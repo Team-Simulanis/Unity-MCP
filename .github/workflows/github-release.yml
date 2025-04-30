@@ -1,0 +1,43 @@
+name: GitHub Release Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Create Release and Upload Package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to create releases
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Or your preferred LTS version
+
+      - name: Create package tarball
+        id: package
+        run: |
+          cd Assets/root
+          npm pack
+          # Get the generated tarball filename
+          TARBALL_NAME=$(ls *.tgz)
+          echo "tarball_name=${TARBALL_NAME}" >> $GITHUB_OUTPUT
+          echo "tarball_path=Assets/root/${TARBALL_NAME}" >> $GITHUB_OUTPUT
+          cd ../.. # Go back to root for next step
+        shell: bash
+
+      - name: Create GitHub Release and Upload Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.package.outputs.tarball_path }}
+          body_path: RELEASE_NOTES.md # Optional: Path to file with release notes content
+          # token: ${{ secrets.GITHUB_TOKEN }} # Uses default GITHUB_TOKEN with write permissions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
