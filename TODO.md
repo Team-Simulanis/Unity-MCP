@@ -20,25 +20,18 @@
   - [x] Update package.json with new identifiers
   - [x] Update relevant manifest files (if applicable)
   - [x] Verify dependencies
-  - [x] Create Distributable Package Structure
+  - [ ] Create Distributable Package Structure (Using Git URL now)
     - [x] Build server component (via Unity tool)
-    - [x] Verify Server Source Inclusion in Package (using `npm pack --dry-run`)
     - [x] Adapt Server Source Path Logic (`Startup.Server.cs`)
-    - [x] Create Final Package (`.tgz` using `npm pack`)
-  - [x] Test Local Package Installation (using tarball)
-    - [x] Verified package loads without errors.
-    - [x] Verified server builds successfully within the test project context.
-    - [x] Verified AI Connector window functionality.
-    - [x] Verified basic tool functionality.
+  - [x] Test Local Package Installation (Testing via Git URL install now)
 
 ## Phase 2: Documentation and Attribution
 - [x] Update Documentation
   - [x] Add clear attribution to original creator (IvanMurzak)
   - [x] Document fork relationship
   - [ ] Add Simulanis-specific contact information (Placeholder added, needs final info)
-  - [x] Update installation instructions (for GitHub Release method)
-    - [x] Detail downloading `.tgz` from GitHub Releases.
-    - [x] Explain adding `file:` reference in `manifest.json`.
+  - [x] Update installation instructions (for Git URL method)
+    - [x] Explain adding package via Git URL in UPM.
     - [x] Include steps for triggering initial server build.
   - [ ] Add Simulanis-specific use cases
 - [ ] Create Contribution Guidelines
@@ -70,28 +63,22 @@
   - [ ] Define version numbering strategy (e.g., `vX.Y.Z-simulanis.N`)
   - [ ] Create release checklist
     - [ ] Ensure `simulanis-main` branch is up-to-date.
-    - [ ] Verify final package build (`npm pack`) locally.
-    - [ ] Final test install of the locally generated `.tgz`.
+    - [ ] Test install using Git URL with the release tag.
   - [ ] Draft release notes template (including installation steps).
-- [ ] GitHub Release Workflow Automation
-  - [ ] Create GitHub Actions workflow (`.github/workflows/github-release.yml`).
-  - [ ] Configure workflow to trigger on tag push (e.g., `v*`).
-  - [ ] Add steps to checkout code.
-  - [ ] Add steps to setup Node.js.
-  - [ ] Add step to run `npm pack` in `Assets/root` to generate `.tgz`.
-  - [ ] Add step to automatically create GitHub Release for the tag.
-  - [ ] Add step to upload the generated `.tgz` as a release asset.
+- [ ] GitHub Release Workflow Automation [Needs Update for Git URL]
+  - [x] Create GitHub Actions workflow (`.github/workflows/github-release.yml`).
+  - [x] Configure workflow to trigger on tag push (e.g., `v*`).
+  - [x] Add steps to checkout code.
+  - [x] Add step to automatically create GitHub Release for the tag (without assets).
   - [ ] Test the workflow with a pre-release tag.
 - [ ] Manual Release Steps (if automation fails or for first release)
-  - [ ] Create Git tag for release (e.g., `git tag v0.6.1-simulanis.1`).
-  - [ ] Push the tag to remote (`git push origin v0.6.1-simulanis.1`).
-  - [ ] Go to GitHub repository > Releases > "Draft a new release".
-  - [ ] Choose the pushed tag.
-  - [ ] Set release title (e.g., `v0.6.1-simulanis.1`).
-  - [ ] Write release notes (using template, link to installation guide).
-  - [ ] Manually generate `.tgz` using `npm pack` locally.
-  - [ ] Upload the generated `.tgz` package as a binary asset.
-  - [ ] Publish release.
+  - [x] Create Git tag for release (e.g., `git tag v0.6.2-simulanis.1`).
+  - [x] Push the tag to remote (`git push origin v0.6.2-simulanis.1`).
+  - [x] Go to GitHub repository > Releases > "Draft a new release".
+  - [x] Choose the pushed tag.
+  - [x] Set release title (e.g., `v0.6.2-simulanis.1`).
+  - [x] Write release notes (using template, link to installation guide).
+  - [x] Publish release.
 - [ ] Maintenance Plan
   - [ ] Define update frequency
   - [ ] Create hotfix process
