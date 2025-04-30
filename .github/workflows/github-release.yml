@@ -37,7 +37,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ steps.package.outputs.tarball_path }}
-          body_path: RELEASE_NOTES.md # Optional: Path to file with release notes content
+          body: "Automated release for ${{ github.ref_name }}"
+          # body_path: RELEASE_NOTES.md # Optional: Path to file with release notes content
           # token: ${{ secrets.GITHUB_TOKEN }} # Uses default GITHUB_TOKEN with write permissions
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
