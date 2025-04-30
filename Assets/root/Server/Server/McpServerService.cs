@@ -7,6 +7,8 @@ using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ModelContextProtocol;
+using ModelContextProtocol.Protocol.Messages;
 using ModelContextProtocol.Server;
 using R3;
 
@@ -90,6 +92,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 tools.Clear();
                 foreach (var tool in pluginTools)
                     tools.Add(tool);
+
+                await _mcpServer.SendNotificationAsync(NotificationMethods.ToolListChangedNotification);
             }
             catch (Exception ex)
             {

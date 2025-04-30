@@ -33,10 +33,16 @@ Returns list of all available components preview if no requested components foun
                 return error;
 
             var allComponents = go.GetComponents<UnityEngine.Component>();
-            var components = allComponents
-                .Where(c => componentInstanceIDs == null || componentInstanceIDs.Length == 0 || componentInstanceIDs.Contains(c.GetInstanceID()))
-                .Select(c => Serializer.Component.BuildData(c))
-                .ToList();
+
+            var needToFilterComponents = componentInstanceIDs != null && componentInstanceIDs.Length > 0;
+
+            var tempComponents = needToFilterComponents
+                ? allComponents.Where(c => componentInstanceIDs.Contains(c.GetInstanceID()))
+                : allComponents;
+
+            var components = tempComponents
+                    .Select((c, i) => Serializer.Serialize(c, name: $"[{i}]"))
+                    .ToList();
 
             if (components.Count == 0)
                 return Error.NotFoundComponents(componentInstanceIDs, allComponents);

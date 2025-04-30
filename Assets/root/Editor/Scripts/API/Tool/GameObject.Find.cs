@@ -39,11 +39,11 @@ Also, it returns Components preview just for the target GameObject."
 
                 var components = go.GetComponents<UnityEngine.Component>();
                 var componentsPreview = components
-                    .Select(c => MCP.Utils.Serializer.Component.BuildDataLight(c))
+                    .Select((c, i) => Serializer.Serialize(c, name: $"[{i}]", recursive: false))
                     .ToList();
 
                 return @$"[Success] Found GameObject.
-# Components preview:
+# Components preview (to get full information use 'GameObject_GetComponents' tool):
 {JsonUtils.Serialize(componentsPreview)}
 
 # GameObject bounds:

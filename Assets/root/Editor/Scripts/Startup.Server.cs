@@ -9,34 +9,61 @@ using Debug = UnityEngine.Debug;
 using com.IvanMurzak.Unity.MCP.Editor.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace com.IvanMurzak.Unity.MCP.Editor
 {
     static partial class Startup
     {
-        public const string PackageName = "com.IvanMurzak.Unity.MCP";
+        public const string PackageName = "com.simulanis.unity.mcp";
         public const string ServerProjectName = "com.IvanMurzak.Unity.MCP.Server";
 
         // Server source path
         public static string PackageCache => Path.GetFullPath(Path.Combine(Application.dataPath, "../Library", "PackageCache"));
+
+        // Helper to get the directory of the current script file
+        private static string GetCurrentScriptDirectory([CallerFilePath] string sourceFilePath = "")
+        {
+            return Path.GetDirectoryName(sourceFilePath);
+        }
+
         public static string? ServerSourcePath
         {
             get
             {
-                var sourceDir = new DirectoryInfo(PackageCache)
-                    .GetDirectories()
-                    .FirstOrDefault(d => d.Name.ToLower().Contains(PackageName.ToLower()))
-                    ?.FullName;
+                // Get the directory where this script (Startup.Server.cs) is located
+                string scriptDir = GetCurrentScriptDirectory();
+                
+                // Navigate up from Editor/Scripts to the package root
+                // Assumes structure: <PackageRoot>/Editor/Scripts/Startup.Server.cs
+                string packageRootPath = Path.GetFullPath(Path.Combine(scriptDir, "..", "..")); 
 
-                if (string.IsNullOrEmpty(sourceDir))
-                    return Path.GetFullPath(Path.Combine(Application.dataPath, "root", "Server"));
+                // Construct the path to the Server source within the package
+                string serverSourceInPackage = Path.Combine(packageRootPath, "Server");
 
-                return Path.GetFullPath(Path.Combine(sourceDir, "Server"));
+                // Check if the Server directory exists at the calculated path
+                if (Directory.Exists(serverSourceInPackage))
+                {
+                    return serverSourceInPackage;
+                }
+                else
+                {
+                    // Fallback for local development environment (if needed, though maybe remove later)
+                    string devPath = Path.GetFullPath(Path.Combine(Application.dataPath, "root", "Server"));
+                    if (Directory.Exists(devPath))
+                    {
+                        return devPath;
+                    }
+                }
+                
+                // If neither path is found, return null or log an error
+                Debug.LogError($"[{PackageName}] Could not determine Server source path. Checked: {serverSourceInPackage} and dev path.");
+                return null; 
             }
         }
 
         // Server executable path
-        public static string ServerExecutableRootPath => Path.GetFullPath(Path.Combine(Application.dataPath, "../Library", ServerProjectName.ToLower()));
+        public static string ServerExecutableRootPath => Path.GetFullPath(Path.Combine(Application.dataPath, "../Library", PackageName.ToLower()));
         public static string ServerExecutableFolder => Path.Combine(ServerExecutableRootPath, "bin~", "Release", "net9.0");
         public static string ServerExecutableFile => Path.Combine(ServerExecutableFolder, $"{ServerProjectName}");
 

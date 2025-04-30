@@ -49,7 +49,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             var components = prefab.GetComponents<UnityEngine.Component>();
             var componentsPreview = components
-                .Select(c => MCP.Utils.Serializer.Component.BuildDataLight(c))
+                .Select((c, i) => Serializer.Serialize(c, name: $"[{i}]", recursive: false))
                 .ToList();
 
             return @$"[Success] Found Prefab at '{prefabAssetPath}'.

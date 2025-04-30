@@ -36,7 +36,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             if (asset == null)
                 return Error.NotFoundAsset(assetPath, assetGuid);
 
-            var serialized = Serializer.Anything.Serialize(asset, name: asset.name, recursive: true);
+            var serialized = Serializer.Serialize(asset, name: asset.name, recursive: true);
             var json = JsonUtils.Serialize(serialized);
 
             return $"[Success] Loaded asset at path '{assetPath}'.\n{json}";

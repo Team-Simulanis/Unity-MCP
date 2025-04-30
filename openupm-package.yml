@@ -1,0 +1,55 @@
+# package name
+name: com.simulanis.unity.mcp
+# package display name
+displayName: Simulanis Unity MCP
+# package description
+description: Simulanis fork of Unity-MCP - A bridge between LLM and Unity. It exposes Unity API to LLM and allows LLM to control Unity. Based on Model Context Protocol (MCP).
+# repository URL
+repoUrl: https://github.com/Team-Simulanis/Unity-MCP
+# repository branch
+repoBranch: simulanis-main
+# package license
+licenseSpdxId: MIT
+# license URL
+licenseName: MIT License
+# package version
+version: 0.6.1-simulanis.1
+# package author
+author:
+  name: Simulanis Solutions
+  url: https://github.com/Team-Simulanis
+# package keywords
+keywords:
+  - ai
+  - ai-integration
+  - mcp
+  - unity-mcp
+  - simulanis
+# package topics (areas)
+topics:
+  - ai-and-machine-learning
+  - integration
+  - editor-enhancement
+# minimal Unity version
+minVersion: 2022.3
+# package readme
+readme: |
+  # Simulanis Unity MCP
+  
+  This is a fork of [Unity-MCP](https://github.com/IvanMurzak/Unity-MCP) by [Ivan Murzak](https://github.com/IvanMurzak), maintained by Simulanis Solutions.
+  
+  A bridge between LLM and Unity that exposes and explains Unity's tools to LLM. The system allows LLM to understand the interface and utilize Unity tools as requested by users.
+  
+  ## Features
+  - Connect to LLM clients like Claude or Cursor
+  - Expose Unity tools to AI
+  - Support for custom tool development
+  - Integrated AI Connector window
+  
+  ## Installation
+  
+  ```bash
+  openupm add com.simulanis.unity.mcp
+  ```
+  
+  For more details, visit the [GitHub repository](https://github.com/Team-Simulanis/Unity-MCP). 

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
@@ -41,17 +42,20 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             public static string NotFoundComponent(int componentInstanceID, IEnumerable<UnityEngine.Component> allComponents)
             {
                 var availableComponentsPreview = allComponents
-                    .Select(c => MCP.Utils.Serializer.Component.BuildDataLight(c))
+                    .Select((c, i) => Serializer.Serialize(c, name: $"[{i}]", recursive: false))
                     .ToList();
                 var previewJson = JsonUtils.Serialize(availableComponentsPreview);
 
-                return $"[Error] No component with instanceID '{componentInstanceID}' found in GameObject.\nAvailable components preview:\n{previewJson}";
+                var instanceIdSample = JsonSerializer.Serialize(new { componentData = availableComponentsPreview[0] });
+                var helpMessage = $"Use 'name=[index]' to specify the component. Or use 'instanceID' to specify the component.\n{instanceIdSample}";
+
+                return $"[Error] No component with instanceID '{componentInstanceID}' found in GameObject.\n{helpMessage}\nAvailable components preview:\n{previewJson}";
             }
             public static string NotFoundComponents(int[] componentInstanceIDs, IEnumerable<UnityEngine.Component> allComponents)
             {
                 var componentInstanceIDsString = string.Join(", ", componentInstanceIDs);
                 var availableComponentsPreview = allComponents
-                    .Select(c => MCP.Utils.Serializer.Component.BuildDataLight(c))
+                    .Select((c, i) => Serializer.Serialize(c, name: $"[{i}]", recursive: false))
                     .ToList();
                 var previewJson = JsonUtils.Serialize(availableComponentsPreview);
 

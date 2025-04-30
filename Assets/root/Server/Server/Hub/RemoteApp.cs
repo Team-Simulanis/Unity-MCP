@@ -11,9 +11,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
 {
     public class RemoteApp : BaseHub<RemoteApp>, IRemoteApp
     {
-
         public RemoteApp(ILogger<RemoteApp> logger, IHubContext<RemoteApp> hubContext)
-            : base(logger, hubContext, pingTimeout: TimeSpan.FromSeconds(1))
+            : base(logger, hubContext)
         {
         }
 
@@ -48,8 +47,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         _logger.LogWarning($"No connected clients for {GetType().Name}. Retrying [{retryCount}/{maxRetries}]...");
                         await Task.Delay(1000, cancellationToken); // Wait before retrying
                         continue;
-                        // return ResponseData<ResponseCallTool>.Error(data.RequestID, $"No connected clients for {GetType().Name}.")
-                        //     .Log(_logger);
                     }
 
                     var invokeTask = client.InvokeAsync<ResponseData<ResponseCallTool>>(Consts.RPC.Client.RunCallTool, data, cancellationToken);

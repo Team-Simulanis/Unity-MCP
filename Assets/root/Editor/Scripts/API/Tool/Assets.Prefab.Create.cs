@@ -47,7 +47,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             EditorApplication.RepaintHierarchyWindow();
 
             return $"[Success] Prefab '{prefabAssetPath}' created from GameObject '{go.name}' (InstanceID: {instanceID}).\n" +
-                   $"Prefab GameObject:\n{MCP.Utils.Serializer.GameObject.SerializeLight(prefabGo)}";
+                   $"Prefab GameObject:\n{Serializer.Serialize(prefabGo, recursive: false)}";
         });
     }
 }

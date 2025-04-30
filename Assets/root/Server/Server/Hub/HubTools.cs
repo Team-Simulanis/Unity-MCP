@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using R3;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -20,7 +18,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         readonly IRemoteServer? _remoteServer;
 
         public HubTools(ILogger<HubTools> logger, IHubContext<HubTools> hubContext, IMcpRunner localApp, IRemoteServer? remoteServer = null, ILocalServer? localServer = null)
-            : base(logger, hubContext, pingTimeout: TimeSpan.FromSeconds(1))
+            : base(logger, hubContext)
         {
             _localApp = localApp ?? throw new ArgumentNullException(nameof(localApp));
             _remoteServer = remoteServer;

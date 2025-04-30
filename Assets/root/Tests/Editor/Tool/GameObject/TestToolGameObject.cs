@@ -1,14 +1,17 @@
 using System.Collections;
-using com.IvanMurzak.Unity.MCP.Editor.API;
-using com.IvanMurzak.Unity.MCP.Utils;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
     public partial class TestToolGameObject
     {
+        const string GO_ParentName = "root";
+        const string GO_Child1Name = "child1";
+        const string GO_Child2Name = "child2";
+
         [UnitySetUp]
         public IEnumerator SetUp()
         {
@@ -19,23 +22,20 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         public IEnumerator TearDown()
         {
             Debug.Log($"[{nameof(TestToolGameObject)}] TearDown");
+            DestroyAllGameObjectsInActiveScene();
             yield return null;
         }
-
-        [UnityTest]
-        public IEnumerator FindByPath()
+        public static void DestroyAllGameObjectsInActiveScene()
         {
-            var parentName = "root";
-            var childName = "nestedGo";
-            var child = new GameObject(parentName).AddChild(childName);
-
-            var path = new Tool_GameObject().Find(name: childName);
-
-            Assert.IsNotNull(path, $"{childName} should not be null");
-            Assert.IsTrue(path.Contains(childName), $"{childName} should be found in the path");
-            Assert.IsFalse(path.ToLower().Contains("error"), $"{childName} should not contain 'error' in the path");
-
-            yield return null;
+            var scene = SceneManager.GetActiveScene();
+            foreach (var go in scene.GetRootGameObjects())
+                Object.DestroyImmediate(go);
+        }
+        void ResultValidation(string result)
+        {
+            Debug.Log($"[{nameof(TestToolGameObject)}] Result:\n{result}");
+            Assert.IsNotNull(result, $"Result should not be empty or null.");
+            Assert.IsFalse(result.ToLower().Contains("error"), $"Result should not contain 'error'.\n{result}");
         }
     }
 }

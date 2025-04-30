@@ -55,7 +55,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public static JsonElement SerializeToElement(object data, JsonSerializerOptions? options = null)
             => JsonSerializer.SerializeToElement(data, options ?? jsonSerializerOptions);
 
-        public static string Serialize(object data, JsonSerializerOptions? options = null)
+        public static string Serialize(object? data, JsonSerializerOptions? options = null)
             => JsonSerializer.Serialize(data, options ?? jsonSerializerOptions);
 
         public static string ToJson(this IRequestCallTool? data, JsonSerializerOptions? options = null)

@@ -1,4 +1,4 @@
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
@@ -22,7 +22,7 @@ Each field and property requires to have 'type' and 'name' fields to identify th
 Follow the object schema to specify what to change, ignore values that should not be modified.
 Any unknown or wrong located fields and properties will be ignored.
 Check the result of this command to see what was changed. The ignored fields and properties will not be listed.")]
-            ComponentData data,
+            SerializedMember componentData,
             [Description("GameObject by 'instanceID' (int). Priority: 1. (Recommended)")]
             int instanceID = 0,
             [Description("GameObject by 'path'. Priority: 2.")]
@@ -33,7 +33,7 @@ Check the result of this command to see what was changed. The ignored fields and
         {
             return ToolRouter.Call("GameObject_ModifyComponent", arguments =>
             {
-                arguments[nameof(data)] = data;
+                arguments[nameof(componentData)] = componentData;
                 arguments[nameof(instanceID)] = instanceID;
 
                 if (path != null && path.Length > 0)

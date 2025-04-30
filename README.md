@@ -1,6 +1,10 @@
-# Unity MCP (Server + Plugin)
+# Simulanis Unity MCP (Server + Plugin)
 
-[![openupm](https://img.shields.io/npm/v/com.ivanmurzak.unity.mcp?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.ivanmurzak.unity.mcp/) ![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP) [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
+> This is a fork of [Unity-MCP](https://github.com/IvanMurzak/Unity-MCP) by [Ivan Murzak](https://github.com/IvanMurzak), maintained by Simulanis Solutions.
+
+[![openupm](https://img.shields.io/npm/v/com.simulanis.unity.mcp?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.simulanis.unity.mcp/) ![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP) [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
+
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/Team-Simulanis/Unity-MCP)](https://github.com/Team-Simulanis/Unity-MCP/releases/latest) ![License](https://img.shields.io/github/license/IvanMurzak/Unity-MCP)
 
 ![image](https://github.com/user-attachments/assets/8f595879-a578-421a-a06d-8c194af874f7)
 
@@ -9,6 +13,16 @@
 | 2022.3.61f1   | ![2022.3.61f1](https://img.shields.io/github/actions/workflow/status/IvanMurzak/Unity-MCP/2022.3.61f1_editmode.yml?label=2022.3.61f1-editmode) | ![2022.3.61f1](https://img.shields.io/github/actions/workflow/status/IvanMurzak/Unity-MCP/2022.3.61f1_playmode.yml?label=2022.3.61f1-playmode) | ![2022.3.61f1](https://img.shields.io/github/actions/workflow/status/IvanMurzak/Unity-MCP/2022.3.61f1_standalone.yml?label=2022.3.61f1-standalone) |
 | 2023.2.20f1   | ![2023.2.20f1](https://img.shields.io/github/actions/workflow/status/IvanMurzak/Unity-MCP/2023.2.20f1_editmode.yml?label=2023.2.20f1-editmode) | ![2023.2.20f1](https://img.shields.io/github/actions/workflow/status/IvanMurzak/Unity-MCP/2023.2.20f1_playmode.yml?label=2023.2.20f1-playmode) | ![2023.2.20f1](https://img.shields.io/github/actions/workflow/status/IvanMurzak/Unity-MCP/2023.2.20f1_standalone.yml?label=2023.2.20f1-standalone) |
 | 6000.0.46f1   | ![6000.0.46f1](https://img.shields.io/github/actions/workflow/status/IvanMurzak/Unity-MCP/6000.0.46f1_editmode.yml?label=6000.0.46f1-editmode) | ![6000.0.46f1](https://img.shields.io/github/actions/workflow/status/IvanMurzak/Unity-MCP/6000.0.46f1_playmode.yml?label=6000.0.46f1-playmode) | ![6000.0.46f1](https://img.shields.io/github/actions/workflow/status/IvanMurzak/Unity-MCP/6000.0.46f1_standalone.yml?label=6000.0.46f1-standalone) |
+
+## About This Fork
+
+This fork is maintained by Simulanis Solutions to provide enhanced Unity-MCP functionality for Simulanis projects while maintaining compatibility with the original project. We are committed to:
+
+- Regular synchronization with the upstream repository
+- Maintaining proper attribution to the original work
+- Contributing improvements back to the original project when possible
+
+## Original Project Description
 
 **[Unity-MCP](https://github.com/IvanMurzak/Unity-MCP)** is a bridge between LLM and Unity. It exposes and explains to LLM Unity's tools. LLM understands the interface and utilizes the tools in the way a user asks.
 
@@ -148,17 +162,47 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 > **Legend:**
 > ✅ = Implemented & available, 🔲 = Planned / Not yet implemented
 
-# Installation
+# Installation (via GitHub Release)
 
-1. [Install .NET 9.0](https://dotnet.microsoft.com/en-us/download)
-2. [Install OpenUPM-CLI](https://github.com/openupm/openupm-cli#installation)
+This package is distributed via GitHub Releases.
 
-- Open command line in Unity project folder
-- Run the command
+1.  **Prerequisites:**
+    *   Unity 2022.3 or newer.
+    *   [.NET 9.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) installed.
 
-```bash
-openupm add com.ivanmurzak.unity.mcp
-```
+2.  **Download Package:**
+    *   Go to the [Releases page](https://github.com/Team-Simulanis/Unity-MCP/releases) of this repository.
+    *   Download the `.tgz` package file (e.g., `com.simulanis.unity.mcp-X.Y.Z-simulanis.N.tgz`) from the latest release.
+    *   Place the downloaded `.tgz` file somewhere accessible to your Unity project (e.g., in the project's root directory, *outside* the `Assets` folder).
+
+3.  **Add to Unity Project:**
+    *   Open your Unity project.
+    *   Open the `Packages/manifest.json` file in a text editor.
+    *   Add the following line to the `dependencies` section, adjusting the path to where you saved the `.tgz` file:
+        ```json
+        {
+          "dependencies": {
+            "com.simulanis.unity.mcp": "file:../com.simulanis.unity.mcp-X.Y.Z-simulanis.N.tgz",
+            // ... other dependencies
+          },
+          "scopedRegistries": [ 
+            {
+              "name": "package.openupm.com",
+              "url": "https://package.openupm.com",
+              "scopes": [
+                "org.nuget"
+              ]
+            }
+          ]
+        }
+        ```
+        *(Ensure the `scopedRegistries` section for `org.nuget` is present to resolve required dependencies. If it doesn't exist, add it.)*
+    *   Save the `manifest.json` file.
+    *   Unity will automatically detect the change and import the package.
+
+4.  **Build Server:**
+    *   Once the package is imported, go to the Unity menu: `Tools > AI Connector (Unity-MCP) > Build MCP Server`.
+    *   Click it to build the necessary server component. Check the Unity console for success messages.
 
 # Usage
 
@@ -186,6 +230,12 @@ openupm add com.ivanmurzak.unity.mcp
   ```text
   Explain my scene hierarchy
   ```
+
+# Support
+
+For issues specific to the Simulanis fork or integration with Simulanis projects, please contact yokeshj@simulanis.com or raise an issue on this GitHub repository.
+
+For issues related to the core MCP functionality, please refer to the original [Unity-MCP issues section](https://github.com/IvanMurzak/Unity-MCP/issues).
 
 # Add custom `tool`
 
@@ -243,14 +293,4 @@ public class Tool_GameObject
 
 # Add custom in-game `tool`
 
-> ⚠️ Not yet supported. There is a blocker issue in `csharp-sdk` for MCP server. Waiting for solution.
-> Please vote up for [this issue](https://github.com/modelcontextprotocol/csharp-sdk/discussions/301) and [this](https://github.com/modelcontextprotocol/csharp-sdk/issues/335) to bring more attention to it. The custom tool is dependent on it.
-
-
-# Contribution
-
-Feel free to add new `tool` into the project.
-
-1. Fork the project.
-2. Implement new `tool` in your forked repository.
-3. Create Pull Request into original [Unity-MCP](https://github.com/IvanMurzak/Unity-MCP) repository.
+> ⚠️ Not yet supported. There is a blocker issue in `csharp-sdk`

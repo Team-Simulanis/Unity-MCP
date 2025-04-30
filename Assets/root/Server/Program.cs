@@ -24,6 +24,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             {
                 var builder = WebApplication.CreateBuilder(args);
 
+                builder.Logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Information);
                 builder.Services.AddSignalR(configure =>
                 {
                     configure.EnableDetailedErrors = true;
