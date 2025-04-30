@@ -25,7 +25,7 @@ jobs:
         id: package
         run: |
           cd Assets/root
-          npm pack
+          npm pack --ignore-scripts
           # Get the generated tarball filename
           TARBALL_NAME=$(ls *.tgz)
           echo "tarball_name=${TARBALL_NAME}" >> $GITHUB_OUTPUT
