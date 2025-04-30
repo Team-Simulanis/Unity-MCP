@@ -59,19 +59,22 @@
   - [ ] Push updated `simulanis-dev` (`git push origin simulanis-dev --force-with-lease`).
 
 ## Phase 4: Release Management (GitHub)
-- [ ] Initial Release Strategy
-  - [ ] Define version numbering strategy (e.g., `vX.Y.Z-simulanis.N`)
-  - [ ] Create release checklist
-    - [ ] Ensure `simulanis-main` branch is up-to-date.
-    - [ ] Test install using Git URL with the release tag.
-  - [ ] Draft release notes template (including installation steps).
-- [ ] GitHub Release Workflow Automation [Needs Update for Git URL]
+- [x] Initial Release Strategy (Switched to Git URL)
+  - [x] Define version numbering strategy (e.g., `vX.Y.Z-simulanis.N`)
+  - [x] Create release checklist
+    - [x] Ensure `simulanis-main` branch is up-to-date.
+    - [x] Test install using Git URL with the release tag.
+  - [x] Draft release notes template (including installation steps).
+- [x] GitHub Release Workflow Automation (Using Git URL)
   - [x] Create GitHub Actions workflow (`.github/workflows/github-release.yml`).
   - [x] Configure workflow to trigger on tag push (e.g., `v*`).
   - [x] Add steps to checkout code.
   - [x] Add step to automatically create GitHub Release for the tag (without assets).
-  - [ ] Test the workflow with a pre-release tag.
-- [ ] Manual Release Steps (if automation fails or for first release)
+  - [x] Test the workflow with the `v0.6.2-simulanis.1` tag (Successful).
+  - [x] Resolved issue with conflicting `openupm-publish.yml` workflow triggering.
+    - [x] Deleted `openupm-publish.yml`.
+    - [x] Deleted and re-created/pushed tag `v0.6.2-simulanis.1` to point to correct commit.
+- [x] Manual Release Steps (Confirmed Working)
   - [x] Create Git tag for release (e.g., `git tag v0.6.2-simulanis.1`).
   - [x] Push the tag to remote (`git push origin v0.6.2-simulanis.1`).
   - [x] Go to GitHub repository > Releases > "Draft a new release".
