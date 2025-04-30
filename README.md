@@ -162,28 +162,38 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 > **Legend:**
 > ✅ = Implemented & available, 🔲 = Planned / Not yet implemented
 
-# Installation (via GitHub Release)
+# Installation (via Git URL)
 
-This package is distributed via GitHub Releases.
+This package is distributed directly via GitHub using its Git URL and release tags.
 
 1.  **Prerequisites:**
     *   Unity 2022.3 or newer.
     *   [.NET 9.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) installed.
+    *   Git installed and available in your system's PATH.
 
-2.  **Download Package:**
-    *   Go to the [Releases page](https://github.com/Team-Simulanis/Unity-MCP/releases) of this repository.
-    *   Download the `.tgz` package file (e.g., `com.simulanis.unity.mcp-X.Y.Z-simulanis.N.tgz`) from the latest release.
-    *   Place the downloaded `.tgz` file somewhere accessible to your Unity project (e.g., in the project's root directory, *outside* the `Assets` folder).
-
-3.  **Add to Unity Project:**
+2.  **Add Package via Unity Package Manager:**
     *   Open your Unity project.
-    *   Open the `Packages/manifest.json` file in a text editor.
-    *   Add the following line to the `dependencies` section, adjusting the path to where you saved the `.tgz` file:
+    *   Go to `Window > Package Manager`.
+    *   Click the `+` (plus) button in the top-left corner of the Package Manager window.
+    *   Select `Add package from git URL...`.
+    *   Enter the following URL, replacing `TAG_NAME` with the desired release tag (e.g., `v0.6.2-simulanis.1`):
+        ```
+        https://github.com/Team-Simulanis/Unity-MCP.git#TAG_NAME
+        ```
+        For the latest release, use:
+        ```
+        https://github.com/Team-Simulanis/Unity-MCP.git#v0.6.2-simulanis.1
+        ```
+    *   Click `Add`.
+    *   Unity will download and import the package.
+
+3.  **Ensure Scoped Registry for Dependencies:**
+    *   After installation, check your `Packages/manifest.json` file.
+    *   Make sure the following `scopedRegistries` entry exists to allow Unity to download necessary dependencies (like SignalR components):
         ```json
         {
           "dependencies": {
-            "com.simulanis.unity.mcp": "file:../com.simulanis.unity.mcp-X.Y.Z-simulanis.N.tgz",
-            // ... other dependencies
+            // ... other dependencies, including com.simulanis.unity.mcp
           },
           "scopedRegistries": [ 
             {
@@ -193,15 +203,14 @@ This package is distributed via GitHub Releases.
                 "org.nuget"
               ]
             }
+            // ... other scoped registries if you have them
           ]
         }
         ```
-        *(Ensure the `scopedRegistries` section for `org.nuget` is present to resolve required dependencies. If it doesn't exist, add it.)*
-    *   Save the `manifest.json` file.
-    *   Unity will automatically detect the change and import the package.
+    *   If it's missing, add it manually and save the `manifest.json` file. Unity should then resolve the remaining dependencies.
 
 4.  **Build Server:**
-    *   Once the package is imported, go to the Unity menu: `Tools > AI Connector (Unity-MCP) > Build MCP Server`.
+    *   Once the package and its dependencies are imported, go to the Unity menu: `Tools > AI Connector (Unity-MCP) > Build MCP Server`.
     *   Click it to build the necessary server component. Check the Unity console for success messages.
 
 # Usage
