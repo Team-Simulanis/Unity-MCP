@@ -50,13 +50,13 @@
   - [x] Define merge conflict resolution process (In docs)
   - [x] Document testing requirements post-sync (In docs)
   - [x] Create sync validation checklist (In docs)
-- [ ] Perform Initial Sync with Upstream
-  - [ ] Fetch upstream changes (`git fetch upstream`)
-  - [ ] Checkout `simulanis-dev` branch.
-  - [ ] Rebase `simulanis-dev` onto `upstream/main` (`git rebase upstream/main`).
-  - [ ] Resolve any merge conflicts.
-  - [ ] Test thoroughly using checklist in `SIMULANIS_CHANGES.md`.
-  - [ ] Push updated `simulanis-dev` (`git push origin simulanis-dev --force-with-lease`).
+- [x] Perform Initial Sync with Upstream
+  - [x] Fetch upstream changes (`git fetch upstream`)
+  - [x] Checkout `simulanis-dev` branch.
+  - [x] Rebase `simulanis-dev` onto `upstream/main` (`git rebase upstream/main`).
+  - [x] Resolve any merge conflicts.
+  - [x] Test thoroughly using checklist in `SIMULANIS_CHANGES.md`.
+  - [x] Push updated `simulanis-dev` (`git push origin simulanis-dev --force-with-lease`).
 
 ## Phase 4: Release Management (GitHub)
 - [x] Initial Release Strategy (Switched to Git URL)
