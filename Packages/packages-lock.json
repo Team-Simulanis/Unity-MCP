@@ -391,7 +391,7 @@
     },
     "org.nuget.microsoft.extensions.dependencyinjection.abstractions": {
       "version": "9.0.4",
-      "depth": 1,
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "org.nuget.microsoft.bcl.asyncinterfaces": "9.0.4",
@@ -412,7 +412,7 @@
     },
     "org.nuget.microsoft.extensions.diagnostics.abstractions": {
       "version": "9.0.4",
-      "depth": 2,
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "org.nuget.microsoft.extensions.dependencyinjection.abstractions": "9.0.4",
@@ -491,7 +491,7 @@
     },
     "org.nuget.microsoft.extensions.hosting.abstractions": {
       "version": "9.0.4",
-      "depth": 1,
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "org.nuget.microsoft.bcl.asyncinterfaces": "9.0.4",
@@ -519,7 +519,7 @@
     },
     "org.nuget.microsoft.extensions.logging.abstractions": {
       "version": "9.0.4",
-      "depth": 1,
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "org.nuget.microsoft.extensions.dependencyinjection.abstractions": "9.0.4",
@@ -676,7 +676,7 @@
     },
     "org.nuget.system.diagnostics.diagnosticsource": {
       "version": "9.0.4",
-      "depth": 2,
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "org.nuget.system.memory": "4.5.5",
@@ -695,7 +695,7 @@
     },
     "org.nuget.system.io.pipelines": {
       "version": "9.0.4",
-      "depth": 3,
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "org.nuget.system.buffers": "4.5.1",
@@ -769,7 +769,7 @@
     },
     "org.nuget.system.text.encodings.web": {
       "version": "9.0.4",
-      "depth": 3,
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "org.nuget.system.buffers": "4.5.1",
@@ -780,7 +780,7 @@
     },
     "org.nuget.system.text.json": {
       "version": "9.0.4",
-      "depth": 2,
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "org.nuget.microsoft.bcl.asyncinterfaces": "9.0.4",
