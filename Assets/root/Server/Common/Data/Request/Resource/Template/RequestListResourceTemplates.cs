@@ -7,13 +7,10 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data
     public class RequestListResourceTemplates : IRequestListResourceTemplates
     {
         public string RequestID { get; set; } = string.Empty;
-        public string? Filter { get; set; }
-        
         public RequestListResourceTemplates() { }
-        public RequestListResourceTemplates(string requestID, string? filter = null)
+        public RequestListResourceTemplates(string requestID)
         {
             RequestID = requestID ?? throw new ArgumentNullException(nameof(requestID));
-            Filter = filter;
         }
 
         public virtual void Dispose()

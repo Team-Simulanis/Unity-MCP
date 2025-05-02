@@ -27,15 +27,12 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 public const string RunResourceContent = "/mcp/run-resource-content";
                 public const string RunListResources = "/mcp/run-list-resources";
                 public const string RunListResourceTemplates = "/mcp/run-list-resource-templates";
-                public const string RunListMenuItems = "/mcp/run-list-menu-items";
-                public const string RunExecuteMenuItem = "/mcp/run-execute-menu-item";
             }
 
             public static class Server
             {
                 public const string SetOnListToolsUpdated = "SetOnListToolsUpdated";
                 public const string SetOnListResourcesUpdated = "SetOnListResourcesUpdated";
-                public const string SetOnListMenuItemsUpdated = "SetOnListMenuItemsUpdated";
             }
         }
     }

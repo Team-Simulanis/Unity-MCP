@@ -3,7 +3,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common.Data;
-//using com.IvanMurzak.Unity.MCP.Unity;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -104,33 +103,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 {
                     _logger.LogDebug("List Resource Templates called.");
                     return await _mcpRunner.RunResourceTemplates(data);
-                })
-                .AddTo(_serverEventsDisposables);
-                
-            hubConnection.On<RequestListMenuItems, IResponseData<ResponseMenuItem[]>>(Consts.RPC.Client.RunListMenuItems, async data =>
-                {
-                    _logger.LogDebug("List Menu Items called.");
-                    
-                    #if UNITY_EDITOR
-                    // We'll just return an empty array since we can't resolve the correct MenuItemService
-                    return ResponseData<ResponseMenuItem[]>.Success(data.RequestID, new ResponseMenuItem[0]);
-                    #else
-                    return ResponseData<ResponseMenuItem[]>.Error(data.RequestID, "Menu items are only available in the Unity Editor.");
-                    #endif
-                })
-                .AddTo(_serverEventsDisposables);
-                
-            hubConnection.On<RequestExecuteMenuItem, IResponseData<ResponseExecuteMenuItem>>(Consts.RPC.Client.RunExecuteMenuItem, async data =>
-                {
-                    _logger.LogDebug($"Execute Menu Item called: {data.MenuPath}");
-                    
-                    #if UNITY_EDITOR
-                    // We'll just return a failure response since we can't resolve the correct MenuItemService
-                    return ResponseData<ResponseExecuteMenuItem>.Success(data.RequestID, 
-                        new ResponseExecuteMenuItem(data.MenuPath, false, "Menu item execution not implemented in this build"));
-                    #else
-                    return ResponseData<ResponseExecuteMenuItem>.Error(data.RequestID, "Menu item execution is only available in the Unity Editor.");
-                    #endif
                 })
                 .AddTo(_serverEventsDisposables);
         }

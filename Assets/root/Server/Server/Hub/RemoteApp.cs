@@ -185,60 +185,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
             }
         }
 
-        public async Task<IResponseData<ResponseMenuItem[]>> RunListMenuItems(IRequestListMenuItems data, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var client = GetActiveClient();
-                if (client == null)
-                    return ResponseData<ResponseMenuItem[]>.Error(data.RequestID, $"No connected clients for {GetType().Name}.")
-                        .Log(_logger);
-
-                var result = await client.InvokeAsync<ResponseData<ResponseMenuItem[]>>(Consts.RPC.Client.RunListMenuItems, data, cancellationToken);
-                if (result == null)
-                    return ResponseData<ResponseMenuItem[]>.Error(data.RequestID, $"'{Consts.RPC.Client.RunListMenuItems}' returned null result.")
-                        .Log(_logger);
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return ResponseData<ResponseMenuItem[]>.Error(data.RequestID, $"Failed to run '{Consts.RPC.Client.RunListMenuItems}'. Exception: {ex}")
-                    .Log(_logger, ex);
-            }
-        }
-
-        public async Task<IResponseData<ResponseExecuteMenuItem>> RunExecuteMenuItem(IRequestExecuteMenuItem data, CancellationToken cancellationToken = default)
-        {
-            if (data == null)
-                return ResponseData<ResponseExecuteMenuItem>.Error(Consts.Guid.Zero, "Execute menu item data is null.")
-                    .Log(_logger);
-
-            if (string.IsNullOrEmpty(data.MenuPath))
-                return ResponseData<ResponseExecuteMenuItem>.Error(data.RequestID, "Menu path is null.")
-                    .Log(_logger);
-
-            try
-            {
-                var client = GetActiveClient();
-                if (client == null)
-                    return ResponseData<ResponseExecuteMenuItem>.Error(data.RequestID, $"No connected clients for {GetType().Name}.")
-                        .Log(_logger);
-
-                var result = await client.InvokeAsync<ResponseData<ResponseExecuteMenuItem>>(Consts.RPC.Client.RunExecuteMenuItem, data, cancellationToken);
-                if (result == null)
-                    return ResponseData<ResponseExecuteMenuItem>.Error(data.RequestID, $"Menu path: '{data.MenuPath}' returned null result.")
-                        .Log(_logger);
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return ResponseData<ResponseExecuteMenuItem>.Error(data.RequestID, $"Failed to execute menu item: '{data.MenuPath}'. Exception: {ex}")
-                    .Log(_logger, ex);
-            }
-        }
-
         public new void Dispose()
         {
             base.Dispose();

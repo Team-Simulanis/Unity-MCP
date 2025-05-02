@@ -43,212 +43,169 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
         public async Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool data, CancellationToken cancellationToken = default)
         {
-            var name = data?.Name ?? string.Empty;
-            var requestId = data?.RequestID ?? Consts.Guid.Zero;
+            if (data == null)
+                return ResponseData<ResponseCallTool>.Error(Consts.Guid.Zero, "Tool data is null.")
+                    .Log(_logger);
 
+            if (string.IsNullOrEmpty(data.Name))
+                return ResponseData<ResponseCallTool>.Error(data.RequestID, "Tool.Name is null.")
+                    .Log(_logger);
+
+            if (!_tools.TryGetValue(data.Name, out var runner))
+                return ResponseData<ResponseCallTool>.Error(data.RequestID, $"Tool with Name '{data.Name}' not found.")
+                    .Log(_logger);
             try
             {
-                if (data == null)
-                    throw new ArgumentNullException(nameof(data));
-
-                var toolKey = name;
-
-                if (!_tools.TryGetValue(toolKey, out var toolRunner))
+                if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogWarning("Tool not found: {0}", name);
-                    return ResponseData<ResponseCallTool>.Error(requestId, $"Tool not found: {name}");
+                    var message = data.Arguments == null
+                        ? $"Run tool '{data.Name}' with no parameters."
+                        : $"Run tool '{data.Name}' with parameters[{data.Arguments.Count}]:\n{string.Join(",\n", data.Arguments)}";
+                    _logger.LogInformation(message);
                 }
 
-                var result = await toolRunner.Run(data.Arguments);
+                var result = await runner.Run(data.Arguments);
                 if (result == null)
-                    return ResponseData<ResponseCallTool>.Error(requestId, $"Error running tool '{name}': returned null result.");
+                    return ResponseData<ResponseCallTool>.Error(data.RequestID, $"Tool '{data.Name}' returned null result.")
+                        .Log(_logger);
 
-                return ResponseData<ResponseCallTool>.Success(requestId, result);
+                return result.Log(_logger).Pack(data.RequestID);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error running tool '{0}': {1}\n{2}", name, ex.Message, ex.StackTrace);
-                return ResponseData<ResponseCallTool>.Error(requestId, $"Error running tool '{name}': {ex.Message}");
+                // Handle or log the exception as needed
+                return ResponseData<ResponseCallTool>.Error(data.RequestID, $"Failed to run tool '{data.Name}'. Exception: {ex}")
+                    .Log(_logger, ex);
             }
         }
 
         public Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool data, CancellationToken cancellationToken = default)
         {
-            var requestId = data?.RequestID ?? Consts.Guid.Zero;
-
             try
             {
-                var response = ResponseData<ResponseListTool[]>.Success(requestId,
-                    _tools.Select(kvp => new ResponseListTool(kvp.Key, kvp.Value.Title, kvp.Value.Description, kvp.Value.InputSchema)).ToArray());
-                return Task.FromResult((IResponseData<ResponseListTool[]>)response);
+                _logger.LogDebug("Listing tools.");
+                var result = _tools
+                    .Select(kvp => new ResponseListTool()
+                    {
+                        Name = kvp.Key,
+                        Title = kvp.Value.Title,
+                        Description = kvp.Value.Description,
+                        InputSchema = kvp.Value.InputSchema.ToJsonElement() ?? new()
+                    })
+                    .ToArray();
+
+                return result
+                    .Log(_logger)
+                    .Pack(data.RequestID)
+                    .TaskFromResult();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting list of tools: {0}", ex.Message);
-                return Task.FromResult((IResponseData<ResponseListTool[]>)ResponseData<ResponseListTool[]>.Error(requestId, $"Error getting list of tools: {ex.Message}"));
-            }
-        }
-
-        public async Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources data, CancellationToken cancellationToken = default)
-        {
-            var requestId = data?.RequestID ?? Consts.Guid.Zero;
-
-            try
-            {
-                var results = new List<ResponseListResource>();
-
-                foreach (var (resourceType, resource) in _resources)
-                {
-                    if (!string.IsNullOrWhiteSpace(data?.Filter))
-                    {
-                        var uriFilter = data.Filter;
-                        // Handle both glob and regex patterns
-                        var isMatch = false;
-                        if (uriFilter.Contains('*'))  // Glob pattern
-                        {
-                            // Convert glob to regex
-                            // * matches any sequence of characters
-                            // ? matches a single character
-                            string regexPattern = "^" + Regex.Escape(uriFilter)
-                                .Replace("\\*", ".*")
-                                .Replace("\\?", ".") + "$";
-                            isMatch = Regex.IsMatch(resourceType, regexPattern, RegexOptions.IgnoreCase);
-                        }
-                        else  // Direct comparison
-                        {
-                            isMatch = resourceType.Contains(uriFilter, StringComparison.OrdinalIgnoreCase);
-                        }
-
-                        if (!isMatch)
-                            continue;
-                    }
-
-                    try
-                    {
-                        var content = await resource.RunResourceList();
-                        // Convert the IList<string> to a comma-separated string for compatibility
-                        string contentStr = string.Join(", ", content);
-                        results.Add(new ResponseListResource(resourceType, contentStr));
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error getting resource type '{0}': {1}", resourceType, ex.Message);
-                    }
-                }
-
-                return ResponseData<ResponseListResource[]>.Success(requestId, results.ToArray());
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting list of resources: {0}", ex.Message);
-                return ResponseData<ResponseListResource[]>.Error(requestId, $"Error getting list of resources: {ex.Message}");
+                // Handle or log the exception as needed
+                return ResponseData<ResponseListTool[]>.Error(data.RequestID, $"Failed to list tools. Exception: {ex}")
+                    .Log(_logger, ex)
+                    .TaskFromResult();
             }
         }
 
         public async Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent data, CancellationToken cancellationToken = default)
         {
-            var requestId = data?.RequestID ?? Consts.Guid.Zero;
-            var uri = data?.Uri ?? string.Empty;
+            if (data == null)
+                throw new ArgumentException("Resource data is null.");
 
-            try
-            {
-                if (data == null)
-                    throw new ArgumentNullException(nameof(data));
+            if (data.Uri == null)
+                throw new ArgumentException("Resource.Uri is null.");
 
-                if (string.IsNullOrWhiteSpace(uri))
-                    throw new ArgumentException("Resource uri is empty or whitespace.", nameof(data.Uri));
+            var runner = FindResourceContentRunner(data.Uri, _resources, out var uriTemplate)?.RunGetContent;
+            if (runner == null || uriTemplate == null)
+                throw new ArgumentException($"No route matches the URI: {data.Uri}");
 
-                var parts = uri.Split(':', 2);
-                if (parts.Length != 2)
-                    throw new ArgumentException($"Invalid uri format: {uri}. Expected format: <resource-type>:<resource-id>");
+            _logger.LogInformation("Executing resource '{0}'.", data.Uri);
 
-                var resourceType = parts[0];
-                var resourceId = parts[1];
+            var parameters = ParseUriParameters(uriTemplate!, data.Uri);
+            PrintParameters(parameters);
 
-                if (!_resources.TryGetValue(resourceType, out var resource))
-                    throw new ArgumentException($"Resource type not found: {resourceType}");
-
-                _logger.LogDebug("Loading resource {0}: {1}", resourceType, resourceId);
-
-                var result = await resource.Run(resourceId);
-                return ResponseData<ResponseResourceContent[]>.Success(requestId, result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading resource '{0}': {1}", uri, ex.Message);
-                return ResponseData<ResponseResourceContent[]>.Error(requestId, $"Error loading resource '{uri}': {ex.Message}");
-            }
+            // Execute the resource with the parameters from Uri
+            var result = await runner.Run(parameters);
+            return result.Pack(data.RequestID);
         }
 
-        public async Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates data, CancellationToken cancellationToken = default)
+        public async Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources data, CancellationToken cancellationToken = default)
         {
-            var requestId = data?.RequestID ?? Consts.Guid.Zero;
+            var tasks = _resources.Values
+                .Select(resource => resource.RunListContext.Run());
 
-            try
+            await Task.WhenAll(tasks);
+
+            return tasks
+                .SelectMany(x => x.Result)
+                .ToArray()
+                .Pack(data.RequestID);
+        }
+
+        public Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates data, CancellationToken cancellationToken = default)
+            => _resources.Values
+                .Select(resource => new ResponseResourceTemplate(resource.Route, resource.Name, resource.Description, resource.MimeType))
+                .ToArray()
+                .Pack(data.RequestID)
+                .TaskFromResult();
+
+        IRunResource? FindResourceContentRunner(string uri, IDictionary<string, IRunResource> resources, out string? uriTemplate)
+        {
+            foreach (var route in resources)
             {
-                var response = new List<ResponseResourceTemplate>();
-                foreach (var (resourceType, resource) in _resources)
+                if (IsMatch(route.Key, uri))
                 {
-                    try
+                    uriTemplate = route.Key;
+                    return route.Value;
+                }
+            }
+            uriTemplate = null;
+            return null;
+        }
+
+        bool IsMatch(string uriTemplate, string uri)
+        {
+            // Convert pattern to regex
+            var regexPattern = "^" + Regex.Replace(uriTemplate, @"\{(\w+)\}", @"(?<$1>[^/]+)") + "(?:/.*)?$";
+
+            return Regex.IsMatch(uri, regexPattern);
+        }
+
+        IDictionary<string, object?> ParseUriParameters(string pattern, string uri)
+        {
+            var parameters = new Dictionary<string, object?>()
+            {
+                { "uri", uri }
+            };
+
+            // Convert pattern to regex
+            var regexPattern = "^" + Regex.Replace(pattern, @"\{(\w+)\}", @"(?<$1>.+)") + "(?:/.*)?$";
+
+            var regex = new Regex(regexPattern);
+            var match = regex.Match(uri);
+
+            if (match.Success)
+            {
+                foreach (var groupName in regex.GetGroupNames())
+                {
+                    if (groupName != "0") // Skip the entire match group
                     {
-                        var templates = await resource.RunResourceTemplates();
-                        foreach (var template in templates)
-                        {
-                            if (!string.IsNullOrWhiteSpace(data?.Filter))
-                            {
-                                if (!template.Uri.Contains(data.Filter, StringComparison.OrdinalIgnoreCase))
-                                    continue;
-                            }
-                            response.Add(template);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error getting resource templates for '{0}': {1}", resourceType, ex.Message);
+                        parameters[groupName] = match.Groups[groupName].Value;
                     }
                 }
+            }
 
-                return ResponseData<ResponseResourceTemplate[]>.Success(requestId, response.ToArray());
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting resource templates: {0}", ex.Message);
-                return ResponseData<ResponseResourceTemplate[]>.Error(requestId, $"Error getting resource templates: {ex.Message}");
-            }
-        }
-        
-        public Task<IResponseData<ResponseMenuItem[]>> RunListMenuItems(IRequestListMenuItems data, CancellationToken cancellationToken = default)
-        {
-            var requestId = data?.RequestID ?? Consts.Guid.Zero;
-
-            try
-            {
-                // The actual menu item listing will be handled by the RpcRouter since it requires Unity editor classes
-                // This just provides the interface method
-                return Task.FromResult((IResponseData<ResponseMenuItem[]>)ResponseData<ResponseMenuItem[]>.Error(requestId, "Menu item listing requires Unity Editor"));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting list of menu items: {0}", ex.Message);
-                return Task.FromResult((IResponseData<ResponseMenuItem[]>)ResponseData<ResponseMenuItem[]>.Error(requestId, $"Error getting list of menu items: {ex.Message}"));
-            }
+            return parameters;
         }
 
-        public Task<IResponseData<ResponseExecuteMenuItem>> RunExecuteMenuItem(IRequestExecuteMenuItem data, CancellationToken cancellationToken = default)
+        void PrintParameters(IDictionary<string, object?> parameters)
         {
-            var requestId = data?.RequestID ?? Consts.Guid.Zero;
+            if (!_logger.IsEnabled(LogLevel.Debug))
+                return;
 
-            try
-            {
-                // The actual menu item execution will be handled by the RpcRouter since it requires Unity editor classes
-                // This just provides the interface method
-                return Task.FromResult((IResponseData<ResponseExecuteMenuItem>)ResponseData<ResponseExecuteMenuItem>.Error(requestId, "Menu item execution requires Unity Editor"));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error executing menu item: {0}", ex.Message);
-                return Task.FromResult((IResponseData<ResponseExecuteMenuItem>)ResponseData<ResponseExecuteMenuItem>.Error(requestId, $"Error executing menu item: {ex.Message}"));
-            }
+            var parameterLogs = string.Join(Environment.NewLine, parameters.Select(kvp => $"{kvp.Key} = {kvp.Value ?? "null"}"));
+            _logger.LogDebug("Parsed Parameters [{0}]:\n{1}", parameters.Count, parameterLogs);
         }
 
         public void Dispose()

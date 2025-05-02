@@ -49,23 +49,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
         {
             throw new NotImplementedException();
         }
-        
-        public Task<IResponseData<ResponseMenuItem[]>> RunListMenuItems(IRequestListMenuItems data, CancellationToken cancellationToken = default)
-        {
-            // Return a not implemented response
-            var requestId = data?.RequestID ?? Consts.Guid.Zero;
-            return Task.FromResult<IResponseData<ResponseMenuItem[]>>(
-                ResponseData<ResponseMenuItem[]>.Error(requestId, "Menu item listing is not implemented in HubTools"));
-        }
-        
-        public Task<IResponseData<ResponseExecuteMenuItem>> RunExecuteMenuItem(IRequestExecuteMenuItem data, CancellationToken cancellationToken = default)
-        {
-            // Return a not implemented response
-            var requestId = data?.RequestID ?? Consts.Guid.Zero;
-            var menuPath = data?.MenuPath ?? "(unknown)";
-            return Task.FromResult<IResponseData<ResponseExecuteMenuItem>>(
-                ResponseData<ResponseExecuteMenuItem>.Error(requestId, $"Menu item execution for '{menuPath}' is not implemented in HubTools"));
-        }
 
         // Client calls this to respond
         public Task SendRpcResponse(string requestId, string result)

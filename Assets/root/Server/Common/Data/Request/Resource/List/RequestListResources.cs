@@ -8,16 +8,14 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data
     {
         public string RequestID { get; set; } = Guid.NewGuid().ToString();
         public string? Cursor { get; set; }
-        public string? Filter { get; set; }
 
         public RequestListResources() { }
-        public RequestListResources(string? cursor = null, string? filter = null)
-            : this(Guid.NewGuid().ToString(), cursor, filter) { }
-        public RequestListResources(string requestId, string? cursor = null, string? filter = null)
+        public RequestListResources(string? cursor = null)
+            : this(Guid.NewGuid().ToString(), cursor) { }
+        public RequestListResources(string requestId, string? cursor = null)
         {
             RequestID = requestId ?? throw new ArgumentNullException(nameof(requestId));
             Cursor = cursor;
-            Filter = filter;
         }
 
         public virtual void Dispose()

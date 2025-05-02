@@ -5,6 +5,5 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data
 {
     public interface IRequestListResourceTemplates : IRequestID, IDisposable
     {
-        public string? Filter { get; set; }
     }
 }

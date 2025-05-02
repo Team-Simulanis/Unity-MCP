@@ -22,21 +22,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data
         {
             Message = message
         };
-        
-        public static ResponseData<T> Success(string requestId, T? value, string? message = null) => new(requestId, isError: false)
-        {
-            Value = value,
-            Message = message
-        };
-        
         public static ResponseData<T> Error(string requestId, string? message = null) => new(requestId, isError: true)
         {
-            Message = "[Error] " + message
-        };
-        
-        public static ResponseData<T> Error(string requestId, T? value, string? message = null) => new(requestId, isError: true)
-        {
-            Value = value,
             Message = "[Error] " + message
         };
     }

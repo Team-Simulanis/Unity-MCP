@@ -36,15 +36,5 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data
 
         public static Task<IResponseData<T>> TaskFromResult<T>(this IResponseData<T> response)
             => Task.FromResult(response);
-
-        public static IResponseData<T> AsInterface<T>(this ResponseData<T> data)
-        {
-            return data;
-        }
-
-        public static Task<IResponseData<T>> AsInterfaceTask<T>(this Task<ResponseData<T>> task)
-        {
-            return task.ContinueWith(t => (IResponseData<T>)t.Result);
-        }
     }
 }
