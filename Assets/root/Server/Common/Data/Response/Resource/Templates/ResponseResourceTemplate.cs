@@ -7,6 +7,20 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data
         public string name { get; set; } = string.Empty;
         public string? mimeType { get; set; }
         public string? description { get; set; }
+        
+        // Alias for uriTemplate for easier usage
+        public string Uri
+        {
+            get => uriTemplate;
+            set => uriTemplate = value;
+        }
+        
+        // Alias for name for easier usage
+        public string Title
+        {
+            get => name;
+            set => name = value;
+        }
 
         public ResponseResourceTemplate() { }
         public ResponseResourceTemplate(string uri, string name, string? mimeType = null, string? description = null)
