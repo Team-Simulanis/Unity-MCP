@@ -82,3 +82,56 @@ This fork aims to stay synchronized with the `main` branch of the upstream `Ivan
 ## Future Changes
 
 Any future Simulanis-specific modifications (e.g., custom tools) should be documented in this file. 
+
+## Commit Message Conventions
+
+We should follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification for commit messages. This helps create a more readable history and can be potentially used for automated changelog generation in the future.
+
+The basic format is:
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+Common types include:
+- `feat`: A new feature
+- `fix`: A bug fix
+- `docs`: Documentation only changes
+- `style`: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- `refactor`: A code change that neither fixes a bug nor adds a feature
+- `perf`: A code change that improves performance
+- `test`: Adding missing tests or correcting existing tests
+- `build`: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
+- `ci`: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
+- `chore`: Other changes that don't modify src or test files
+- `revert`: Reverts a previous commit
+
+Example:
+```
+feat(ui): Add Simulanis logo to AI Connector window
+
+Replaced the default icon with the Simulanis brand logo located
+in Assets/root/Editor/Gizmos/.
+```
+```
+fix(build): Correct server source path for local package install
+
+Modified Startup.Server.cs to use [CallerFilePath] to ensure the
+server source can be found correctly when installing the package
+as a local tarball.
+```
+
+## Repository Maintenance Guidelines
+
+- **Branching Strategy:**
+  - `simulanis-main`: Represents the latest stable release. Merges should only come from `simulanis-dev` via Pull Requests after thorough testing.
+  - `simulanis-dev`: The main development branch. All new features, bug fixes, and upstream syncs should be merged or rebased onto this branch first.
+  - Feature Branches: Create temporary branches off `simulanis-dev` for significant new features or complex fixes.
+- **Upstream Sync:** Follow the process detailed in the "Synchronization Strategy" section above (recommended monthly).
+- **Testing:** Always run through the "Testing Checklist (Post-Sync)" after merging/rebasing upstream changes. Test thoroughly before merging `simulanis-dev` into `simulanis-main` for a release.
+- **Pull Requests:** Use Pull Requests to merge changes into `simulanis-main` from `simulanis-dev`. Ensure PRs include a clear description of the changes.
+- **Issue Tracking:** Use the GitHub Issues tracker for this repository to report bugs or request features specific to the Simulanis fork. 
