@@ -9,7 +9,8 @@ using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
-    [McpPluginToolType]
+    // Important: This attribute marks the class for tool discovery
+    [McpPluginToolType(Path = "Unity/Menu")]
     public partial class Tool_Menu
     {
         // Base class for menu-related tools
