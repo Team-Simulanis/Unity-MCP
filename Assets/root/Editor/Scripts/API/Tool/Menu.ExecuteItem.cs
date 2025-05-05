@@ -18,7 +18,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         )]
         public string ExecuteItem
         (
-            [Description("Path to the menu item to execute")]
+            [System.ComponentModel.Description("Path to the menu item to execute")]
             string menuPath = "Window/AI Connector (Unity-MCP)"
         )
         {

@@ -3,6 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common.Data;
+using com.IvanMurzak.Unity.MCP.Common.Utils;
 //using com.IvanMurzak.Unity.MCP.Unity;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
@@ -28,7 +29,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             _mcpRunner = mcpRunner ?? throw new ArgumentNullException(nameof(mcpRunner));
             _connectionManager = connectionManager ?? throw new ArgumentNullException(nameof(connectionManager));
 
-            _connectionManager.Endpoint = Consts.Hub.DefaultEndpoint + Consts.Hub.RemoteApp;
+            _connectionManager.Endpoint = com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Hub.DefaultEndpoint + com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Hub.RemoteApp;
 
             _hubConnectionDisposable = connectionManager.HubConnection
                 .Subscribe(SubscribeOnServerEvents);
@@ -55,42 +56,42 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
             _logger.LogTrace("{0} Subscribing to server events.", nameof(RpcRouter));
 
-            hubConnection.On<RequestCallTool, IResponseData<ResponseCallTool>>(Consts.RPC.Client.RunCallTool, async data =>
+            hubConnection.On<RequestCallTool, IResponseData<ResponseCallTool>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunCallTool, async data =>
                 {
-                    _logger.LogDebug("{0}.{1}", nameof(RpcRouter), Consts.RPC.Client.RunCallTool);
+                    _logger.LogDebug("{0}.{1}", nameof(RpcRouter), com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunCallTool);
                     return await _mcpRunner.RunCallTool(data);
                 })
                 .AddTo(_serverEventsDisposables);
 
-            hubConnection.On<RequestListTool, IResponseData<ResponseListTool[]>>(Consts.RPC.Client.RunListTool, async data =>
+            hubConnection.On<RequestListTool, IResponseData<ResponseListTool[]>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListTool, async data =>
                 {
-                    _logger.LogDebug("{0}.{1}", nameof(RpcRouter), Consts.RPC.Client.RunListTool);
+                    _logger.LogDebug("{0}.{1}", nameof(RpcRouter), com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListTool);
                     return await _mcpRunner.RunListTool(data);
                 })
                 .AddTo(_serverEventsDisposables);
 
-            hubConnection.On<RequestResourceContent, IResponseData<ResponseResourceContent[]>>(Consts.RPC.Client.RunResourceContent, async data =>
+            hubConnection.On<RequestResourceContent, IResponseData<ResponseResourceContent[]>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunResourceContent, async data =>
                 {
-                    _logger.LogDebug("{0}.{1}", nameof(RpcRouter), Consts.RPC.Client.RunResourceContent);
+                    _logger.LogDebug("{0}.{1}", nameof(RpcRouter), com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunResourceContent);
                     return await _mcpRunner.RunResourceContent(data);
                 })
                 .AddTo(_serverEventsDisposables);
 
-            hubConnection.On<RequestListResources, IResponseData<ResponseListResource[]>>(Consts.RPC.Client.RunListResources, async data =>
+            hubConnection.On<RequestListResources, IResponseData<ResponseListResource[]>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListResources, async data =>
                 {
-                    _logger.LogDebug("{0}.{1}", nameof(RpcRouter), Consts.RPC.Client.RunListResources);
+                    _logger.LogDebug("{0}.{1}", nameof(RpcRouter), com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListResources);
                     return await _mcpRunner.RunListResources(data);
                 })
                 .AddTo(_serverEventsDisposables);
 
-            hubConnection.On<RequestListResourceTemplates, IResponseData<ResponseResourceTemplate[]>>(Consts.RPC.Client.RunListResourceTemplates, async data =>
+            hubConnection.On<RequestListResourceTemplates, IResponseData<ResponseResourceTemplate[]>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListResourceTemplates, async data =>
                 {
-                    _logger.LogDebug("{0}.{1}", nameof(RpcRouter), Consts.RPC.Client.RunListResourceTemplates);
+                    _logger.LogDebug("{0}.{1}", nameof(RpcRouter), com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListResourceTemplates);
                     return await _mcpRunner.RunResourceTemplates(data);
                 })
                 .AddTo(_serverEventsDisposables);
                 
-            hubConnection.On<RequestListMenuItems, IResponseData<ResponseMenuItem[]>>(Consts.RPC.Client.RunListMenuItems, async data =>
+            hubConnection.On<RequestListMenuItems, IResponseData<ResponseMenuItem[]>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListMenuItems, async data =>
                 {
                     _logger.LogDebug("List Menu Items called.");
                     
@@ -103,7 +104,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 })
                 .AddTo(_serverEventsDisposables);
                 
-            hubConnection.On<RequestExecuteMenuItem, IResponseData<ResponseExecuteMenuItem>>(Consts.RPC.Client.RunExecuteMenuItem, async data =>
+            hubConnection.On<RequestExecuteMenuItem, IResponseData<ResponseExecuteMenuItem>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunExecuteMenuItem, async data =>
                 {
                     _logger.LogDebug($"Execute Menu Item called: {data.MenuPath}");
                     
@@ -121,13 +122,13 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public Task<ResponseData<string>> NotifyAboutUpdatedTools(CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("{0} Notify server about updated tools.", nameof(RpcRouter));
-            return _connectionManager.InvokeAsync<string, ResponseData<string>>(Consts.RPC.Server.OnListToolsUpdated, string.Empty, cancellationToken);
+            return _connectionManager.InvokeAsync<string, ResponseData<string>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Server.GetToolInfo, string.Empty, cancellationToken);
         }
 
         public Task<ResponseData<string>> NotifyAboutUpdatedResources(CancellationToken cancellationToken = default)
         {
             _logger.LogTrace("{0} Notify server about updated resources.", nameof(RpcRouter));
-            return _connectionManager.InvokeAsync<string, ResponseData<string>>(Consts.RPC.Server.OnListResourcesUpdated, string.Empty, cancellationToken);
+            return _connectionManager.InvokeAsync<string, ResponseData<string>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Server.GetResourceInfo, string.Empty, cancellationToken);
         }
 
         public void Dispose()

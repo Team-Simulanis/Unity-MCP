@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data;
+using com.IvanMurzak.Unity.MCP.Common.Utils;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -27,7 +28,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             => ClientUtils.InvokeAsync<IRequestCallTool, ResponseCallTool, RemoteApp>(
                 logger: _logger,
                 hubContext: _remoteAppContext,
-                methodName: Consts.RPC.Client.RunCallTool,
+                methodName: com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunCallTool,
                 connectionId: connectionId,
                 requestData: requestData,
                 cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
@@ -44,7 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             => ClientUtils.InvokeAsync<IRequestListTool, ResponseListTool[], RemoteApp>(
                 logger: _logger,
                 hubContext: _remoteAppContext,
-                methodName: Consts.RPC.Client.RunListTool,
+                methodName: com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListTool,
                 connectionId: connectionId,
                 requestData: requestData,
                 cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
@@ -53,6 +54,40 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 var response = task.Result;
                 if (response.IsError)
                     return ResponseData<ResponseListTool[]>.Error(requestData.RequestID, response.Message ?? "[Error] Got an error during listing tools");
+
+                return response;
+            }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
+
+        public Task<IResponseData<ResponseMenuItem[]>> RunListMenuItems(IRequestListMenuItems requestData, string? connectionId = null, CancellationToken cancellationToken = default)
+            => ClientUtils.InvokeAsync<IRequestListMenuItems, ResponseMenuItem[], RemoteApp>(
+                logger: _logger,
+                hubContext: _remoteAppContext,
+                methodName: com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListMenuItems,
+                connectionId: connectionId,
+                requestData: requestData,
+                cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
+                .ContinueWith(task =>
+            {
+                var response = task.Result;
+                if (response.IsError)
+                    return ResponseData<ResponseMenuItem[]>.Error(requestData.RequestID, response.Message ?? "[Error] Got an error during listing menu items");
+
+                return response;
+            }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
+
+        public Task<IResponseData<ResponseExecuteMenuItem>> RunExecuteMenuItem(IRequestExecuteMenuItem requestData, string? connectionId = null, CancellationToken cancellationToken = default)
+            => ClientUtils.InvokeAsync<IRequestExecuteMenuItem, ResponseExecuteMenuItem, RemoteApp>(
+                logger: _logger,
+                hubContext: _remoteAppContext,
+                methodName: com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunExecuteMenuItem,
+                connectionId: connectionId,
+                requestData: requestData,
+                cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
+                .ContinueWith(task =>
+            {
+                var response = task.Result;
+                if (response.IsError)
+                    return ResponseData<ResponseExecuteMenuItem>.Error(requestData.RequestID, response.Message ?? "[Error] Got an error during executing menu item");
 
                 return response;
             }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);

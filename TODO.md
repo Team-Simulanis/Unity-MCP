@@ -244,4 +244,4 @@
 1. List top-level menus: `Menu_ListItems("")`
 2. List items in a category: `Menu_ListItems("File")`  
 3. List items in a nested menu: `Menu_ListItems("Tools/AI Connector (Unity-MCP)")`
-4. Execute a menu item: `Menu_ExecuteItem("File/New Scene %n")` 
+4. Execute a menu item: `Menu_ExecuteItem("File/New Scene %n")`

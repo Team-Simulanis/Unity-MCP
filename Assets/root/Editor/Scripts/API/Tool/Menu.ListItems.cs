@@ -19,7 +19,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             Description = "List available Unity menu items. Provide a parent path to see child items."
         )]
         public string ListItems(
-            [Description("Parent menu path. Empty for top-level menus.")]
+            [System.ComponentModel.Description("Parent menu path. Empty for top-level menus.")]
             string parentPath = "")
         {
             Debug.Log($"[MCP] Menu.ListItems called with parentPath: {parentPath}");

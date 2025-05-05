@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data;
+using com.IvanMurzak.Unity.MCP.Common.Utils;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -27,7 +28,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             => ClientUtils.InvokeAsync<IRequestResourceContent, ResponseResourceContent[], RemoteApp>(
                 logger: _logger,
                 hubContext: _remoteAppContext,
-                methodName: Consts.RPC.Client.RunResourceContent,
+                methodName: com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunResourceContent,
                 connectionId: connectionId,
                 requestData: requestData,
                 cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
@@ -44,7 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             => ClientUtils.InvokeAsync<IRequestListResources, ResponseListResource[], RemoteApp>(
                 logger: _logger,
                 hubContext: _remoteAppContext,
-                methodName: Consts.RPC.Client.RunListResources,
+                methodName: com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListResources,
                 connectionId: connectionId,
                 requestData: requestData,
                 cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
@@ -61,7 +62,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             => ClientUtils.InvokeAsync<IRequestListResourceTemplates, ResponseResourceTemplate[], RemoteApp>(
                 logger: _logger,
                 hubContext: _remoteAppContext,
-                methodName: Consts.RPC.Client.RunListResourceTemplates,
+                methodName: com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListResourceTemplates,
                 connectionId: connectionId!,
                 requestData: requestData,
                 cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)

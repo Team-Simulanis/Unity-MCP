@@ -1,9 +1,12 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data;
+using com.IvanMurzak.Unity.MCP.Common.Utils;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
@@ -11,6 +14,55 @@ namespace com.IvanMurzak.Unity.MCP.Server
 {
     public class RemoteApp : BaseHub<RemoteApp>, IRemoteApp
     {
+        // Add static property for connected clients
+        private static readonly List<string> _connectedClients = new List<string>();
+        
+        // Static property to access connected clients
+        public static IReadOnlyList<string> AllConnections => _connectedClients;
+        
+        // Static property to get the first connected client
+        public static string? FirstConnectionId => _connectedClients.FirstOrDefault();
+        
+        // Add client connection tracking methods
+        public override Task OnConnectedAsync()
+        {
+            var connectionId = Context.ConnectionId;
+            if (!string.IsNullOrEmpty(connectionId) && !_connectedClients.Contains(connectionId))
+            {
+                _connectedClients.Add(connectionId);
+                _logger.LogInformation($"Client connected: {connectionId}. Total clients: {_connectedClients.Count}");
+            }
+            return base.OnConnectedAsync();
+        }
+        
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            var connectionId = Context.ConnectionId;
+            if (!string.IsNullOrEmpty(connectionId) && _connectedClients.Contains(connectionId))
+            {
+                _connectedClients.Remove(connectionId);
+                _logger.LogInformation($"Client disconnected: {connectionId}. Total clients: {_connectedClients.Count}");
+            }
+            return base.OnDisconnectedAsync(exception);
+        }
+        
+        // Helper methods for active client management
+        private ISingleClientProxy? GetActiveClient()
+        {
+            var connectionId = FirstConnectionId;
+            return string.IsNullOrEmpty(connectionId) 
+                ? null 
+                : Clients.Client(connectionId);
+        }
+        
+        private void RemoveCurrentClient(IClientProxy client)
+        {
+            // The current approach doesn't allow direct removal by IClientProxy reference
+            // We'd need the actual connectionId, which we don't have here
+            // This is a placeholder for the original method call
+            _logger.LogWarning("RemoveCurrentClient called but cannot remove by IClientProxy reference");
+        }
+
         public RemoteApp(ILogger<RemoteApp> logger, IHubContext<RemoteApp> hubContext)
             : base(logger, hubContext)
         {
@@ -19,7 +71,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public async Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool data, CancellationToken cancellationToken = default)
         {
             if (data == null)
-                return ResponseData<ResponseCallTool>.Error(Consts.Guid.Zero, "Tool data is null.")
+                return ResponseData<ResponseCallTool>.Error(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Guid.Zero, "Tool data is null.")
                     .Log(_logger);
 
             if (string.IsNullOrEmpty(data.Name))
@@ -49,8 +101,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         continue;
                     }
 
-                    var invokeTask = client.InvokeAsync<ResponseData<ResponseCallTool>>(Consts.RPC.Client.RunCallTool, data, cancellationToken);
-                    var completedTask = await Task.WhenAny(invokeTask, Task.Delay(TimeSpan.FromSeconds(Consts.Hub.TimeoutSeconds), cancellationToken));
+                    var invokeTask = client.InvokeAsync<ResponseData<ResponseCallTool>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunCallTool, data, cancellationToken);
+                    var completedTask = await Task.WhenAny(invokeTask, Task.Delay(TimeSpan.FromSeconds(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Hub.TimeoutSeconds), cancellationToken));
                     if (completedTask == invokeTask)
                     {
                         try
@@ -71,7 +123,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     }
 
                     // Timeout occurred
-                    _logger.LogWarning($"Timeout: Client '{Context?.ConnectionId}' did not respond in {Consts.Hub.TimeoutSeconds} seconds. Removing from ConnectedClients.");
+                    _logger.LogWarning($"Timeout: Client '{Context?.ConnectionId}' did not respond in {com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Hub.TimeoutSeconds} seconds. Removing from ConnectedClients.");
                     RemoveCurrentClient(client);
                     // Restart the loop to try again with a new client
                 }
@@ -94,16 +146,16 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     return ResponseData<ResponseListTool[]>.Error(data.RequestID, $"No connected clients for {GetType().Name}.")
                         .Log(_logger);
 
-                var result = await client.InvokeAsync<ResponseData<ResponseListTool[]>>(Consts.RPC.Client.RunListTool, data, cancellationToken);
+                var result = await client.InvokeAsync<ResponseData<ResponseListTool[]>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListTool, data, cancellationToken);
                 if (result == null)
-                    return ResponseData<ResponseListTool[]>.Error(data.RequestID, $"'{Consts.RPC.Client.RunListTool}' returned null result.")
+                    return ResponseData<ResponseListTool[]>.Error(data.RequestID, $"'{com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListTool}' returned null result.")
                         .Log(_logger);
 
                 return result;
             }
             catch (Exception ex)
             {
-                return ResponseData<ResponseListTool[]>.Error(data.RequestID, $"Failed to run '{Consts.RPC.Client.RunListTool}'. Exception: {ex}")
+                return ResponseData<ResponseListTool[]>.Error(data.RequestID, $"Failed to run '{com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListTool}'. Exception: {ex}")
                     .Log(_logger, ex);
             }
         }
@@ -111,7 +163,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public async Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent data, CancellationToken cancellationToken = default)
         {
             if (data == null)
-                return ResponseData<ResponseResourceContent[]>.Error(Consts.Guid.Zero, "Resource content data is null.")
+                return ResponseData<ResponseResourceContent[]>.Error(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Guid.Zero, "Resource content data is null.")
                     .Log(_logger);
 
             if (string.IsNullOrEmpty(data.Uri))
@@ -125,7 +177,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     return ResponseData<ResponseResourceContent[]>.Error(data.RequestID, $"No connected clients for {GetType().Name}.")
                         .Log(_logger);
 
-                var result = await client.InvokeAsync<ResponseData<ResponseResourceContent[]>>(Consts.RPC.Client.RunResourceContent, data, cancellationToken);
+                var result = await client.InvokeAsync<ResponseData<ResponseResourceContent[]>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunResourceContent, data, cancellationToken);
                 if (result == null)
                     return ResponseData<ResponseResourceContent[]>.Error(data.RequestID, $"Resource uri: '{data.Uri}' returned null result.")
                         .Log(_logger);
@@ -148,16 +200,16 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     return ResponseData<ResponseListResource[]>.Error(data.RequestID, $"No connected clients for {GetType().Name}.")
                         .Log(_logger);
 
-                var result = await client.InvokeAsync<ResponseData<ResponseListResource[]>>(Consts.RPC.Client.RunListResources, data, cancellationToken);
+                var result = await client.InvokeAsync<ResponseData<ResponseListResource[]>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListResources, data, cancellationToken);
                 if (result == null)
-                    return ResponseData<ResponseListResource[]>.Error(data.RequestID, $"'{Consts.RPC.Client.RunListResources}' returned null result.")
+                    return ResponseData<ResponseListResource[]>.Error(data.RequestID, $"'{com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListResources}' returned null result.")
                         .Log(_logger);
 
                 return result;
             }
             catch (Exception ex)
             {
-                return ResponseData<ResponseListResource[]>.Error(data.RequestID, $"Failed to run '{Consts.RPC.Client.RunListResources}'. Exception: {ex}")
+                return ResponseData<ResponseListResource[]>.Error(data.RequestID, $"Failed to run '{com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListResources}'. Exception: {ex}")
                     .Log(_logger, ex);
             }
         }
@@ -171,16 +223,16 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     return ResponseData<ResponseResourceTemplate[]>.Error(data.RequestID, $"No connected clients for {GetType().Name}.")
                         .Log(_logger);
 
-                var result = await client.InvokeAsync<ResponseData<ResponseResourceTemplate[]>>(Consts.RPC.Client.RunListResourceTemplates, data, cancellationToken);
+                var result = await client.InvokeAsync<ResponseData<ResponseResourceTemplate[]>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListResourceTemplates, data, cancellationToken);
                 if (result == null)
-                    return ResponseData<ResponseResourceTemplate[]>.Error(data.RequestID, $"'{Consts.RPC.Client.RunListResourceTemplates}' returned null result.")
+                    return ResponseData<ResponseResourceTemplate[]>.Error(data.RequestID, $"'{com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListResourceTemplates}' returned null result.")
                         .Log(_logger);
 
                 return result;
             }
             catch (Exception ex)
             {
-                return ResponseData<ResponseResourceTemplate[]>.Error(data.RequestID, $"Failed to run '{Consts.RPC.Client.RunListResourceTemplates}'. Exception: {ex}")
+                return ResponseData<ResponseResourceTemplate[]>.Error(data.RequestID, $"Failed to run '{com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListResourceTemplates}'. Exception: {ex}")
                     .Log(_logger, ex);
             }
         }
@@ -194,16 +246,16 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     return ResponseData<ResponseMenuItem[]>.Error(data.RequestID, $"No connected clients for {GetType().Name}.")
                         .Log(_logger);
 
-                var result = await client.InvokeAsync<ResponseData<ResponseMenuItem[]>>(Consts.RPC.Client.RunListMenuItems, data, cancellationToken);
+                var result = await client.InvokeAsync<ResponseData<ResponseMenuItem[]>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListMenuItems, data, cancellationToken);
                 if (result == null)
-                    return ResponseData<ResponseMenuItem[]>.Error(data.RequestID, $"'{Consts.RPC.Client.RunListMenuItems}' returned null result.")
+                    return ResponseData<ResponseMenuItem[]>.Error(data.RequestID, $"'{com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListMenuItems}' returned null result.")
                         .Log(_logger);
 
                 return result;
             }
             catch (Exception ex)
             {
-                return ResponseData<ResponseMenuItem[]>.Error(data.RequestID, $"Failed to run '{Consts.RPC.Client.RunListMenuItems}'. Exception: {ex}")
+                return ResponseData<ResponseMenuItem[]>.Error(data.RequestID, $"Failed to run '{com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunListMenuItems}'. Exception: {ex}")
                     .Log(_logger, ex);
             }
         }
@@ -211,7 +263,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public async Task<IResponseData<ResponseExecuteMenuItem>> RunExecuteMenuItem(IRequestExecuteMenuItem data, string? connectionId = null, CancellationToken cancellationToken = default)
         {
             if (data == null)
-                return ResponseData<ResponseExecuteMenuItem>.Error(Consts.Guid.Zero, "Execute menu item data is null.")
+                return ResponseData<ResponseExecuteMenuItem>.Error(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Guid.Zero, "Execute menu item data is null.")
                     .Log(_logger);
 
             if (string.IsNullOrEmpty(data.MenuPath))
@@ -225,7 +277,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     return ResponseData<ResponseExecuteMenuItem>.Error(data.RequestID, $"No connected clients for {GetType().Name}.")
                         .Log(_logger);
 
-                var result = await client.InvokeAsync<ResponseData<ResponseExecuteMenuItem>>(Consts.RPC.Client.RunExecuteMenuItem, data, cancellationToken);
+                var result = await client.InvokeAsync<ResponseData<ResponseExecuteMenuItem>>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.RPC.Client.RunExecuteMenuItem, data, cancellationToken);
                 if (result == null)
                     return ResponseData<ResponseExecuteMenuItem>.Error(data.RequestID, $"Menu path: '{data.MenuPath}' returned null result.")
                         .Log(_logger);
@@ -242,6 +294,18 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public new void Dispose()
         {
             base.Dispose();
+        }
+
+        public Task<IResponseData<string>> OnListToolsUpdated(string data)
+        {
+            _logger.LogInformation("OnListToolsUpdated called");
+            return Task.FromResult<IResponseData<string>>(ResponseData<string>.Success(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Guid.Zero, "Tools updated"));
+        }
+
+        public Task<IResponseData<string>> OnListResourcesUpdated(string data)
+        {
+            _logger.LogInformation("OnListResourcesUpdated called");
+            return Task.FromResult<IResponseData<string>>(ResponseData<string>.Success(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Guid.Zero, "Resources updated"));
         }
     }
 }

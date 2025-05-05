@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Utils;
 using NLog.Extensions.Logging;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using NLog;
@@ -75,7 +76,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         });
                 });
 
-                // builder.WebHost.UseUrls(Consts.Hub.DefaultEndpoint);
+                // builder.WebHost.UseUrls(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Hub.DefaultEndpoint);
                 builder.WebHost.UseKestrel(options =>
                 {
                     options.ListenLocalhost(GetPort(args));
@@ -87,7 +88,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 // ---------------------------------------------------------------------------
 
                 app.UseRouting();
-                app.MapHub<RemoteApp>(Consts.Hub.RemoteApp, options =>
+                app.MapHub<RemoteApp>(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Hub.RemoteApp, options =>
                 {
                     options.Transports = HttpTransports.All;
                     options.ApplicationMaxBufferSize = 1024 * 1024 * 10; // 10 MB
@@ -125,11 +126,11 @@ namespace com.IvanMurzak.Unity.MCP.Server
             if (args.Length > 0 && int.TryParse(args[0], out var parsedPort))
                 return parsedPort;
 
-            var envPort = Environment.GetEnvironmentVariable(Consts.Env.Port);
+            var envPort = Environment.GetEnvironmentVariable(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Env.Port);
             if (envPort != null && int.TryParse(envPort, out var parsedEnvPort))
                 return parsedEnvPort;
 
-            return Consts.Hub.DefaultPort;
+            return com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Hub.DefaultPort;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data;
+using com.IvanMurzak.Unity.MCP.Common.Utils;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
@@ -37,8 +38,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             {
                 if (logger.IsEnabled(LogLevel.Trace))
                 {
-                    var allConnections = string.Join(", ", RemoteApp.AllConnections);
-                    logger.LogTrace("ConnectionId: {0}. Invoke '{1}':\n{2}\nAvailable connections: {3}", connectionId, methodName, requestData, allConnections);
+                    logger.LogTrace("ConnectionId: {0}. Invoke '{1}':\n{2}", connectionId, methodName, requestData);
                 }
 
                 // if (logger.IsEnabled(LogLevel.Information))
@@ -62,7 +62,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     }
 
                     var invokeTask = client.InvokeAsync<ResponseData<TResponse>>(methodName, requestData, cancellationToken);
-                    var completedTask = await Task.WhenAny(invokeTask, Task.Delay(TimeSpan.FromSeconds(Consts.Hub.TimeoutSeconds), cancellationToken));
+                    var completedTask = await Task.WhenAny(invokeTask, Task.Delay(TimeSpan.FromSeconds(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Hub.TimeoutSeconds), cancellationToken));
                     if (completedTask == invokeTask)
                     {
                         try
@@ -84,7 +84,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     }
 
                     // Timeout occurred
-                    logger.LogWarning($"Timeout: Client '{connectionId}' did not respond in {Consts.Hub.TimeoutSeconds} seconds. Removing from ConnectedClients.");
+                    logger.LogWarning($"Timeout: Client '{connectionId}' did not respond in {com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Hub.TimeoutSeconds} seconds. Removing from ConnectedClients.");
                     // RemoveCurrentClient(client);
                     await Task.Delay(retryDelayMs, cancellationToken); // Wait before retrying
                     // Restart the loop to try again with a new client

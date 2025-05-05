@@ -1,5 +1,6 @@
 using System;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 using Microsoft.AspNetCore.SignalR.Client;
 using R3;
@@ -59,7 +60,7 @@ namespace com.IvanMurzak.Unity.MCP
                 if (Uri.TryCreate(Host, UriKind.Absolute, out var uri) && uri.Port > 0)
                     return uri.Port;
 
-                return Consts.Hub.DefaultPort;
+                return com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Hub.DefaultPort;
             }
         }
         public static bool KeepConnected
@@ -84,9 +85,9 @@ namespace com.IvanMurzak.Unity.MCP
             var changed = false;
             var data = Instance.data ??= new Data();
 
-            if (data.port < 0 || data.port > Consts.Hub.MaxPort)
+            if (data.port < 0 || data.port > com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Hub.MaxPort)
             {
-                data.port = Consts.Hub.DefaultPort;
+                data.port = com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Hub.DefaultPort;
                 changed = true;
             }
 
