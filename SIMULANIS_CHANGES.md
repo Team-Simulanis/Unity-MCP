@@ -151,4 +151,6 @@ as a local tarball.
 - **Upstream Sync:** Follow the process detailed in the "Synchronization Strategy" section above (recommended monthly).
 - **Testing:** Always run through the "Testing Checklist (Post-Sync)" after merging/rebasing upstream changes. Test thoroughly before merging `simulanis-dev` into `simulanis-main` for a release.
 - **Pull Requests:** Use Pull Requests to merge changes into `simulanis-main` from `simulanis-dev`. Ensure PRs include a clear description of the changes.
+
 - **Issue Tracking:** Use the GitHub Issues tracker for this repository to report bugs or request features specific to the Simulanis fork. 
+

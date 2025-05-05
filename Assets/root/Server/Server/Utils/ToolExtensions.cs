@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data;
 using ModelContextProtocol.Protocol.Types;
@@ -43,7 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             Name = response.Name,
             // Title = response.Title,
             Description = response.Description,
-            InputSchema = response.InputSchema
+            InputSchema = response.InputSchema != null ? JsonSerializer.SerializeToElement(response.InputSchema) : default
         };
 
         public static McpServerTool ToMcpServerTool(this IResponseListTool response) => McpServerTool.Create

@@ -1,5 +1,6 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Data
 {
@@ -8,6 +9,6 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data
         string Name { get; set; }
         string? Title { get; set; }
         string? Description { get; set; }
-        JsonElement InputSchema { get; set; }
+        JsonNode? InputSchema { get; set; }
     }
 }
