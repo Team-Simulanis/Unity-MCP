@@ -12,7 +12,7 @@
         "Unity MCP",
         "Simulanis"
     ],
-    "version": "0.6.2-simulanis.5",
+    "version": "0.7.3-simulanis.3",
     "unity": "2022.3",
     "description": "Simulanis fork of Unity-MCP - A bridge between LLM and Unity. It expose Unity API to LLM and allows LLM to control Unity. Based on Model Context Protocol (MCP) and uses SignalR for communication. Original project by IvanMurzak (https://github.com/IvanMurzak/Unity-MCP).",
     "repository": {

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.3-simulanis.3] - 2023-09-07
+### Changed
+- Cleaned up debug logging in Menu tools
+- Standardized logging approach across tools
+- Improved code readability and maintenance
+
 ## [0.7.3-simulanis.2] - 2023-09-06
 ### Fixed
 - Fixed namespace conflicts with Consts class by using fully qualified names
