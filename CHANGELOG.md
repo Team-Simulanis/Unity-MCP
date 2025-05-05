@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.3-simulanis.4] - 2023-09-08
+### Fixed
+- Added standardized ToolLogger for server-side components
+- Updated Menu tools to use the standardized logging approach
+- Improved error handling and logging in Menu.ExecuteItem and Menu.ListItems
+
 ## [0.7.3-simulanis.3] - 2023-09-07
 ### Changed
 - Cleaned up debug logging in Menu tools
