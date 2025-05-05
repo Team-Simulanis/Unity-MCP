@@ -1,19 +1,27 @@
 {
-    "name": "com.ivanmurzak.unity.mcp",
-    "displayName": "Unity MCP (Model Context Protocol)",
+    "name": "com.simulanis.unity.mcp",
+    "displayName": "Simulanis Unity MCP (Model Context Protocol)",
     "author": {
-        "name": "IvanMurzak",
-        "url": "https://github.com/IvanMurzak"
+        "name": "Simulanis Solutions (Fork of IvanMurzak's Unity-MCP)",
+        "url": "https://github.com/Team-Simulanis/Unity-MCP"
     },
     "keywords": [
         "AI",
         "AI Integration",
         "MCP",
-        "Unity MCP"
+        "Unity MCP",
+        "Simulanis"
     ],
-    "version": "0.7.3",
+    "version": "0.7.3-simulanis.2",
     "unity": "2022.3",
-    "description": "Bridge between LLM and Unity. It expose Unity API to LLM and allows LLM to control Unity. It is based on Model Context Protocol (MCP) and uses SignalR for communication.",
+    "description": "Simulanis fork of Unity-MCP - A bridge between LLM and Unity. It expose Unity API to LLM and allows LLM to control Unity. Based on Model Context Protocol (MCP) and uses SignalR for communication. Original project by IvanMurzak (https://github.com/IvanMurzak/Unity-MCP).",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Team-Simulanis/Unity-MCP.git"
+    },
+    "documentationUrl": "https://github.com/Team-Simulanis/Unity-MCP/blob/simulanis-main/README.md",
+    "changelogUrl": "https://github.com/Team-Simulanis/Unity-MCP/blob/simulanis-main/CHANGELOG.md",
+    "license": "MIT",
     "dependencies": {
         "com.unity.test-framework": "1.1.33",
         "com.unity.modules.uielements": "1.0.0",

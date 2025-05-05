@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.3-simulanis.2] - 2023-09-06
+### Fixed
+- Fixed namespace conflicts with Consts class by using fully qualified names
+- Added missing OnListToolsUpdated and OnListResourcesUpdated methods to RemoteApp
+- Fixed GetActiveClient() method to return ISingleClientProxy
+- Added client connection tracking
+- Added Description property to McpPluginToolAttribute
+- Fixed method signatures to include connectionId parameters
+
 ## [0.7.3-simulanis.1] - 2023-09-05
 ### Changed
 - Synced with upstream v0.7.3
