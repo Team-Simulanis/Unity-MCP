@@ -13,9 +13,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Menu_ExecuteItem",
-            Title = "Execute Menu Item",
-            Description = "Execute a Unity menu item by path"
+            Title = "Execute Menu Item"
         )]
+        [System.ComponentModel.Description("Execute a Unity menu item by specifying its menu path")]
         public string ExecuteItem
         (
             [System.ComponentModel.Description("Path to the menu item to execute")]
