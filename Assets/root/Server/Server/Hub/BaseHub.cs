@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
+using com.IvanMurzak.Unity.MCP.Common;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using R3;
@@ -33,6 +34,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 _logger.LogWarning("{0} Client '{1}' is already connected to {2}.", _guid, Context.ConnectionId, GetType().Name);
 
             _logger.LogInformation("{0} Client connected: '{1}', Total connected clients for {2}: {3}", _guid, Context.ConnectionId, GetType().Name, clients.Count);
+
+            DisconnectOtherClients(clients, currentConnectionId: Context.ConnectionId);
             return base.OnConnectedAsync();
         }
 
@@ -55,60 +58,31 @@ namespace com.IvanMurzak.Unity.MCP.Server
             return base.OnDisconnectedAsync(exception);
         }
 
-        // public void RemoveCurrentClient(ISingleClientProxy client)
-        // {
-        //     if (!ConnectedClients.TryGetValue(GetType(), out var clients) || clients.IsEmpty)
-        //     {
-        //         _logger.LogWarning($"No connected clients found for {GetType().Name}.");
-        //         return;
-        //     }
+        protected virtual void DisconnectOtherClients(ConcurrentDictionary<string, bool> clients, string currentConnectionId)
+        {
+            if (clients.IsEmpty)
+                return;
 
-        //     var connectionId = Context?.ConnectionId;
-        //     if (connectionId == null)
-        //         connectionId = clients.Last().Key;
+            foreach (var connectionId in clients.Keys.Where(c => c != currentConnectionId).ToList())
+            {
+                if (clients.TryRemove(connectionId, out _))
+                {
+                    _logger.LogInformation("{0} Client '{1}' removed from connected clients for {2}.", _guid, connectionId, GetType().Name);
+                    var client = Clients.Client(connectionId);
+                    client.SendAsync(Consts.RPC.Client.ForceDisconnect);
+                }
+                else
+                {
+                    _logger.LogWarning("{0} Client '{1}' was not found in connected clients for {2}.", _guid, connectionId, GetType().Name);
+                }
+            }
+        }
 
-        //     if (clients.TryRemove(connectionId, out _))
-        //     {
-        //         _logger.LogInformation($"Client '{connectionId}' removed from connected clients for {GetType().Name}.");
-        //         Context?.Abort();
-        //     }
-        //     else
-        //     {
-        //         _logger.LogWarning($"Client '{connectionId}' was not found in connected clients for {GetType().Name}.");
-        //     }
-        // }
-
-        // protected ISingleClientProxy? GetActiveClient()
-        // {
-        //     if (!ConnectedClients.TryGetValue(GetType(), out var clients) || clients.IsEmpty)
-        //     {
-        //         _logger.LogWarning($"No connected clients of type {GetType().Name}.");
-        //         return null;
-        //     }
-
-        //     var connectionId = clients.Keys.LastOrDefault();
-        //     if (connectionId == null)
-        //         return null;
-
-        //     var client = _hubContext.Clients.Client(connectionId);
-        //     if (client == null)
-        //     {
-        //         _logger.LogDebug($"Client {connectionId} is not available. Removing from connected clients.");
-        //         clients.TryRemove(connectionId, out _);
-        //         return GetActiveClient();
-        //     }
-
-        //     _logger.LogTrace($"Client {connectionId} is available.");
-        //     return client;
-        // }
         public virtual new void Dispose()
         {
             _logger.LogTrace("Dispose. {0}", _guid);
             base.Dispose();
             _disposables.Dispose();
-
-            // if (ConnectedClients.TryRemove(GetType(), out var clients))
-            //     clients.Clear();
         }
     }
 }

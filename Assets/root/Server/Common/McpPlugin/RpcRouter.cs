@@ -54,6 +54,12 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
             _logger.LogTrace("{0} Subscribing to server events.", nameof(RpcRouter));
 
+            hubConnection.On(Consts.RPC.Client.ForceDisconnect, async () =>
+            {
+                _logger.LogDebug("{0}.{1}", nameof(RpcRouter), Consts.RPC.Client.ForceDisconnect);
+                await _connectionManager.Disconnect();
+            });
+
             hubConnection.On<RequestCallTool, IResponseData<ResponseCallTool>>(Consts.RPC.Client.RunCallTool, async data =>
                 {
                     _logger.LogDebug("{0}.{1}", nameof(RpcRouter), Consts.RPC.Client.RunCallTool);
