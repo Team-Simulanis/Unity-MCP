@@ -1,6 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
 using System.IO;
+using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
@@ -31,6 +32,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 return Error.ScriptFileNotFound(filePath);
 
             File.Delete(filePath);
+            if (File.Exists(filePath + ".meta"))
+                File.Delete(filePath + ".meta");
 
             return MainThread.Run(() =>
             {

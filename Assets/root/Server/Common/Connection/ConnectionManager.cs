@@ -50,14 +50,14 @@ namespace com.IvanMurzak.Unity.MCP.Common
             .AddTo(_disposables);
 
             _connectionState
-                .Where(state => state == HubConnectionState.Reconnecting)
+                .Where(state => state == HubConnectionState.Reconnecting && _continueToReconnect.CurrentValue)
                 .Subscribe(async state => await Connect())
                 .AddTo(_disposables);
         }
 
         public async Task InvokeAsync<TInput>(string methodName, TInput input, CancellationToken cancellationToken = default)
         {
-            if (_hubConnection.Value?.State != HubConnectionState.Connected)
+            if (_hubConnection.Value?.State != HubConnectionState.Connected && _continueToReconnect.CurrentValue)
             {
                 await Connect(cancellationToken);
                 if (_hubConnection.Value?.State != HubConnectionState.Connected)
@@ -78,9 +78,12 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
         public async Task<TResult> InvokeAsync<TInput, TResult>(string methodName, TInput input, CancellationToken cancellationToken = default)
         {
-            if (_hubConnection.Value?.State != HubConnectionState.Connected)
+            if (_hubConnection.Value?.State != HubConnectionState.Connected && _continueToReconnect.CurrentValue)
             {
+                _logger.LogDebug("{0} Connection is not established. Attempting to connect...", _guid);
+                // Attempt to connect if the connection is not established
                 await Connect(cancellationToken);
+
                 if (_hubConnection.Value?.State != HubConnectionState.Connected)
                 {
                     _logger.LogError("{0} Can't establish connection with Remote.", _guid);

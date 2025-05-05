@@ -35,7 +35,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
             _logger.LogInformation("{0} Client connected: '{1}', Total connected clients for {2}: {3}", _guid, Context.ConnectionId, GetType().Name, clients.Count);
 
-            DisconnectOtherClients(clients, currentConnectionId: Context.ConnectionId);
+            // DisconnectOtherClients(clients, currentConnectionId: Context.ConnectionId);
             return base.OnConnectedAsync();
         }
 
