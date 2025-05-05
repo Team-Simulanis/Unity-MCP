@@ -176,13 +176,13 @@ This package is distributed directly via GitHub using its Git URL and release ta
     *   Go to `Window > Package Manager`.
     *   Click the `+` (plus) button in the top-left corner of the Package Manager window.
     *   Select `Add package from git URL...`.
-    *   Enter the following URL, replacing `TAG_NAME` with the desired release tag (e.g., `v0.6.2-simulanis.1`) and including the `?path=` parameter:
+    *   Enter the following URL, replacing `TAG_NAME` with the desired release tag (e.g., `v0.7.3-simulanis.2`) and including the `?path=` parameter:
         ```
         https://github.com/Team-Simulanis/Unity-MCP.git?path=Assets/root#TAG_NAME
         ```
-        For the latest release (`v0.6.2-simulanis.1`), use:
+        For the latest release (`v0.7.3-simulanis.2`), use:
         ```
-        https://github.com/Team-Simulanis/Unity-MCP.git?path=Assets/root#v0.6.2-simulanis.1
+        https://github.com/Team-Simulanis/Unity-MCP.git?path=Assets/root#v0.7.3-simulanis.2
         ```
     *   Click `Add`.
     *   Unity will download and import the package from the specified path within the repository.
