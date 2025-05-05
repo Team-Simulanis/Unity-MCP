@@ -8,6 +8,12 @@ This document tracks the specific changes made in the Simulanis Solutions fork o
 
 ## Version History
 
+### v0.6.2-simulanis.4 (2023-09-03)
+- **ui:** Improved Menu_ListItems tool with better formatting and readability
+- **fix:** Added table format to display menu items and commands
+- **feat:** Updated output to include commands to explore further
+- **docs:** Added usage tips section to the output
+
 ### v0.6.2-simulanis.3 (2023-09-03)
 - **feat:** Simplified menu tools to focus on core functionality
 - **fix:** Removed problematic submenu discovery tool (Menu_ListSubmenus)

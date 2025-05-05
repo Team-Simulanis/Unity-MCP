@@ -32,25 +32,69 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                     var menuItems = MenuItemService.GetMenuItems(parentPath);
                     Debug.Log($"[MCP] Retrieved {menuItems.Length} menu items");
                     
-                    // Log the menu items data for debugging
-                    foreach (var item in menuItems)
-                    {
-                        Debug.Log($"Menu item: {item.MenuPath}, {item.DisplayName}, {item.Category}, {item.IsEnabled}");
-                    }
-                    
                     // Build a formatted string response
                     StringBuilder result = new StringBuilder();
-                    result.AppendLine($"Found {menuItems.Length} menu items for path '{parentPath}':");
-                    result.AppendLine();
                     
-                    foreach (var item in menuItems)
+                    // Title with horizontal line
+                    string title = string.IsNullOrEmpty(parentPath) 
+                        ? "Top-Level Menu Categories" 
+                        : $"Menu Items for '{parentPath}'";
+                    
+                    result.AppendLine($"# {title}");
+                    result.AppendLine($"Found {menuItems.Length} items");
+                    result.AppendLine(new string('-', 50));
+                    result.AppendLine();
+
+                    // Create a nicely formatted table
+                    if (menuItems.Length > 0)
                     {
-                        result.AppendLine($"• {item.MenuPath}");
-                        result.AppendLine($"  Display: {item.DisplayName}");
-                        result.AppendLine($"  Category: {item.Category}");
-                        result.AppendLine($"  Enabled: {item.IsEnabled}");
-                        result.AppendLine();
+                        // For top-level menus, show different information
+                        if (string.IsNullOrEmpty(parentPath))
+                        {
+                            // Group by Category to remove duplicates
+                            var uniqueCategories = menuItems
+                                .OrderBy(m => m.Category)
+                                .GroupBy(m => m.Category)
+                                .Select(g => g.First());
+                                
+                            result.AppendLine("| Category | Execute Command |");
+                            result.AppendLine("|----------|----------------|");
+                            
+                            foreach (var item in uniqueCategories)
+                            {
+                                result.AppendLine($"| **{item.Category}** | `Menu_ListItems(\"{item.Category}\")` |");
+                            }
+                        }
+                        else
+                        {
+                            // For submenu items
+                            result.AppendLine("| Menu Path | Command to Execute |");
+                            result.AppendLine("|-----------|---------------------|");
+                            
+                            foreach (var item in menuItems.OrderBy(m => m.MenuPath))
+                            {
+                                // Extract the display name (remove parent path)
+                                string displayName = item.MenuPath;
+                                if (!string.IsNullOrEmpty(parentPath) && item.MenuPath.StartsWith(parentPath + "/"))
+                                {
+                                    displayName = item.MenuPath.Substring(parentPath.Length + 1);
+                                }
+                                
+                                result.AppendLine($"| **{displayName}** | `Menu_ExecuteItem(\"{item.MenuPath}\")` |");
+                            }
+                        }
                     }
+                    else
+                    {
+                        result.AppendLine("No menu items found for this path.");
+                    }
+                    
+                    // Add helpful tips
+                    result.AppendLine();
+                    result.AppendLine("## Tips");
+                    result.AppendLine("- To execute a menu item: `Menu_ExecuteItem(\"full/path/to/item\")`");
+                    result.AppendLine("- To explore a category: `Menu_ListItems(\"category/path\")`");
+                    result.AppendLine("- Common categories: File, Edit, Window, GameObject, Tools");
                     
                     return result.ToString();
                 }
