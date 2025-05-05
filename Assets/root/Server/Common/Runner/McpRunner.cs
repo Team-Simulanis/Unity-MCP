@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common.Data;
+using com.IvanMurzak.Unity.MCP.Common.Utils;
 using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common
@@ -152,6 +153,37 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 .ToArray()
                 .Pack(data.RequestID)
                 .TaskFromResult();
+
+        public Task<IResponseData<ResponseExecuteMenuItem>> RunExecuteMenuItem(IRequestExecuteMenuItem data, string? connectionId = null, CancellationToken cancellationToken = default)
+        {
+            if (data == null)
+                return ResponseData<ResponseExecuteMenuItem>.Error(Consts.Guid.Zero, "Menu execution data is null.")
+                    .Log(_logger).TaskFromResult();
+
+            try
+            {
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    var message = $"Execute menu item: '{data.MenuPath}'";
+                    _logger.LogInformation(message);
+                }
+
+                var result = MenuItemHelper.ExecuteMenuItem(data.MenuPath);
+                if (result == null)
+                    return ResponseData<ResponseExecuteMenuItem>.Error(data.RequestID, $"Menu item execution for '{data.MenuPath}' returned null result.")
+                        .Log(_logger).TaskFromResult();
+
+                return ResponseData<ResponseExecuteMenuItem>.Success(data.RequestID)
+                    .SetData(result)
+                    .Log(_logger).TaskFromResult();
+            }
+            catch (Exception ex)
+            {
+                // Handle or log the exception as needed
+                return ResponseData<ResponseExecuteMenuItem>.Error(data.RequestID, $"Failed to execute menu item '{data.MenuPath}'. Exception: {ex}")
+                    .Log(_logger, ex).TaskFromResult();
+            }
+        }
 
         IRunResource? FindResourceContentRunner(string uri, IDictionary<string, IRunResource> resources, out string? uriTemplate)
         {

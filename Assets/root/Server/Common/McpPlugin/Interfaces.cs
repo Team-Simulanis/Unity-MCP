@@ -31,6 +31,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
     {
         Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool requestData, string? connectionId = null, CancellationToken cancellationToken = default);
         Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool requestData, string? connectionId = null, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseExecuteMenuItem>> RunExecuteMenuItem(IRequestExecuteMenuItem requestData, string? connectionId = null, CancellationToken cancellationToken = default);
     }
 
     public interface IResourceRunner

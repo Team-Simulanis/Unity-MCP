@@ -57,6 +57,23 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 return response;
             }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
 
+        public Task<IResponseData<ResponseExecuteMenuItem>> RunExecuteMenuItem(IRequestExecuteMenuItem requestData, string? connectionId, CancellationToken cancellationToken = default)
+            => ClientUtils.InvokeAsync<IRequestExecuteMenuItem, ResponseExecuteMenuItem, RemoteApp>(
+                logger: _logger,
+                hubContext: _remoteAppContext,
+                methodName: Consts.RPC.Client.RunExecuteMenuItem,
+                connectionId: connectionId,
+                requestData: requestData,
+                cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
+                .ContinueWith(task =>
+            {
+                var response = task.Result;
+                if (response.IsError)
+                    return ResponseData<ResponseExecuteMenuItem>.Error(requestData.RequestID, response.Message ?? "[Error] Got an error during executing menu item");
+
+                return response;
+            }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
+
         public void Dispose()
         {
             _logger.LogTrace("{0} Dispose.", typeof(RemoteToolRunner).Name);
