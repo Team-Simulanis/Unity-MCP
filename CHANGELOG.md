@@ -2,20 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.7.3-simulanis.1] - 2025-09-03
+## [0.7.3-simulanis.1] - 2023-09-05
 ### Changed
 - Synced with upstream v0.7.3
 - Updated version number to match upstream while maintaining Simulanis customizations
 - Resolved conflicts in server-side components
 
-## [0.6.2-simulanis.5] - 2023-09-03
+## [0.6.2-simulanis.5] - 2023-09-05
 ### Added
 - Added proper package metadata to improve Unity Package Manager experience
 - Added documentationUrl, changelogUrl and repository URL to package.json
 - Created standard CHANGELOG.md in the root of the repository
 - Improved update process in Unity Package Manager
 
-## [0.6.2-simulanis.4] - 2023-09-03
+## [0.6.2-simulanis.4] - 2023-09-05
 ### Added
 - Improved Menu_ListItems tool with better formatting and readability
 - Added table format to display menu items and commands
