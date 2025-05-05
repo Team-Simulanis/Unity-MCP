@@ -296,10 +296,22 @@ namespace com.IvanMurzak.Unity.MCP.Server
             base.Dispose();
         }
 
+        public Task<IResponseData<string>> GetToolInfo(string data)
+        {
+            _logger.LogInformation("GetToolInfo called");
+            return Task.FromResult<IResponseData<string>>(ResponseData<string>.Success(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Guid.Zero, "Tools information retrieved"));
+        }
+
         public Task<IResponseData<string>> OnListToolsUpdated(string data)
         {
             _logger.LogInformation("OnListToolsUpdated called");
             return Task.FromResult<IResponseData<string>>(ResponseData<string>.Success(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Guid.Zero, "Tools updated"));
+        }
+
+        public Task<IResponseData<string>> GetResourceInfo(string data)
+        {
+            _logger.LogInformation("GetResourceInfo called");
+            return Task.FromResult<IResponseData<string>>(ResponseData<string>.Success(com.IvanMurzak.Unity.MCP.Common.Utils.Consts.Guid.Zero, "Resources information retrieved"));
         }
 
         public Task<IResponseData<string>> OnListResourcesUpdated(string data)

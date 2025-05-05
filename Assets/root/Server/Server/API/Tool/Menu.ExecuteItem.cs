@@ -2,6 +2,8 @@ using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using com.IvanMurzak.Unity.MCP.Server.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Server.API
 {
@@ -19,9 +21,12 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             string menuPath = "Window/AI Connector (Unity-MCP)"
         )
         {
+            ToolLogger.LogToolStart(_logger, "Menu_ExecuteItem", $"menuPath: '{menuPath}'");
+            
             return ToolRouter.Call("Menu_ExecuteItem", arguments =>
             {
                 arguments[nameof(menuPath)] = menuPath ?? "";
+                ToolLogger.LogToolDetail(_logger, "Menu_ExecuteItem", "Arguments prepared for tool router");
             });
         }
     }

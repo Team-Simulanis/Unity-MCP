@@ -2,11 +2,15 @@ using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using com.IvanMurzak.Unity.MCP.Server.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Server.API
 {
     public partial class Tool_Menu
     {
+        private static readonly ILogger _logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+
         [McpServerTool
         (
             Name = "Menu_ListItems",
@@ -19,9 +23,12 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             string parentPath = ""
         )
         {
+            ToolLogger.LogToolStart(_logger, "Menu_ListItems", $"parentPath: '{parentPath}'");
+            
             return ToolRouter.Call("Menu_ListItems", arguments =>
             {
                 arguments[nameof(parentPath)] = parentPath ?? "";
+                ToolLogger.LogToolDetail(_logger, "Menu_ListItems", "Arguments prepared for tool router");
             });
         }
     }
