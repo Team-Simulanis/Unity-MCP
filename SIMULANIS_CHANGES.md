@@ -6,6 +6,23 @@ This document tracks the specific changes made in the Simulanis Solutions fork o
 **Original Author:** [Ivan Murzak (IvanMurzak)](https://github.com/IvanMurzak)
 **Fork Maintainer:** Simulanis Solutions
 
+## Version History
+
+### v0.6.2-simulanis.3 (2023-09-03)
+- **feat:** Simplified menu tools to focus on core functionality
+- **fix:** Removed problematic submenu discovery tool (Menu_ListSubmenus)
+- **refactor:** Removed documentation tools (Menu_GetReference, Menu_GetMenuReference)
+- **cleanup:** Removed test scripts (MenuTest, MenuItemTester, DirectMenuTest)
+- **docs:** Updated TODO.md with plans for future improvements to menu tools
+
+### v0.6.2-simulanis.2 (2023-09-01)
+- Minor updates and fixes
+
+### v0.6.2-simulanis.1 (2023-04-30)
+- Initial branded release of Simulanis fork
+- Rebranding and package identification updates
+- Modified server build/path logic for better package installation
+
 ## Purpose of this Fork
 
 This fork is maintained by Simulanis Solutions to:
