@@ -32,29 +32,5 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             { "Assets/Create/Material", "Creates a new material" },
             { "Assets/Create/Prefab", "Creates a new prefab" }
         };
-        
-        // Helper method to discover submenus
-        private string[] GetPossibleSubmenus(string parentPath)
-        {
-            var allMenuItems = MenuItemService.GetAllMenuItemsArray();
-            var possibleSubmenus = new HashSet<string>();
-            
-            foreach (var item in allMenuItems)
-            {
-                if (item.MenuPath.StartsWith(parentPath + "/"))
-                {
-                    string remaining = item.MenuPath.Substring(parentPath.Length + 1);
-                    int slashIndex = remaining.IndexOf('/');
-                    
-                    if (slashIndex >= 0)
-                    {
-                        string submenu = remaining.Substring(0, slashIndex);
-                        possibleSubmenus.Add(submenu);
-                    }
-                }
-            }
-            
-            return possibleSubmenus.OrderBy(s => s).ToArray();
-        }
     }
 } 
