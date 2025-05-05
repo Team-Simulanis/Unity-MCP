@@ -12,9 +12,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Assets_Shader_ListAll",
-            Title = "List all shader names",
-            Description = @"Scans the project assets to find all shaders and to get the name from each of them. Returns the list of shader names."
+            Title = "List all shader names"
         )]
+        [Description(@"Scans the project assets to find all shaders and to get the name from each of them. Returns the list of shader names.")]
         public string ListAll() => MainThread.Run(() =>
         {
             var shaderNames = ShaderUtils.GetAllShaders()

@@ -10,7 +10,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public interface IMcpPlugin : IConnection, IDisposableAsync
     {
-        IRemoteServer? RemoteServer { get; }
         IMcpRunner McpRunner { get; }
     }
     public interface IConnection : IDisposableAsync
@@ -28,20 +27,39 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
     // -----------------------------------------------------------------
 
+    public interface IToolsIdentity
+    {
+        string GetToolsIdentity(string? connectionId = null);
+    }
+
+    public interface IToolsConnection
+    {
+        void SetIsConnected(bool isConnected);
+        void OnConnected(string connectionId);
+        void OnDisconnected(string connectionId);
+
+        Task OnConnectedAsync(string connectionId, CancellationToken cancellationToken = default);
+        Task OnDisconnectedAsync(string connectionId, CancellationToken cancellationToken = default);
+        
+        Task Connect(CancellationToken cancellationToken = default);
+        Task Disconnect(CancellationToken cancellationToken = default);
+    }
+
     public interface IToolRunner
     {
-        Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool data, CancellationToken cancellationToken = default);
-        Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool data, CancellationToken cancellationToken = default);
-        Task<IResponseData<ResponseMenuItem[]>> RunListMenuItems(IRequestListMenuItems data, CancellationToken cancellationToken = default);
-        Task<IResponseData<ResponseExecuteMenuItem>> RunExecuteMenuItem(IRequestExecuteMenuItem data, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool requestData, string? connectionId = null, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool requestData, string? connectionId = null, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseMenuItem[]>> RunListMenuItems(IRequestListMenuItems data, string? connectionId = null, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseExecuteMenuItem>> RunExecuteMenuItem(IRequestExecuteMenuItem data, string? connectionId = null, CancellationToken cancellationToken = default);
     }
 
     public interface IResourceRunner
     {
-        Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent data, CancellationToken cancellationToken = default);
-        Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources data, CancellationToken cancellationToken = default);
-        Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates data, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent requestData, string? connectionId = null, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources requestData, string? connectionId = null, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates requestData, string? connectionId = null, CancellationToken cancellationToken = default);
     }
 
     // -----------------------------------------------------------------
 }
+#pragma warning restore CS8632

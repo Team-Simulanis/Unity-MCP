@@ -10,9 +10,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Script_Read",
-            Title = "Read Script content",
-            Description = "Reads the content of a script file and returns it as a string."
+            Title = "Read Script content"
         )]
+        [Description("Reads the content of a script file and returns it as a string.")]
         public string Read
         (
             [Description("The path to the file. Sample: \"Assets/Scripts/MyScript.cs\".")]

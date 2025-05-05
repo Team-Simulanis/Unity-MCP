@@ -189,8 +189,7 @@ openupm add com.ivanmurzak.unity.mcp
 
 # Add custom `tool`
 
-> ⚠️ Not yet supported. There is a blocker issue in `csharp-sdk` for MCP server. Waiting for solution.
-> Please vote up for [this issue](https://github.com/modelcontextprotocol/csharp-sdk/discussions/301) and [this](https://github.com/modelcontextprotocol/csharp-sdk/issues/335) to bring more attention to it. The custom tool is dependent on it.
+> ⚠️ It only works with MCP client that supports dynamic tool list update.
 
 Unity-MCP is designed to support custom `tool` development by project owner. MCP server takes data from Unity plugin and exposes it to a Client. So anyone in the MCP communication chain would receive the information about a new `tool`. Which LLM may decide to call at some point.
 
@@ -201,7 +200,7 @@ To add a custom `tool` you need:
 3. [optional] Add `Description` attribute to each method argument to let LLM to understand it.
 4. [optional] Use `string? optional = null` properties with `?` and default value to mark them as `optional` for LLM.
 
-> Take a look that the line `=> MainThread.Run(() =>` it allows to run the code in Main thread which is needed to interact with Unity API. If you don't need it and running the tool in background thread is fine for the tool, don't use Main thread for efficience purpose.
+> Take a look that the line `MainThread.Run(() =>` it allows to run the code in Main thread which is needed to interact with Unity API. If you don't need it and running the tool in background thread is fine for the tool, don't use Main thread for efficiency purpose.
 
 ```csharp
 [McpPluginToolType]
@@ -209,42 +208,31 @@ public class Tool_GameObject
 {
     [McpPluginTool
     (
-        "GameObject_Create",
-        Title = "Create a new GameObject",
-        Description = "Create a new GameObject."
+        "MyCustomTask",
+        Title = "Create a new GameObject"
     )]
-    public string Create
+    [Description("Explain here to LLM what is this, when it should be called.")]
+    public string CustomTask
     (
-        [Description("Path to the GameObject (excluding the name of the GameObject).")]
-        string path,
-        [Description("Name of the GameObject.")]
-        string name
+        [Description("Explain to LLM what is this.")]
+        string inputData
     )
-    => MainThread.Run(() =>
     {
-        var targetParent = string.IsNullOrEmpty(path) ? null : GameObject.Find(path);
-        if (targetParent == null && !string.IsNullOrEmpty(path))
-            return $"[Error] Parent GameObject '{path}' not found.";
+        // do anything in background thread
 
-        var go = new GameObject(name);
-        go.transform.position = new Vector3(0, 0, 0);
-        go.transform.rotation = Quaternion.identity;
-        go.transform.localScale = new Vector3(1, 1, 1);
-        if (targetParent != null)
-            go.transform.SetParent(targetParent.transform, false);
+        return MainThread.Run(() =>
+        {
+            // do something in main thread if needed
 
-        EditorUtility.SetDirty(go);
-        EditorApplication.RepaintHierarchyWindow();
-
-        return $"[Success] Created GameObject '{name}' at path '{path}'.";
-    });
+            return $"[Success] Operation completed.";
+        });
+    }
 }
 ```
 
 # Add custom in-game `tool`
 
-> ⚠️ Not yet supported. There is a blocker issue in `csharp-sdk` for MCP server. Waiting for solution.
-> Please vote up for [this issue](https://github.com/modelcontextprotocol/csharp-sdk/discussions/301) and [this](https://github.com/modelcontextprotocol/csharp-sdk/issues/335) to bring more attention to it. The custom tool is dependent on it.
+> ⚠️ Not yet supported. The work is in progress
 
 
 # Contribution

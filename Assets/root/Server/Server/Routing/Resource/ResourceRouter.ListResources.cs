@@ -16,13 +16,13 @@ namespace com.IvanMurzak.Unity.MCP.Server
             if (mcpServerService == null)
                 return new ListResourcesResult().SetError("[Error] 'McpServerService' is null");
 
-            var remoteApp = mcpServerService.RemoteApp;
-            if (remoteApp == null)
-                return new ListResourcesResult().SetError("[Error] 'RemoteApp' is null");
+            var resourceRunner = mcpServerService.ResourceRunner;
+            if (resourceRunner == null)
+                return new ListResourcesResult().SetError($"[Error] '{nameof(resourceRunner)}' is null");
 
             var requestData = new RequestListResources(cursor: request?.Params?.Cursor);
 
-            var response = await remoteApp.RunListResources(requestData, cancellationToken: cancellationToken);
+            var response = await resourceRunner.RunListResources(requestData, cancellationToken: cancellationToken);
             if (response == null)
                 return new ListResourcesResult().SetError("[Error] Resource is null");
 

@@ -16,6 +16,16 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
             var output = string.Empty;
             var error = string.Empty;
 
+            // Ensure proper configuration for macOS and other platforms
+            processStartInfo.RedirectStandardOutput = true;
+            processStartInfo.RedirectStandardError = true;
+            processStartInfo.UseShellExecute = false;
+            processStartInfo.CreateNoWindow = true;
+
+#if !UNITY_EDITOR_WIN
+            FixEnvironmentPath(processStartInfo);
+#endif
+
             await Task.Run(() =>
             {
                 try
@@ -41,6 +51,22 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
                 }
             });
             return (output, error);
+        }
+        static void FixEnvironmentPath(ProcessStartInfo processStartInfo)
+        {
+            // Explicitly set the PATH environment variable
+            if (!processStartInfo.EnvironmentVariables.ContainsKey("PATH"))
+            {
+                var systemPath = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+
+                // Add the path to the dotnet executable if needed
+                var dotnetPath = "/usr/local/share/dotnet:/usr/bin:/bin:/usr/sbin:/sbin";
+                processStartInfo.EnvironmentVariables["PATH"] = $"{systemPath}:{dotnetPath}";
+            }
+
+            // Ensure the full path to the dotnet executable is used
+            if (processStartInfo.FileName == "dotnet")
+                processStartInfo.FileName = "/usr/local/share/dotnet/dotnet"; // Adjust this path if dotnet is installed elsewhere
         }
     }
 }

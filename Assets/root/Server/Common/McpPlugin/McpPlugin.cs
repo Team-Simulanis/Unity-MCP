@@ -10,25 +10,31 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public partial class McpPlugin : IMcpPlugin
     {
-        public const string Version = "0.1.0";
+        public const string Version = "0.7.0";
 
         readonly ILogger<McpPlugin> _logger;
         readonly IRpcRouter _rpcRouter;
+        readonly CompositeDisposable _disposables = new();
 
         public IMcpRunner McpRunner { get; private set; }
-        public IRemoteServer RemoteServer { get; private set; }
         public ReadOnlyReactiveProperty<HubConnectionState> ConnectionState => _rpcRouter.ConnectionState;
         public ReadOnlyReactiveProperty<bool> KeepConnected => _rpcRouter.KeepConnected;
 
-        public McpPlugin(ILogger<McpPlugin> logger, IRpcRouter rpcRouter, IMcpRunner mcpRunner, IRemoteServer remoteServer)
+        public McpPlugin(ILogger<McpPlugin> logger, IRpcRouter rpcRouter, IMcpRunner mcpRunner)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _logger.LogTrace("Ctor. Version: {0}", Version);
+            _logger.LogTrace("{0} Ctor. Version: {Version}", typeof(McpPlugin).Name, Version);
 
             _rpcRouter = rpcRouter ?? throw new ArgumentNullException(nameof(rpcRouter));
 
             McpRunner = mcpRunner ?? throw new ArgumentNullException(nameof(mcpRunner));
-            RemoteServer = remoteServer ?? throw new ArgumentNullException(nameof(remoteServer));
+
+            _rpcRouter.ConnectionState
+                .Where(state => state == HubConnectionState.Connected)
+                .Subscribe(state =>
+                {
+                    _rpcRouter.NotifyAboutUpdatedTools(_disposables.ToCancellationToken());
+                }).AddTo(_disposables);
 
             if (HasInstance)
             {
@@ -37,24 +43,19 @@ namespace com.IvanMurzak.Unity.MCP.Common
             }
 
             _instance.Value = this;
+
+            // Dispose if another instance is created, because only one instance is allowed.
+            _instance
+                .Where(instance => instance != this)
+                .Subscribe(instance => Dispose())
+                .AddTo(_disposables);
         }
 
         public Task<bool> Connect(CancellationToken cancellationToken = default)
-        {
-            RemoteServer?.Connect(cancellationToken);
-            return _rpcRouter.Connect(cancellationToken).ContinueWith(task =>
-            {
-                if (task.IsCompletedSuccessfully)
-                    RemoteServer?.NotifyAboutUpdatedTools();
-                return task.IsCompletedSuccessfully;
-            });
-        }
+            => _rpcRouter.Connect(cancellationToken);
 
         public Task Disconnect(CancellationToken cancellationToken = default)
-        {
-            RemoteServer?.Disconnect(cancellationToken);
-            return _rpcRouter.Disconnect(cancellationToken);
-        }
+            => _rpcRouter.Disconnect(cancellationToken);
 
         public void Dispose()
         {
@@ -67,6 +68,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
         public async Task DisposeAsync()
         {
+            _disposables.Dispose();
+
             var localInstance = _instance.CurrentValue;
             if (localInstance == this)
                 _instance.Value = null;
@@ -74,10 +77,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
             try
             {
                 await _rpcRouter.DisposeAsync();
-                await RemoteServer.DisposeAsync();
-
-                if (localInstance != null)
-                    await localInstance.DisposeAsync();
             }
             catch (Exception ex)
             {

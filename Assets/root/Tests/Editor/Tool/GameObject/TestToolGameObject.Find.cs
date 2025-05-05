@@ -13,8 +13,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         public IEnumerator FindByInstanceId()
         {
             var child = new GameObject(GO_ParentName).AddChild(GO_Child1Name);
-
-            var result = new Tool_GameObject().Find(instanceID: child.GetInstanceID());
+            var result = new Tool_GameObject().Find(
+                gameObjectRef: new Common.Data.Unity.GameObjectRef
+                {
+                    instanceID = child.GetInstanceID()
+                });
             ResultValidation(result);
 
             Assert.IsTrue(result.Contains(GO_Child1Name), $"{GO_Child1Name} should be found in the path");
@@ -25,8 +28,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         public IEnumerator FindByPath()
         {
             var child = new GameObject(GO_ParentName).AddChild(GO_Child1Name);
-
-            var result = new Tool_GameObject().Find(path: $"{GO_ParentName}/{GO_Child1Name}");
+            var result = new Tool_GameObject().Find(
+                gameObjectRef: new Common.Data.Unity.GameObjectRef
+                {
+                    path = $"{GO_ParentName}/{GO_Child1Name}"
+                });
             ResultValidation(result);
 
             Assert.IsTrue(result.Contains(GO_Child1Name), $"{GO_Child1Name} should be found in the path");
@@ -37,8 +43,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         public IEnumerator FindByName()
         {
             var child = new GameObject(GO_ParentName).AddChild(GO_Child1Name);
-
-            var result = new Tool_GameObject().Find(name: GO_Child1Name);
+            var result = new Tool_GameObject().Find(
+                gameObjectRef: new Common.Data.Unity.GameObjectRef
+                {
+                    name = GO_Child1Name
+                });
             ResultValidation(result);
 
             Assert.IsTrue(result.Contains(GO_Child1Name), $"{GO_Child1Name} should be found in the path");

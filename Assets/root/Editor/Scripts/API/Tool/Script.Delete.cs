@@ -12,9 +12,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Script_Delete",
-            Title = "Delete Script content",
-            Description = "Delete the script file. Does AssetDatabase.Refresh() at the end."
+            Title = "Delete Script content"
         )]
+        [Description("Delete the script file. Does AssetDatabase.Refresh() at the end.")]
         public string Delete
         (
             [Description("The path to the file. Sample: \"Assets/Scripts/MyScript.cs\".")]

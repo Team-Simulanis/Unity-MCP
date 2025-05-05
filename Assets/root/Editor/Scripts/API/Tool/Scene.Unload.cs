@@ -13,9 +13,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Scene_Unload",
-            Title = "Unload scene",
-            Description = "Destroys all GameObjects associated with the given Scene and removes the Scene from the SceneManager."
+            Title = "Unload scene"
         )]
+        [Description("Destroys all GameObjects associated with the given Scene and removes the Scene from the SceneManager.")]
         public Task<string> Unload
         (
             [Description("Name of the loaded scene.")]

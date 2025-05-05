@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
@@ -13,9 +14,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "GameObject_ModifyComponent",
-            Title = "Modify Component at GameObject in opened Prefab or in a Scene",
-            Description = "Modify existed component at GameObject."
+            Title = "Modify Component at GameObject in opened Prefab or in a Scene"
         )]
+        [Description("Modify existed component at GameObject.")]
         public string ModifyComponent
         (
             [Description(@"Json Object with required readonly 'instanceID' and 'type' fields.
@@ -24,12 +25,7 @@ Follow the object schema to specify what to change, ignore values that should no
 Any unknown or wrong located fields and properties will be ignored.
 Check the result of this command to see what was changed. The ignored fields and properties will not be listed.")]
             SerializedMember componentData,
-            [Description("GameObject by 'instanceID' (int). Priority: 1. (Recommended)")]
-            int instanceID = 0,
-            [Description("GameObject by 'path'. Priority: 2.")]
-            string? path = null,
-            [Description("GameObject by 'name'. Priority: 3.")]
-            string? name = null
+            GameObjectRef gameObjectRef
         )
         => MainThread.Run(() =>
         {
@@ -40,15 +36,17 @@ Check the result of this command to see what was changed. The ignored fields and
             if (type == null)
                 return Error.InvalidComponentType(componentData.type);
 
-            var go = GameObjectUtils.FindBy(instanceID, path, name, out var error);
+            var go = GameObjectUtils.FindBy(gameObjectRef, out var error);
             if (error != null)
                 return error;
 
+            var index = -1;
+            if (componentData.HasIndexName())
+                componentData.GetIndexFromName(out index);
+            
             var componentInstanceID = componentData.GetInstanceID();
-            if (componentInstanceID == 0 && !string.IsNullOrEmpty(componentData.name) && !componentData.HasIndexName())
+            if (componentInstanceID == 0 && index == -1)
                 return $"[Error] Component 'instanceID' is not provided. Use 'instanceID' or name '[index]' to specify the component. '{componentData.name}' is not valid.";
-
-            componentData.GetIndexFromName(out var index);
 
             var allComponents = go.GetComponents<UnityEngine.Component>();
             var component = componentInstanceID == 0
@@ -63,13 +61,11 @@ Check the result of this command to see what was changed. The ignored fields and
             var componentObject = (object)component;
             var result = Serializer.Populate(ref componentObject, componentData);
 
-            return @$"Component with instanceID '{componentInstanceID}' modification result:
-
-{result.ToString()}
+            return @$"Component with instanceID '{component.GetInstanceID()}' modification result:
+{result}
 
 at GameObject.
 {go.Print()}";
-
         });
     }
 }

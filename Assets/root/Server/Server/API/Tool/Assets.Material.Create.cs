@@ -12,7 +12,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Name = "Assets_Material_Create",
             Title = "Create Material asset"
         )]
-        [Description(@"Create new material asset with default parameters.")]
+        [Description(@"Create new material asset with default parameters. Right 'shaderName' should be set. To find the shader, use 'Shader.Find' method.")]
         public Task<CallToolResponse> Create
         (
             [Description("Asset path. Starts with 'Assets/'. Ends with '.mat'.")]

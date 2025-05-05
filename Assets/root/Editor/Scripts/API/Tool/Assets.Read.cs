@@ -11,9 +11,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Assets_Read",
-            Title = "Read asset file content",
-            Description = @"Read file asset in the project."
+            Title = "Read asset file content"
         )]
+        [Description(@"Read file asset in the project.")]
         public string Read
         (
             [Description("Path to the asset. See 'Assets_Search' for more details. Starts with 'Assets/'. Priority: 1. (Recommended)")]

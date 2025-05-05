@@ -15,10 +15,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Assets_CreateFolders",
-            Title = "Assets Create Folders",
-            Description = @"Create folders at specific locations in the project.
-Use it to organize scripts and assets in the project. Does AssetDatabase.Refresh() at the end."
+            Title = "Assets Create Folders"
         )]
+        [Description(@"Create folders at specific locations in the project.
+Use it to organize scripts and assets in the project. Does AssetDatabase.Refresh() at the end.")]
         public string CreateFolders
         (
             [Description("The paths for the folders to create.")]

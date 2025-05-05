@@ -16,7 +16,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public static async Task<CallToolResponse> Call(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
         {
             var logger = LogManager.GetCurrentClassLogger();
-            logger.Trace("Call called");
+            logger.Trace("{0}.Call", typeof(ToolRouter).Name);
 
             if (request == null)
                 return new CallToolResponse().SetError("[Error] Request is null");
@@ -29,22 +29,35 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
             var mcpServerService = McpServerService.Instance;
             if (mcpServerService == null)
-                return new CallToolResponse().SetError("[Error] 'McpServerService' is null");
+                return new CallToolResponse().SetError($"[Error] '{nameof(mcpServerService)}' is null");
 
             var toolRunner = mcpServerService.McpRunner.HasTool(request.Params.Name)
-                ? mcpServerService.McpRunner as IToolRunner
-                : mcpServerService.RemoteApp;
+                ? mcpServerService.McpRunner
+                : mcpServerService.ToolRunner;
 
             if (toolRunner == null)
-                return new CallToolResponse().SetError("[Error] 'ToolRunner' is null");
+                return new CallToolResponse().SetError($"[Error] '{nameof(toolRunner)}' is null");
+
+            // while (RemoteApp.FirstConnectionId == null)
+            //     await Task.Delay(100, cancellationToken);
+
+            var clientConnectionId = RemoteApp.FirstConnectionId;
+            if (mcpServerService.McpRunner.HasTool(request.Params.Name))
+            {
+                if (string.IsNullOrEmpty(clientConnectionId))
+                {
+                    logger.Warn("{0}.Call, no connected client. Returning empty success result.", typeof(ToolRouter).Name);
+                    return new CallToolResponse().SetError($"[Error] '{nameof(clientConnectionId)}' is null");
+                }
+            }
 
             var requestData = new RequestCallTool(request.Params.Name, request.Params.Arguments);
             if (logger.IsTraceEnabled)
                 logger.Trace("Call remote tool '{0}':\n{1}", request.Params.Name, JsonUtils.Serialize(requestData));
 
-            var response = await toolRunner.RunCallTool(requestData, cancellationToken);
+            var response = await toolRunner.RunCallTool(requestData, connectionId: clientConnectionId, cancellationToken: cancellationToken);
             if (response == null)
-                return new CallToolResponse().SetError("[Error] Resource is null");
+                return new CallToolResponse().SetError($"[Error] '{nameof(response)}' is null");
 
             if (logger.IsTraceEnabled)
                 logger.Trace("Call tool response:\n{0}", JsonUtils.Serialize(response));
@@ -55,7 +68,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             if (response.Value == null)
                 return new CallToolResponse().SetError("[Error] Tool returned null value");
 
-            return response.Value.ToCallToolRespose();
+            return response.Value.ToCallToolResponse();
         }
 
         public static Task<CallToolResponse> Call(string name, Action<Dictionary<string, object>>? configureArguments = null)
@@ -102,7 +115,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             //     return "[Error] Tool returned null value";
 
             // // logger.Trace("Call, result: {0}", JsonSerializer.Serialize(response.Value));
-            // return response.Value.ToCallToolRespose();
+            // return response.Value.ToCallToolResponse();
         }
     }
 }

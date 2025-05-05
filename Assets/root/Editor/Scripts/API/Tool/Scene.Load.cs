@@ -10,9 +10,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Scene_Load",
-            Title = "Load scene",
-            Description = "Load scene from the project assets."
+            Title = "Load scene"
         )]
+        [Description("Load scene from the project assets.")]
         public string Load
         (
             [Description("Path to the scene file.")]

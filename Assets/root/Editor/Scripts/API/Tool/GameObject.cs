@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 
@@ -51,9 +52,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
                 return $"[Error] No component with instanceID '{componentInstanceID}' found in GameObject.\n{helpMessage}\nAvailable components preview:\n{previewJson}";
             }
-            public static string NotFoundComponents(int[] componentInstanceIDs, IEnumerable<UnityEngine.Component> allComponents)
+            public static string NotFoundComponents(ComponentRefList componentRefs, IEnumerable<UnityEngine.Component> allComponents)
             {
-                var componentInstanceIDsString = string.Join(", ", componentInstanceIDs);
+                var componentInstanceIDsString = string.Join(", ", componentRefs.Select(cr => cr.ToString()));
                 var availableComponentsPreview = allComponents
                     .Select((c, i) => Serializer.Serialize(c, name: $"[{i}]", recursive: false))
                     .ToList();

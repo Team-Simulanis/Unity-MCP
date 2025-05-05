@@ -12,9 +12,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Scene_Save",
-            Title = "Save scene",
-            Description = "Save scene from the project assets."
+            Title = "Save scene"
         )]
+        [Description("Save scene from the project assets.")]
         public string Save
         (
             [Description("Path to the scene file.")]

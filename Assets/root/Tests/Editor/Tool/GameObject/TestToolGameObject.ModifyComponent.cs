@@ -23,7 +23,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 .AddProperty(SerializedMember.FromValue(name: nameof(child.transform.position),
                     value: newPosition));
 
-            var result = new Tool_GameObject().ModifyComponent(data, instanceID: child.GetInstanceID());
+            var result = new Tool_GameObject().ModifyComponent(data, 
+                gameObjectRef: new Common.Data.Unity.GameObjectRef
+                {
+                    instanceID = child.GetInstanceID()
+                });
             ResultValidation(result);
 
             Assert.IsTrue(result.Contains(GO_Child1Name), $"{GO_Child1Name} should be found in the path");
@@ -47,7 +51,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                     type: typeof(Material),
                     value: new InstanceID(sharedMaterial.GetInstanceID())));
 
-            var result = new Tool_GameObject().ModifyComponent(data, instanceID: go.GetInstanceID());
+            var result = new Tool_GameObject().ModifyComponent(data, 
+                gameObjectRef: new Common.Data.Unity.GameObjectRef
+                {
+                    instanceID = go.GetInstanceID()
+                });
             ResultValidation(result);
 
             Assert.IsTrue(result.Contains(GO_ParentName), $"{GO_ParentName} should be found in the path");

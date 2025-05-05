@@ -105,6 +105,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             Debug.Log($"{Consts.Log.Tag} Current Server version: <color=#8CFFD1>{ServerExecutableVersion}</color>. New Server version: <color=#8CFFD1>{ServerSourceVersion}</color>");
 
             CopyServerSources();
+            DeleteSlnFiles();
 
             Debug.Log($"{Consts.Log.Tag} Building server at <color=#8CFFD1>{ServerExecutableRootPath}</color>");
 
@@ -183,6 +184,18 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 Debug.LogError($"{Consts.Log.Tag} Server source directory not found. Please check the path: <color=#8CFFD1>{PackageCache}</color>");
                 Debug.LogError($"{Consts.Log.Tag} It may happen if the package was added into a project using local path reference. Please consider to use a package from the registry instead. Follow official installation instructions at https://github.com/IvanMurzak/Unity-MCP");
                 Debug.LogException(ex);
+            }
+        }
+        public static void DeleteSlnFiles()
+        {
+            var slnFiles = Directory.GetFiles(ServerExecutableRootPath, "*.sln*", SearchOption.TopDirectoryOnly);
+            foreach (var slnFile in slnFiles)
+            {
+                try
+                {
+                    File.Delete(slnFile);
+                }
+                catch (UnauthorizedAccessException) { /* ignore */ }
             }
         }
     }

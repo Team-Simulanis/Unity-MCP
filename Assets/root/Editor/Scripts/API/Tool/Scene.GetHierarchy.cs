@@ -11,9 +11,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Scene_GetHierarchy",
-            Title = "Get Scene Hierarchy",
-            Description = "This tool retrieves the list of root GameObjects in the specified scene."
+            Title = "Get Scene Hierarchy"
         )]
+        [Description("This tool retrieves the list of root GameObjects in the specified scene.")]
         public string GetHierarchyRoot
         (
             [Description("Determines the depth of the hierarchy to include.")]

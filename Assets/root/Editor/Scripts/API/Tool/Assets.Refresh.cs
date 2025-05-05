@@ -11,11 +11,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Assets_Refresh",
-            Title = "Assets Refresh",
-            Description = @"Refreshes the AssetDatabase. Use it if any new files were added or updated in the project outside of Unity API.
-Don't need to call it for Scripts manipulations.
-It also triggers scripts recompilation if any changes in '.cs' files."
+            Title = "Assets Refresh"
         )]
+        [Description(@"Refreshes the AssetDatabase. Use it if any new files were added or updated in the project outside of Unity API.
+Don't need to call it for Scripts manipulations.
+It also triggers scripts recompilation if any changes in '.cs' files.")]
         public string Refresh() => MainThread.Run(() =>
         {
             AssetDatabase.Refresh();

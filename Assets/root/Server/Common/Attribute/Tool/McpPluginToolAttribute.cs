@@ -8,13 +8,11 @@ namespace com.IvanMurzak.Unity.MCP.Common
     {
         public string Name { get; set; }
         public string? Title { get; set; }
-        public string? Description { get; set; }
 
-        public McpPluginToolAttribute(string name, string? title = null, string? description = null)
+        public McpPluginToolAttribute(string name, string? title = null)
         {
             Name = name;
             Title = title;
-            Description = description;
         }
     }
 }

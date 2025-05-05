@@ -13,8 +13,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Assets_Find",
-            Title = "Find assets in the project",
-Description = @"Search the asset database using the search filter string.
+            Title = "Find assets in the project"
+        )]
+        [Description(@"Search the asset database using the search filter string.
 Available types:
 t:AnimationClip
 t:AudioClip
@@ -34,8 +35,7 @@ t:Sprite
 t:Texture
 t:VideoClip
 t:VisualEffectAsset
-t:VisualEffectSubgraph"
-        )]
+t:VisualEffectSubgraph")]
         public string Search
         (
 // <ref>https://docs.unity3d.com/ScriptReference/AssetDatabase.FindAssets.html</ref>

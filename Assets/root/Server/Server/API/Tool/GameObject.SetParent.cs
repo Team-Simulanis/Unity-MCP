@@ -1,3 +1,4 @@
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
@@ -15,18 +16,16 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
         [Description(@"Set GameObjects in opened Prefab or in a Scene by 'instanceID' (int) array.")]
         public Task<CallToolResponse> SetParent
         (
-            [Description("The 'instanceID' array of the target GameObjects.")]
-            int[] targetInstanceIDs,
-            [Description("The 'instanceID' of the parent GameObject.")]
-            int parentInstanceID,
+            GameObjectRefList gameObjectRefs,
+            GameObjectRef parentGameObjectRef,
             [Description("A boolean flag indicating whether the GameObject's world position should remain unchanged when setting its parent.")]
             bool worldPositionStays = true
         )
         {
             return ToolRouter.Call("GameObject_SetParent", arguments =>
             {
-                arguments[nameof(targetInstanceIDs)] = targetInstanceIDs ?? new int[0];
-                arguments[nameof(parentInstanceID)] = parentInstanceID;
+                arguments[nameof(gameObjectRefs)] = gameObjectRefs ?? new();
+                arguments[nameof(parentGameObjectRef)] = parentGameObjectRef;
                 arguments[nameof(worldPositionStays)] = worldPositionStays;
             });
         }

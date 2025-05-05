@@ -13,12 +13,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Assets_Prefab_Read",
-            Title = "Read prefab content",
-            Description = "Read a prefab content. Use it for get started with prefab editing. There are two options to open prefab:\n" +
-                          "1. Read prefab from asset using 'prefabAssetPath'.\n" +
-                          "2. Read prefab from GameObject in loaded scene using 'instanceID' of the GameObject.\n" +
-                          "   The GameObject should be connected to a prefab."
+            Title = "Read prefab content"
         )]
+        [Description("Read a prefab content. Use it for get started with prefab editing. There are two options to open prefab:\n" +
+                    "1. Read prefab from asset using 'prefabAssetPath'.\n" +
+                    "2. Read prefab from GameObject in loaded scene using 'instanceID' of the GameObject.\n" +
+                    "   The GameObject should be connected to a prefab.")]
         public string Read
         (
             [Description("'instanceID' of GameObject in a scene.")]

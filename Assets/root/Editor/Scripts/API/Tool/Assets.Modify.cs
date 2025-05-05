@@ -12,9 +12,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Assets_Modify",
-            Title = "Modify asset file",
-            Description = @"Modify asset in the project. Not allowed to modify asset in 'Packages/' folder. Please modify it in 'Assets/' folder."
+            Title = "Modify asset file"
         )]
+        [Description(@"Modify asset in the project. Not allowed to modify asset in 'Packages/' folder. Please modify it in 'Assets/' folder.")]
         public string Modify
         (
             [Description("The asset content. It overrides the existing asset content.")]

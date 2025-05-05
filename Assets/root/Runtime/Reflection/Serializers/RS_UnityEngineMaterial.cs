@@ -12,6 +12,9 @@ namespace com.IvanMurzak.Unity.MCP.Utils
 {
     public partial class RS_UnityEngineMaterial : RS_Generic<Material>
     {
+        const string FieldShader = "shader";
+        const string FieldName = "name";
+
         protected override SerializedMember InternalSerialize(object obj, Type type, string name = null, bool recursive = true, BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
         {
             var material = obj as Material;
@@ -59,8 +62,8 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                 type = type.FullName,
                 fields = new List<SerializedMember>()
                 {
-                    SerializedMember.FromValue(name: "name", value: material.name),
-                    SerializedMember.FromValue(name: "shader", value: shader.name)
+                    SerializedMember.FromValue(name: FieldName, value: material.name),
+                    SerializedMember.FromValue(name: FieldShader, value: shader.name)
                 },
                 properties = properties,
             }.SetValue(new InstanceID(material.GetInstanceID()));
@@ -71,7 +74,8 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             var serialized = JsonUtils.Deserialize<SerializedMember>(value.Value.GetRawText());
             var material = obj as Material;
 
-            var shaderName = serialized.GetField("shader")?.GetValue<string>();
+            // Set shader
+            var shaderName = serialized.GetField(FieldShader)?.GetValue<string>();
             if (!string.IsNullOrEmpty(shaderName) && material.shader.name != shaderName)
                 material.shader = Shader.Find(shaderName) ?? throw new ArgumentException($"Shader '{shaderName}' not found.");
 
@@ -81,6 +85,23 @@ namespace com.IvanMurzak.Unity.MCP.Utils
         protected override StringBuilder? ModifyField(ref object obj, SerializedMember fieldValue, StringBuilder? stringBuilder = null, int depth = 0,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
         {
+            var material = obj as Material;
+
+            // Set shader
+            if (fieldValue.name == FieldShader)
+            {
+                var shaderName = fieldValue.GetValue<string>();
+                if (!string.IsNullOrEmpty(shaderName) && material.shader.name != shaderName)
+                {
+                    var shader = Shader.Find(shaderName);
+                    if (shader == null)
+                        return stringBuilder?.AppendLine(new string(' ', depth) + $"[Error] Shader '{shaderName}' not found.");
+
+                    material.shader = shader;
+                    return stringBuilder?.AppendLine(new string(' ', depth) + $"[Success] Material '{material.name}' shader set to '{shaderName}'.");
+                }
+            }
+
             return stringBuilder;
         }
     }

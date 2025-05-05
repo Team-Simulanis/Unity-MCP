@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.3-simulanis.1] - 2025-09-03
+### Changed
+- Synced with upstream v0.7.3
+- Updated version number to match upstream while maintaining Simulanis customizations
+- Resolved conflicts in server-side components
+
 ## [0.6.2-simulanis.5] - 2023-09-03
 ### Added
 - Added proper package metadata to improve Unity Package Manager experience

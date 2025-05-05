@@ -8,20 +8,24 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public class HubConnectionLogger : HubConnectionObservable, IDisposable
     {
+        readonly string? _guid;
         readonly ILogger _logger;
         readonly CompositeDisposable _disposables = new();
 
-        public HubConnectionLogger(ILogger logger, HubConnection hubConnection) : base(hubConnection)
+        public HubConnectionLogger(ILogger logger, HubConnection hubConnection, string? guid = null) : base(hubConnection)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _guid = guid;
+
+            _logger.LogTrace("{0} HubConnectionLogger.Ctor.", _guid);
 
             Closed
                 .Where(x => _logger.IsEnabled(LogLevel.Debug))
                 .Subscribe(ex =>
                 {
-                    _logger.LogTrace("HubConnection OnClosed. Exception: {0}", ex?.Message);
+                    _logger.LogTrace("{0} HubConnectionLogger HubConnection OnClosed. Exception: {1}", _guid, ex?.Message);
                     if (ex != null)
-                        _logger.LogError("Error in Closed event subscription: {0}", ex.Message);
+                        _logger.LogError("{0} HubConnectionLogger Error in Closed event subscription: {1}", _guid, ex.Message);
                 })
                 .AddTo(_disposables);
 
@@ -29,9 +33,9 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 .Where(x => _logger.IsEnabled(LogLevel.Debug))
                 .Subscribe(ex =>
                 {
-                    _logger.LogTrace("HubConnection OnReconnecting.");
+                    _logger.LogTrace("{0} HubConnectionLogger HubConnection OnReconnecting.", _guid);
                     if (ex != null)
-                        _logger.LogError("Error during reconnecting: {0}", ex.Message);
+                        _logger.LogError("{0} HubConnectionLogger Error during reconnecting: {1}", _guid, ex.Message);
                 })
                 .AddTo(_disposables);
 
@@ -39,13 +43,14 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 .Where(x => _logger.IsEnabled(LogLevel.Debug))
                 .Subscribe(connectionId =>
                 {
-                    _logger.LogTrace("HubConnection OnReconnected with id {0}.", connectionId);
+                    _logger.LogTrace("{0} HubConnectionLogger HubConnection OnReconnected with id {1}.", _guid, connectionId);
                 })
                 .AddTo(_disposables);
         }
 
         public override void Dispose()
         {
+            _logger.LogTrace("{0} HubConnectionLogger.Dispose.", _guid);
             base.Dispose();
             _disposables.Dispose();
         }

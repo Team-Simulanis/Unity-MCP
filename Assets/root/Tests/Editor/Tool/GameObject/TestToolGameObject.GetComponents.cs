@@ -17,7 +17,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var meshRenderer = child.AddComponent<MeshRenderer>();
             meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
 
-            var result = new Tool_GameObject().GetComponents(new int[0], instanceID: child.GetInstanceID());
+            var result = new Tool_GameObject().GetComponents(
+                gameObjectRef: new Common.Data.Unity.GameObjectRef
+                {
+                    instanceID = child.GetInstanceID()
+                },
+                filterComponentRefs: null);
             ResultValidation(result);
 
             Assert.IsTrue(result.Contains(GO_Child1Name), $"{GO_Child1Name} should be found in the path");

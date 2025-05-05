@@ -21,7 +21,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
             _services = services ?? new ServiceCollection();
 
             _services.AddTransient<IConnectionManager, ConnectionManager>();
-            _services.AddSingleton<IRpcRouter, RpcRouter>();
             _services.AddSingleton<IMcpPlugin, McpPlugin>();
 
             _services.AddSingleton(_tools);

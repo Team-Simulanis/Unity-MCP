@@ -9,22 +9,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 {
     public static class MenuItems
     {
-        // [MenuItem("Tools/Unity-MCP/Build and Start", priority = 1000)]
-        // public static void BuildAndStart() => McpPluginUnity.BuildAndStart();
-
-        // [MenuItem("Tools/Unity-MCP/Connect", priority = 1001)]
-        // public static void Editor_Connect() => McpPlugin.Instance.Connect();
-
-        // [MenuItem("Tools/Unity-MCP/Disconnect", priority = 1001)]
-        // public static void Editor_Disconnect()
-        // {
-        //     if (!McpPlugin.HasInstance)
-        //     {
-        //         Debug.Log($"{Consts.Log.Tag} {Consts.Log.Color.CategoryStart}Connector{Consts.Log.Color.CategoryEnd} Already disconnected.");
-        //         return;
-        //     }
-        //     McpPlugin.Instance.Disconnect();
-        // }
+        [MenuItem("Tools/AI Connector (Unity-MCP)/Build & Start", priority = 1000)]
+        public static void BuildAndStart() => McpPluginUnity.BuildAndStart();
 
         [MenuItem("Tools/AI Connector (Unity-MCP)/Build MCP Server", priority = 1010)]
         public static Task BuildMcpServer() => Startup.BuildServer();

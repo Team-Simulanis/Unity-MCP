@@ -13,9 +13,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Assets_Delete",
-            Title = "Assets Delete",
-            Description = @"Delete the assets at paths from the project. Does AssetDatabase.Refresh() at the end."
+            Title = "Assets Delete"
         )]
+        [Description(@"Delete the assets at paths from the project. Does AssetDatabase.Refresh() at the end.")]
         public string Delete
         (
             [Description("The paths of the assets")]

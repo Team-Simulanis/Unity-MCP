@@ -1,6 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -12,14 +13,15 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "GameObject_Create",
-            Title = "Create a new GameObject in opened Prefab or in a Scene",
-            Description = @"Create a new GameObject at specific path.
-if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount of operations."
+            Title = "Create a new GameObject in opened Prefab or in a Scene"
         )]
+        [Description(@"Create a new GameObject at specific path.
+if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount of operations.")]
         public string Create
         (
-            [Description("Path to the GameObject where it should be created. Can't be empty. Each intermediate GameObject should exist.")]
-            string path,
+            [Description("Name of the new GameObject.")]
+            string name,
+            GameObjectRef? parentGameObjectRef = null,
             [Description("Transform position of the GameObject.")]
             Vector3? position = default,
             [Description("Transform rotation of the GameObject. Euler angles in degrees.")]
@@ -33,16 +35,16 @@ if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount o
         )
         => MainThread.Run(() =>
         {
-            var parentGo = default(GameObject);
-            if (StringUtils.Path_ParseParent(path, out var parentPath, out var name))
-            {
-                parentGo = GameObjectUtils.FindByPath(parentPath);
-                if (parentGo == null)
-                    return Error.NotFoundGameObjectAtPath(parentPath);
-            }
-
             if (string.IsNullOrEmpty(name))
                 return Error.GameObjectNameIsEmpty();
+
+            var parentGo = default(GameObject);
+            if (parentGameObjectRef?.IsValid ?? false)
+            {
+                parentGo = GameObjectUtils.FindBy(parentGameObjectRef, out var error);
+                if (error != null)
+                    return error;
+            }
 
             var go = primitiveType switch
             {

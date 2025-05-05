@@ -11,12 +11,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Editor_Selection_Set",
-            Title = "Set Selection in Unity Editor",
-            Description = @"'UnityEditor.Selection'. Access to the selection in the editor.
+            Title = "Set Selection in Unity Editor"
+        )]
+        [Description(@"'UnityEditor.Selection'. Access to the selection in the editor.
 Use it to select Assets or GameObjects in a scene. Set empty array to clear selection.
 Selection.instanceIDs - The actual unfiltered selection from the Scene returned as instance ids.
-Selection.activeInstanceID -  The 'instanceID' of the actual object selection. Includes Prefabs, non-modifiable objects."
-        )]
+Selection.activeInstanceID -  The 'instanceID' of the actual object selection. Includes Prefabs, non-modifiable objects.")]
         public string Set
         (
             [Description("The 'instanceID' array of the target GameObjects.")]

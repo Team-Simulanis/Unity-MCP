@@ -20,9 +20,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public static IMcpPluginBuilder WithAppFeatures(this IMcpPluginBuilder builder)
         {
             builder.AddMcpRunner();
-            builder.AddRemoteServer();
 
-            // // TODO: Oncomment if any tools or prompts are needed from this assembly
+            builder.Services.AddTransient<IRpcRouter, RpcRouter>();
+
+            // // TODO: Uncomment if any tools or prompts are needed from this assembly
             // // var assembly = typeof(McpAppBuilderExtensions).Assembly;
 
             // // builder.WithToolsFromAssembly(assembly);
@@ -35,11 +36,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public static IMcpPluginBuilder AddMcpRunner(this IMcpPluginBuilder builder)
         {
             builder.Services.TryAddSingleton<IMcpRunner, McpRunner>();
-            return builder;
-        }
-        public static IMcpPluginBuilder AddRemoteServer(this IMcpPluginBuilder builder)
-        {
-            builder.Services.TryAddSingleton<IRemoteServer, RemoteServer>();
             return builder;
         }
     }

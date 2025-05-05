@@ -11,9 +11,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Editor_SetApplicationState",
-            Title = "Set Unity Editor application state",
-            Description = "Control the Unity Editor application state. You can start, stop, or pause the 'playmode'."
+            Title = "Set Unity Editor application state"
         )]
+        [Description("Control the Unity Editor application state. You can start, stop, or pause the 'playmode'.")]
         public string SetApplicationState
         (
             [Description("If true, the 'playmode' will be started. If false, the 'playmode' will be stopped.")]

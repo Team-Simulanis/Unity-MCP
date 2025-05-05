@@ -1,3 +1,4 @@
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Server.API.Data;
 using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
@@ -17,8 +18,9 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
 if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount of operations.")]
         public Task<CallToolResponse> Create
         (
-            [Description("Path to the GameObject where it should be created. Can't be empty. Each intermediate GameObject should exist.")]
-            string path,
+            [Description("Name of the new GameObject.")]
+            string name,
+            GameObjectRef? parentGameObjectRef = null,
             [Description("Transform position of the GameObject.")]
             Vector3? position = default,
             [Description("Transform rotation of the GameObject. Euler angles in degrees.")]
@@ -33,7 +35,10 @@ if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount o
         {
             return ToolRouter.Call("GameObject_Create", arguments =>
             {
-                arguments[nameof(path)] = path;
+                arguments[nameof(name)] = name;
+
+                if (parentGameObjectRef != null)
+                    arguments[nameof(parentGameObjectRef)] = parentGameObjectRef;
 
                 if (position != null)
                     arguments[nameof(position)] = position;

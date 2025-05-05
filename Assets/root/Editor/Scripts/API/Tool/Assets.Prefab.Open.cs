@@ -13,13 +13,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Assets_Prefab_Open",
-            Title = "Open prefab",
-            Description = "Open a prefab. There are two options to open prefab:\n" +
-                          "1. Open prefab from asset using 'prefabAssetPath'.\n" +
-                          "2. Open prefab from GameObject in loaded scene using 'instanceID' of the GameObject.\n" +
-                          "   The GameObject should be connected to a prefab.\n\n" +
-                          "Note: Please 'Close' the prefab later to exit prefab editing mode."
+            Title = "Open prefab"
         )]
+        [Description("Open a prefab. There are two options to open prefab:\n" +
+                    "1. Open prefab from asset using 'prefabAssetPath'.\n" +
+                    "2. Open prefab from GameObject in loaded scene using 'instanceID' of the GameObject.\n" +
+                    "   The GameObject should be connected to a prefab.\n\n" +
+                    "Note: Please 'Close' the prefab later to exit prefab editing mode.")]
         public string Open
         (
             [Description("'instanceID' of GameObject in a scene.")]

@@ -62,9 +62,7 @@ Assets/root/Server/com.IvanMurzak.Unity.MCP.Server.sln.meta
 
 # Unity Editor layouts
 UserSettings/Layouts/*
-kernelsCache/AIDenoiser-79ba37a0.v.01070000BBCFD912.NVIDIA GeForce RTX 4090.576.02_64.bin
-kernelsCache/AIDenoiser-79ba37a0.v.01070000BBCFD912.NVIDIA GeForce RTX 4090.576.02_64.bin.check
-kernelsCache/ConcatImageFromPlanar-5e6bbd7c.v.01070000BBCFD912.NVIDIA GeForce RTX 4090.576.02_64.bin
-kernelsCache/ConcatImageFromPlanar-5e6bbd7c.v.01070000BBCFD912.NVIDIA GeForce RTX 4090.576.02_64.bin.check
-kernelsCache/PerceptuallyUniformEncoding-7b1ea472.v.01070000BBCFD912.NVIDIA GeForce RTX 4090.576.02_64.bin
-kernelsCache/PerceptuallyUniformEncoding-7b1ea472.v.01070000BBCFD912.NVIDIA GeForce RTX 4090.576.02_64.bin.check
+
+# Unity Render cache
+kernelsCache/*
+

@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
@@ -11,41 +12,35 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "GameObject_GetComponents",
-            Title = "Get GameObject components in opened Prefab or in a Scene",
-            Description = @"Get components of the target GameObject. Returns property values of each component.
-Returns list of all available components preview if no requested components found."
+            Title = "Get GameObject components in opened Prefab or in a Scene"
         )]
+        [Description(@"Get components of the target GameObject. Returns property values of each component.
+Returns list of all available components preview if no requested components found.")]
         public string GetComponents
         (
-            [Description("The 'instanceID' array of the target components. Leave it empty if all components needed.")]
-            int[] componentInstanceIDs,
-            [Description("GameObject by 'instanceID' (int). Priority: 1. (Recommended)")]
-            int instanceID = 0,
-            [Description("GameObject by 'path'. Priority: 2.")]
-            string? path = null,
-            [Description("GameObject by 'name'. Priority: 3.")]
-            string? name = null
+            GameObjectRef gameObjectRef,
+            ComponentRefList? filterComponentRefs = null
         )
         => MainThread.Run(() =>
         {
-            var go = GameObjectUtils.FindBy(instanceID, path, name, out var error);
+            var go = GameObjectUtils.FindBy(gameObjectRef, out var error);
             if (error != null)
                 return error;
 
             var allComponents = go.GetComponents<UnityEngine.Component>();
 
-            var needToFilterComponents = componentInstanceIDs != null && componentInstanceIDs.Length > 0;
+            var needToFilterComponents = (filterComponentRefs?.Count ?? 0) > 0;
 
             var tempComponents = needToFilterComponents
-                ? allComponents.Where(c => componentInstanceIDs.Contains(c.GetInstanceID()))
+                ? allComponents.Where(c => filterComponentRefs.Any(fcr => fcr.Matches(c)))
                 : allComponents;
 
             var components = tempComponents
-                    .Select((c, i) => Serializer.Serialize(c, name: $"[{i}]"))
-                    .ToList();
+                .Select((c, i) => Serializer.Serialize(c, name: $"[{i}]"))
+                .ToList();
 
             if (components.Count == 0)
-                return Error.NotFoundComponents(componentInstanceIDs, allComponents);
+                return Error.NotFoundComponents(filterComponentRefs, allComponents);
 
             var componentsJson = JsonUtils.Serialize(components);
 

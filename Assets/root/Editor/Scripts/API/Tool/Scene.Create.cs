@@ -10,9 +10,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Scene_Create",
-            Title = "Create new scene",
-            Description = "Create new scene in the project assets."
+            Title = "Create new scene"
         )]
+        [Description("Create new scene in the project assets.")]
         public string Create
         (
             [Description("Path to the scene file.")]

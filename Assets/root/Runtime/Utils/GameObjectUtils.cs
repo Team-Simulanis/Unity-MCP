@@ -3,13 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace com.IvanMurzak.Unity.MCP.Utils
 {
     public static partial class GameObjectUtils
     {
+        public static GameObject FindBy(GameObjectRef gameObjectRef, out string error)
+        {
+            if (gameObjectRef == null)
+            {
+                error = "[Error] GameObjectRef is null.";
+                return null;
+            }
+            if (!gameObjectRef.IsValid)
+            {
+                error = "[Error] GameObjectRef is not valid. At least one of the properties should be set.";
+                return null;
+            }
+            return FindBy(gameObjectRef.instanceID, gameObjectRef.path, gameObjectRef.name, out error);
+        }
 
         public static GameObject FindBy(int? instanceID, string? path, string? name, out string error)
         {

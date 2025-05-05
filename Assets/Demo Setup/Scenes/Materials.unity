@@ -96,7 +96,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 130b29a4161643c4ea8bde991c42fc73, type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: ca0dba689f242064f9bc29dea3756086, type: 2}
 --- !u!196 &4
 NavMeshSettings:
@@ -422,6 +422,18 @@ ReflectionProbe:
   m_UseOcclusionCulling: 1
   m_Importance: 1
   m_CustomBakedTexture: {fileID: 0}
+--- !u!134 &293176979
+PhysicMaterial:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ' (Instance)'
+  dynamicFriction: 0.6
+  staticFriction: 0.6
+  bounciness: 0
+  frictionCombine: 0
+  bounceCombine: 0
 --- !u!1 &299687668
 GameObject:
   m_ObjectHideFlags: 0
@@ -578,7 +590,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 428228130}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 1180658554}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1451,6 +1463,18 @@ ReflectionProbe:
   m_UseOcclusionCulling: 1
   m_Importance: 1
   m_CustomBakedTexture: {fileID: 0}
+--- !u!134 &1180658554
+PhysicMaterial:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  dynamicFriction: 0.6
+  staticFriction: 0.6
+  bounciness: 0
+  frictionCombine: 0
+  bounceCombine: 0
 --- !u!1 &1218411761
 GameObject:
   m_ObjectHideFlags: 0
@@ -2342,7 +2366,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1658498180}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 1954499797}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2512,7 +2536,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1939001960}
-  m_Material: {fileID: 2080311955}
+  m_Material: {fileID: 293176979}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2591,6 +2615,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!134 &1954499797
+PhysicMaterial:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  dynamicFriction: 0.6
+  staticFriction: 0.6
+  bounciness: 0
+  frictionCombine: 0
+  bounceCombine: 0
 --- !u!1 &1955110869
 GameObject:
   m_ObjectHideFlags: 0
@@ -2617,7 +2653,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1955110869}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2068070237}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2761,7 +2797,7 @@ ReflectionProbe:
   m_UseOcclusionCulling: 1
   m_Importance: 1
   m_CustomBakedTexture: {fileID: 0}
---- !u!134 &2080311955
+--- !u!134 &2068070237
 PhysicMaterial:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

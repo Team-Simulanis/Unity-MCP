@@ -1,3 +1,4 @@
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
@@ -15,13 +16,12 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
         [Description(@"Duplicate GameObjects in opened Prefab and in a Scene by 'instanceID' (int) array.")]
         public Task<CallToolResponse> Duplicate
         (
-            [Description("The 'instanceID' array of the target GameObjects.")]
-            int [] instanceIDs
+            GameObjectRefList gameObjectRefs
         )
         {
             return ToolRouter.Call("GameObject_Duplicate", arguments =>
             {
-                arguments[nameof(instanceIDs)] = instanceIDs;
+                arguments[nameof(gameObjectRefs)] = gameObjectRefs;
             });
         }
     }

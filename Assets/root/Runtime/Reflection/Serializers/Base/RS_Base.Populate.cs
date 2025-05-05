@@ -65,7 +65,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
 
             var fieldInfo = obj.GetType().GetField(fieldValue.name, flags);
             if (fieldInfo == null)
-                return stringBuilder?.AppendLine(new string(' ', depth) + $"[Error] Field '{fieldValue.name}' not found. Can't modify field '{fieldValue.name}'.");
+                return stringBuilder?.AppendLine(new string(' ', depth) + $"[Error] Field '{fieldValue.name}'. Make sure the name is right, it is case sensitive. Make sure this is a field, maybe is it a property?.");
 
             var targetType = TypeUtils.GetType(fieldValue.type);
             if (targetType == null)
@@ -97,7 +97,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             var propInfo = obj.GetType().GetProperty(propertyValue.name, flags);
             if (propInfo == null)
             {
-                var warningMessage = $"[Error] Property '{propertyValue.name}' not found. Can't modify property '{propertyValue.name}'.";
+                var warningMessage = $"[Error] Property '{propertyValue.name}' not found. Make sure the name is right, it is case sensitive. Make sure this is a property, maybe is it a field?.";
                 return stringBuilder?.AppendLine(new string(' ', depth) + warningMessage);
             }
             if (!propInfo.CanWrite)

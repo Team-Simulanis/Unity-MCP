@@ -11,16 +11,17 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Assets_Material_Create",
-            Title = "Create Material asset",
-            Description = @"Create new material asset with default parameters."
+            Title = "Create Material asset"
         )]
+        [Description(@"Create new material asset with default parameters. Right 'shaderName' should be set. To find the shader, use 'Shader.Find' method.")]
         public string Create
         (
             [Description("Asset path. Starts with 'Assets/'. Ends with '.mat'.")]
             string assetPath,
             [Description("Name of the shader that need to be used to create the material.")]
             string shaderName
-        ) => MainThread.Run(() =>
+        )
+        => MainThread.Run(() =>
         {
             if (string.IsNullOrEmpty(assetPath))
                 return Error.EmptyAssetPath();

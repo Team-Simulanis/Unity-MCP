@@ -185,7 +185,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             }
         }
 
-        public async Task<IResponseData<ResponseMenuItem[]>> RunListMenuItems(IRequestListMenuItems data, CancellationToken cancellationToken = default)
+        public async Task<IResponseData<ResponseMenuItem[]>> RunListMenuItems(IRequestListMenuItems data, string? connectionId = null, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -208,7 +208,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             }
         }
 
-        public async Task<IResponseData<ResponseExecuteMenuItem>> RunExecuteMenuItem(IRequestExecuteMenuItem data, CancellationToken cancellationToken = default)
+        public async Task<IResponseData<ResponseExecuteMenuItem>> RunExecuteMenuItem(IRequestExecuteMenuItem data, string? connectionId = null, CancellationToken cancellationToken = default)
         {
             if (data == null)
                 return ResponseData<ResponseExecuteMenuItem>.Error(Consts.Guid.Zero, "Execute menu item data is null.")
@@ -234,7 +234,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             }
             catch (Exception ex)
             {
-                return ResponseData<ResponseExecuteMenuItem>.Error(data.RequestID, $"Failed to execute menu item: '{data.MenuPath}'. Exception: {ex}")
+                return ResponseData<ResponseExecuteMenuItem>.Error(data.RequestID, $"Failed to execute menu path: '{data.MenuPath}'. Exception: {ex}")
                     .Log(_logger, ex);
             }
         }
