@@ -6,5 +6,6 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data
     public interface IRequestListResources : IRequestID, IDisposable
     {
         public string? Cursor { get; set; }
+        public string? Filter { get; set; }
     }
 }
