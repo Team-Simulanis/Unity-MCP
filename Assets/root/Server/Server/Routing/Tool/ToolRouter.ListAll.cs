@@ -13,6 +13,10 @@ namespace com.IvanMurzak.Unity.MCP.Server
     {
         public static async Task<ListToolsResult> ListAll(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
         {
+            // TODO: Dynamic tool list update has too much issues in the current implementation of MCP Client (Cursor, Claude)
+            // That is why it is disabled for now
+            return new ListToolsResult().SetError($"[Error] Dynamic tool list update is disabled for now.");
+
             var logger = LogManager.GetCurrentClassLogger();
             logger.Trace("{0}.ListAll", nameof(ToolRouter));
 
