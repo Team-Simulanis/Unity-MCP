@@ -29,7 +29,7 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 - ✅ Create
 - ✅ Destroy
 - ✅ Find
-- 🔲 Modify (tag, layer, name, static)
+- ✅ Modify (tag, layer, name, static)
 - ✅ Set parent
 - ✅ Duplicate
 
@@ -75,6 +75,13 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 - ✅ Save
 - ✅ Close
 
+### Package
+
+- 🔲 Get installed
+- 🔲 Install
+- 🔲 Remove
+- 🔲 Update
+
 </td>
 <td valign="top">
 
@@ -83,7 +90,6 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 - ✅ Create
 - ✅ Find
 - ✅ Refresh
-- 🔲 Import (is it needed?)
 - ✅ Read
 - ✅ Modify
 - ✅ Rename
@@ -133,13 +139,6 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 ### Component
 
 - ✅ Get All
-
-### Package
-
-- 🔲 Get installed
-- 🔲 Install
-- 🔲 Remove
-- 🔲 Update
 
 </td>
 </tr>
