@@ -44,7 +44,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public bool HasTool(string name) => _tools.ContainsKey(name);
         public bool HasResource(string name) => _resources.ContainsKey(name);
 
-        public async Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool data, string? connectionId = null, CancellationToken cancellationToken = default)
+        public async Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool data, CancellationToken cancellationToken = default)
         {
             if (data == null)
                 return ResponseData<ResponseCallTool>.Error(Consts.Guid.Zero, "Tool data is null.")
@@ -63,7 +63,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 {
                     var message = data.Arguments == null
                         ? $"Run tool '{data.Name}' with no parameters."
-                        : $"Run tool '{data.Name}' with parameters[{data.Arguments.Count}]:\n{string.Join(",\n", data.Arguments)}";
+                        : $"Run tool '{data.Name}' with parameters[{data.Arguments.Count}]:\n{string.Join(",\n", data.Arguments)}\n";
                     _logger.LogInformation(message);
                 }
 
@@ -82,7 +82,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             }
         }
 
-        public Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool data, string? connectionId = null, CancellationToken cancellationToken = default)
+        public Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool data, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -111,7 +111,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             }
         }
 
-        public async Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent data, string? connectionId = null, CancellationToken cancellationToken = default)
+        public async Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent data, CancellationToken cancellationToken = default)
         {
             if (data == null)
                 throw new ArgumentException("Resource data is null.");
@@ -133,7 +133,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             return result.Pack(data.RequestID);
         }
 
-        public async Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources data, string? connectionId = null, CancellationToken cancellationToken = default)
+        public async Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources data, CancellationToken cancellationToken = default)
         {
             var tasks = _resources.Values
                 .Select(resource => resource.RunListContext.Run());
@@ -146,7 +146,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 .Pack(data.RequestID);
         }
 
-        public Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates data, string? connectionId = null, CancellationToken cancellationToken = default)
+        public Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates data, CancellationToken cancellationToken = default)
             => _resources.Values
                 .Select(resource => new ResponseResourceTemplate(resource.Route, resource.Name, resource.Description, resource.MimeType))
                 .ToArray()

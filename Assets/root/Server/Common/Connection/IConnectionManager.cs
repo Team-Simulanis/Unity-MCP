@@ -10,7 +10,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
     public interface IConnectionManager : IConnection, IDisposable
     {
         string Endpoint { get; set; }
-        ReadOnlyReactiveProperty<HubConnection> HubConnection { get; }
+        ReadOnlyReactiveProperty<HubConnection?> HubConnection { get; }
         Task InvokeAsync<TInput>(string methodName, TInput input, CancellationToken cancellationToken = default);
         Task<TResult> InvokeAsync<TInput, TResult>(string methodName, TInput input, CancellationToken cancellationToken = default);
     }

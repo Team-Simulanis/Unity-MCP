@@ -1,5 +1,6 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
+using System.ComponentModel;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -16,30 +17,44 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
             var parameters = method.GetParameters();
             if (parameters.Length == 0)
-                return null; // No parameters to generate schema for
+                return new JsonObject { ["type"] = "object" };
 
+            var properties = new JsonObject();
+            var required = new JsonArray();
             // Create a schema object manually
             var schema = new JsonObject
             {
                 ["type"] = "object",
-                ["properties"] = new JsonObject(),
-                ["required"] = new JsonArray()
+                ["properties"] = properties,
+                ["required"] = required
             };
-
-            var properties = (JsonObject)schema["properties"]!;
-            var required = (JsonArray)schema["required"]!;
 
             foreach (var parameter in parameters)
             {
                 // Use JsonSchemaExporter to get the schema for each parameter type
-                var parameterSchema = JsonSchemaExporter.GetJsonSchemaAsNode(jsonSerializerOptions, type: parameter.ParameterType);
+                var parameterSchema = JsonSchemaExporter.GetJsonSchemaAsNode(
+                    jsonSerializerOptions,
+                    type: parameter.ParameterType,
+                    exporterOptions: new JsonSchemaExporterOptions
+                    {
+                        TreatNullObliviousAsNonNullable = true
+                    });
+
                 if (parameterSchema == null)
                     continue;
 
                 properties[parameter.Name!] = parameterSchema;
 
-                // Add to "required" if the parameter is not nullable
-                if (!IsNullable(parameter.ParameterType))
+                if (parameterSchema is JsonObject parameterSchemaObject)
+                {
+                    var propertyDescription = parameter.GetCustomAttribute<DescriptionAttribute>()?.Description
+                        ?? parameter.ParameterType.GetCustomAttribute<DescriptionAttribute>()?.Description;
+                    if (!string.IsNullOrEmpty(propertyDescription))
+                        parameterSchemaObject["description"] = JsonValue.Create(propertyDescription);
+                }
+
+                // Check if the parameter has a default value
+                if (!parameter.HasDefaultValue)
                     required.Add(parameter.Name!);
             }
             return schema;

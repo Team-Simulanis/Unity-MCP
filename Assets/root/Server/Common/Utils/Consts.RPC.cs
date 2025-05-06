@@ -13,7 +13,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             public const int MaxPort = 65535;
             public const string DefaultEndpoint = "http://localhost:60606";
             public const string RemoteApp = "/mcp/remote-app";
-            public const float TimeoutSeconds = 10f;
+            public const float TimeoutSeconds = 3f;
         }
 
         public static partial class RPC
@@ -25,6 +25,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 public const string RunResourceContent = "/mcp/run-resource-content";
                 public const string RunListResources = "/mcp/run-list-resources";
                 public const string RunListResourceTemplates = "/mcp/run-list-resource-templates";
+
+                public const string ForceDisconnect = "force-disconnect";
             }
 
             public static class Server

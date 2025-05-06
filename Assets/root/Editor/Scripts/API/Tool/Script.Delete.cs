@@ -31,6 +31,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 return Error.ScriptFileNotFound(filePath);
 
             File.Delete(filePath);
+            if (File.Exists(filePath + ".meta"))
+                File.Delete(filePath + ".meta");
 
             return MainThread.Run(() =>
             {

@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
         readonly string _guid = Guid.NewGuid().ToString();
         readonly ILogger<ConnectionManager> _logger;
-        readonly ReactiveProperty<HubConnection> _hubConnection = new();
+        readonly ReactiveProperty<HubConnection?> _hubConnection = new();
         readonly Func<string, Task<HubConnection>> _hubConnectionBuilder;
         readonly ReactiveProperty<HubConnectionState> _connectionState = new(HubConnectionState.Disconnected);
         readonly ReactiveProperty<bool> _continueToReconnect = new(false);
@@ -25,7 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         HubConnectionObservable? hubConnectionObservable;
         CancellationTokenSource? internalCts;
         public ReadOnlyReactiveProperty<HubConnectionState> ConnectionState => _connectionState.ToReadOnlyReactiveProperty();
-        public ReadOnlyReactiveProperty<HubConnection> HubConnection => _hubConnection.ToReadOnlyReactiveProperty();
+        public ReadOnlyReactiveProperty<HubConnection?> HubConnection => _hubConnection.ToReadOnlyReactiveProperty();
         public ReadOnlyReactiveProperty<bool> KeepConnected => _continueToReconnect.ToReadOnlyReactiveProperty();
         public string Endpoint { get; set; } = string.Empty;
 
@@ -50,24 +50,29 @@ namespace com.IvanMurzak.Unity.MCP.Common
             .AddTo(_disposables);
 
             _connectionState
-                .Where(state => state == HubConnectionState.Reconnecting)
+                .Where(state => state == HubConnectionState.Reconnecting && _continueToReconnect.CurrentValue)
                 .Subscribe(async state => await Connect())
                 .AddTo(_disposables);
         }
 
         public async Task InvokeAsync<TInput>(string methodName, TInput input, CancellationToken cancellationToken = default)
         {
-            if (_hubConnection.Value?.State != HubConnectionState.Connected)
+            if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected && _continueToReconnect.CurrentValue)
             {
                 await Connect(cancellationToken);
-                if (_hubConnection.Value?.State != HubConnectionState.Connected)
+                if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected)
                 {
                     _logger.LogError("{0} Can't establish connection with Remote.", _guid);
                     return;
                 }
             }
+            if (_hubConnection.CurrentValue == null)
+            {
+                _logger.LogError("{0} HubConnection is null. Can't invoke method {1}.", _guid, methodName);
+                return;
+            }
 
-            await _hubConnection.Value.InvokeAsync(methodName, input, cancellationToken).ContinueWith(task =>
+            await _hubConnection.CurrentValue.InvokeAsync(methodName, input, cancellationToken).ContinueWith(task =>
             {
                 if (task.IsCompletedSuccessfully)
                     return;
@@ -78,17 +83,25 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
         public async Task<TResult> InvokeAsync<TInput, TResult>(string methodName, TInput input, CancellationToken cancellationToken = default)
         {
-            if (_hubConnection.Value?.State != HubConnectionState.Connected)
+            if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected && _continueToReconnect.CurrentValue)
             {
+                _logger.LogDebug("{0} Connection is not established. Attempting to connect...", _guid);
+                // Attempt to connect if the connection is not established
                 await Connect(cancellationToken);
-                if (_hubConnection.Value?.State != HubConnectionState.Connected)
+
+                if (_hubConnection.CurrentValue?.State != HubConnectionState.Connected)
                 {
                     _logger.LogError("{0} Can't establish connection with Remote.", _guid);
                     return default!;
                 }
             }
+            if (_hubConnection.CurrentValue == null)
+            {
+                _logger.LogError("{0} HubConnection is null. Can't invoke method {1}.", _guid, methodName);
+                return default!;
+            }
 
-            return await _hubConnection.Value.InvokeAsync<TResult>(methodName, input, cancellationToken).ContinueWith(task =>
+            return await _hubConnection.CurrentValue.InvokeAsync<TResult>(methodName, input, cancellationToken).ContinueWith(task =>
             {
                 if (task.IsCompletedSuccessfully)
                     return task.Result;
@@ -205,8 +218,16 @@ namespace com.IvanMurzak.Unity.MCP.Common
             _logger.LogDebug("{0} Connecting to {1}...", _guid, Endpoint);
             while (_continueToReconnect.CurrentValue && !cancellationToken.IsCancellationRequested)
             {
+                var connection = _hubConnection.CurrentValue;
+                if (connection == null)
+                {
+                    _logger.LogTrace("{0} Waiting before retry... {1}", _guid, Endpoint);
+                    await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken); // Wait before retrying
+                    continue;
+                }
+
                 var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                var task = _hubConnection.CurrentValue.StartAsync(cts.Token);
+                var task = connection.StartAsync(cts.Token);
                 try
                 {
                     await Task.WhenAny(task, Task.Delay(TimeSpan.FromSeconds(3), cancellationToken));
@@ -299,17 +320,22 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 try
                 {
                     var tempHubConnection = _hubConnection.Value;
+                    
                     _hubConnection.Value = null;
                     _hubConnection.Dispose();
-                    await tempHubConnection.StopAsync()
-                        .ContinueWith(task =>
-                        {
-                            try
+
+                    if (tempHubConnection != null)
+                    {
+                        await tempHubConnection.StopAsync()
+                            .ContinueWith(task =>
                             {
-                                tempHubConnection.DisposeAsync();
-                            }
-                            catch { }
-                        });
+                                try
+                                {
+                                    tempHubConnection.DisposeAsync();
+                                }
+                                catch { }
+                            });
+                    }
                 }
                 catch (Exception ex)
                 {

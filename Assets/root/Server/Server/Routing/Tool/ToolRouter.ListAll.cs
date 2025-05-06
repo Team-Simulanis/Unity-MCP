@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public static async Task<ListToolsResult> ListAll(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
         {
             var logger = LogManager.GetCurrentClassLogger();
-            logger.Trace("{0}.ListAll", typeof(ToolRouter).Name);
+            logger.Trace("{0}.ListAll", nameof(ToolRouter));
 
             var mcpServerService = McpServerService.Instance;
             if (mcpServerService == null)
@@ -24,18 +24,10 @@ namespace com.IvanMurzak.Unity.MCP.Server
             if (toolRunner == null)
                 return new ListToolsResult().SetError($"[Error] '{nameof(toolRunner)}' is null");
 
-            // while (RemoteApp.FirstConnectionId == null)
-            //     await Task.Delay(100, cancellationToken);
-
-            var clientConnectionId = RemoteApp.FirstConnectionId;
-            if (string.IsNullOrEmpty(clientConnectionId))
-            {
-                logger.Warn("{0}.ListAll, no connected client. Returning empty success result.", typeof(ToolRouter).Name);
-                return new ListToolsResult();
-            }
+            logger.Trace("Using ToolRunner: {0}", toolRunner.GetType().Name);
 
             var requestData = new RequestListTool();
-            var response = await toolRunner.RunListTool(requestData, clientConnectionId, cancellationToken: cancellationToken);
+            var response = await toolRunner.RunListTool(requestData, cancellationToken: cancellationToken);
             if (response == null)
                 return new ListToolsResult().SetError($"[Error] '{nameof(response)}' is null");
 
@@ -54,6 +46,10 @@ namespace com.IvanMurzak.Unity.MCP.Server
             };
 
             logger.Trace("ListAll, result: {0}", JsonUtils.Serialize(result));
+
+            // Clear current Tools
+            mcpServerService.McpServer.ServerOptions.Capabilities?.Tools?.ToolCollection?.Clear();
+
             return result;
         }
     }

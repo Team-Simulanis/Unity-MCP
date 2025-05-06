@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
@@ -12,21 +15,89 @@ namespace com.IvanMurzak.Unity.MCP.Server
     {
         const int maxRetries = 10; // Maximum number of retries
         const int retryDelayMs = 1000; // Delay between retries in milliseconds
+        
+        // Thread-safe collection to store connected clients, grouped by hub type
+        static readonly ConcurrentDictionary<Type, ConcurrentDictionary<string, bool>> ConnectedClients = new();
+        static readonly ConcurrentDictionary<Type, string> LastSuccessfulClients = new();
+
+        static IEnumerable<string> AllConnections => ConnectedClients.TryGetValue(typeof(RemoteApp), out var clients)
+            ? clients?.Keys ?? new string[0]
+            : Enumerable.Empty<string>();
+
+        static string? GetBestConnectionId(Type type, int offset = 0)
+        {
+            var clients = default(ConcurrentDictionary<string, bool>);
+            if (offset == 0)
+            {
+                if (LastSuccessfulClients.TryGetValue(type, out var connectionId))
+                {
+                    if (ConnectedClients.TryGetValue(type, out clients) && clients.ContainsKey(connectionId))
+                    {
+                        return connectionId;
+                    }
+                    else
+                    {
+                        LastSuccessfulClients.TryRemove(type, out _);
+                    }
+                }
+            }
+            if (ConnectedClients.TryGetValue(type, out clients))
+            {
+                var connectionIds = clients.Keys.ToList();
+                if (connectionIds.Count == 0)
+                    return null;
+                return connectionIds[offset % connectionIds.Count];
+            }
+            return null;
+        }
+        // static string? FirstConnectionId => ConnectedClients.TryGetValue(typeof(RemoteApp), out var clients)
+        //     ? clients?.FirstOrDefault().Key
+        //     : null;
+
+        public static void AddClient<T>(string connectionId, ILogger? logger)
+            => AddClient(typeof(T), connectionId, logger);
+        public static void AddClient(Type type, string connectionId, ILogger? logger)
+        {
+            var clients = ConnectedClients.GetOrAdd(type, _ => new());
+            if (clients.TryAdd(connectionId, true))
+            {
+                logger?.LogInformation($"Client '{connectionId}' connected to {type.Name}. Total connected clients: {clients.Count}"); 
+            }
+            else
+            {
+                logger?.LogWarning($"Client '{connectionId}' is already connected to {type.Name}.");
+            }
+        }
+        public static void RemoveClient<T>(string connectionId, ILogger? logger)
+            => RemoveClient(typeof(T), connectionId, logger);
+        public static void RemoveClient(Type type, string connectionId, ILogger? logger)
+        {
+            if (ConnectedClients.TryGetValue(type, out var clients))
+            {
+                if (clients.TryRemove(connectionId, out _))
+                {
+                    logger?.LogInformation($"Client '{connectionId}' disconnected from {type.Name}. Total connected clients: {clients.Count}");
+                }
+                else
+                {
+                    logger?.LogWarning($"Client '{connectionId}' was not found in connected clients for {type.Name}.");
+                }
+            }
+            else
+            {
+                logger?.LogWarning($"No connected clients found for {type.Name}.");
+            }
+        }
 
         public static async Task<IResponseData<TResponse>> InvokeAsync<TRequest, TResponse, THub>(
             ILogger logger,
             IHubContext<THub> hubContext,
             string methodName,
-            string? connectionId,
             TRequest requestData,
             CancellationToken cancellationToken = default)
             where TRequest : IRequestID
             where THub : Hub
         {
-            if (string.IsNullOrEmpty(connectionId))
-                return ResponseData<TResponse>.Error(requestData.RequestID, $"'{nameof(connectionId)}' is null. Can't Invoke method '{methodName}'.")
-                    .Log(logger);
-
             if (hubContext == null)
                 return ResponseData<TResponse>.Error(requestData.RequestID, $"'{nameof(hubContext)}' is null.").Log(logger);
 
@@ -37,23 +108,20 @@ namespace com.IvanMurzak.Unity.MCP.Server
             {
                 if (logger.IsEnabled(LogLevel.Trace))
                 {
-                    var allConnections = string.Join(", ", RemoteApp.AllConnections);
-                    logger.LogTrace("ConnectionId: {0}. Invoke '{1}':\n{2}\nAvailable connections: {3}", connectionId, methodName, requestData, allConnections);
+                    var allConnections = string.Join(", ", AllConnections);
+                    logger.LogTrace("Invoke '{0}': {1}\nAvailable connections: {2}", methodName, requestData.ToString(), allConnections);
                 }
-
-                // if (logger.IsEnabled(LogLevel.Information))
-                // {
-                //     var message = requestData.Arguments == null
-                //         ? $"Run tool '{requestData.Name}' with no parameters."
-                //         : $"Run tool '{requestData.Name}' with parameters[{requestData.Arguments.Count}]:\n{string.Join(",\n", requestData.Arguments)}";
-                //     logger.LogInformation(message);
-                // }
 
                 var retryCount = 0;
                 while (retryCount < maxRetries)
                 {
                     retryCount++;
-                    var client = hubContext.Clients.Client(connectionId);
+
+                    var connectionId = GetBestConnectionId(typeof(RemoteApp), retryCount - 1);
+                    var client = string.IsNullOrEmpty(connectionId)
+                        ? null
+                        : hubContext.Clients.Client(connectionId);
+
                     if (client == null)
                     {
                         logger.LogWarning($"No connected clients. Retrying [{retryCount}/{maxRetries}]...");
@@ -61,6 +129,11 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         continue;
                     }
 
+                    if (logger.IsEnabled(LogLevel.Trace))
+                    {
+                        var allConnections = string.Join(", ", AllConnections);
+                        logger.LogTrace("Invoke '{0}', ConnectionId ='{1}'. RequestData:\n{2}\n{3}", methodName, connectionId, requestData, allConnections);
+                    }
                     var invokeTask = client.InvokeAsync<ResponseData<TResponse>>(methodName, requestData, cancellationToken);
                     var completedTask = await Task.WhenAny(invokeTask, Task.Delay(TimeSpan.FromSeconds(Consts.Hub.TimeoutSeconds), cancellationToken));
                     if (completedTask == invokeTask)
@@ -72,6 +145,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                                 return ResponseData<TResponse>.Error(requestData.RequestID, $"Invoke '{requestData}' returned null result.")
                                     .Log(logger);
 
+                            LastSuccessfulClients[typeof(RemoteApp)] = connectionId!;
                             return result;
                         }
                         catch (Exception ex)
