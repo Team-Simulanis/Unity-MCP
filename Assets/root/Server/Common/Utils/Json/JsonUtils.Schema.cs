@@ -34,7 +34,11 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 // Use JsonSchemaExporter to get the schema for each parameter type
                 var parameterSchema = JsonSchemaExporter.GetJsonSchemaAsNode(
                     jsonSerializerOptions,
-                    type: parameter.ParameterType);
+                    type: parameter.ParameterType,
+                    exporterOptions: new JsonSchemaExporterOptions
+                    {
+                        TreatNullObliviousAsNonNullable = true
+                    });
 
                 if (parameterSchema == null)
                     continue;
