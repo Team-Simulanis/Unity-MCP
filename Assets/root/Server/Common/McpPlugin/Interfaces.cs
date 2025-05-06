@@ -29,15 +29,15 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
     public interface IToolRunner
     {
-        Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool requestData, string? connectionId = null, CancellationToken cancellationToken = default);
-        Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool requestData, string? connectionId = null, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool requestData, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool requestData, CancellationToken cancellationToken = default);
     }
 
     public interface IResourceRunner
     {
-        Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent requestData, string? connectionId = null, CancellationToken cancellationToken = default);
-        Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources requestData, string? connectionId = null, CancellationToken cancellationToken = default);
-        Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates requestData, string? connectionId = null, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent requestData, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources requestData, CancellationToken cancellationToken = default);
+        Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates requestData, CancellationToken cancellationToken = default);
     }
 
     // -----------------------------------------------------------------

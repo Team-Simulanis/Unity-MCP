@@ -23,53 +23,50 @@ namespace com.IvanMurzak.Unity.MCP.Server
             _remoteAppContext = remoteAppContext ?? throw new ArgumentNullException(nameof(remoteAppContext));
         }
 
-        public Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent requestData, string? connectionId, CancellationToken cancellationToken = default)
+        public Task<IResponseData<ResponseResourceContent[]>> RunResourceContent(IRequestResourceContent requestData, CancellationToken cancellationToken = default)
             => ClientUtils.InvokeAsync<IRequestResourceContent, ResponseResourceContent[], RemoteApp>(
                 logger: _logger,
                 hubContext: _remoteAppContext,
                 methodName: Consts.RPC.Client.RunResourceContent,
-                connectionId: connectionId,
                 requestData: requestData,
                 cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
                 .ContinueWith(task =>
             {
                 var response = task.Result;
                 if (response.IsError)
-                    return ResponseData<ResponseResourceContent[]>.Error(requestData.RequestID, response.Message ?? "[Error] Got an error during invoking tool");
+                    return ResponseData<ResponseResourceContent[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking tool");
 
                 return response;
             }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
 
-        public Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources requestData, string? connectionId, CancellationToken cancellationToken = default)
+        public Task<IResponseData<ResponseListResource[]>> RunListResources(IRequestListResources requestData, CancellationToken cancellationToken = default)
             => ClientUtils.InvokeAsync<IRequestListResources, ResponseListResource[], RemoteApp>(
                 logger: _logger,
                 hubContext: _remoteAppContext,
                 methodName: Consts.RPC.Client.RunListResources,
-                connectionId: connectionId,
                 requestData: requestData,
                 cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
                 .ContinueWith(task =>
             {
                 var response = task.Result;
                 if (response.IsError)
-                    return ResponseData<ResponseListResource[]>.Error(requestData.RequestID, response.Message ?? "[Error] Got an error during invoking tool");
+                    return ResponseData<ResponseListResource[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking tool");
 
                 return response;
             }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
 
-        public Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates requestData, string? connectionId = null, CancellationToken cancellationToken = default)
+        public Task<IResponseData<ResponseResourceTemplate[]>> RunResourceTemplates(IRequestListResourceTemplates requestData, CancellationToken cancellationToken = default)
             => ClientUtils.InvokeAsync<IRequestListResourceTemplates, ResponseResourceTemplate[], RemoteApp>(
                 logger: _logger,
                 hubContext: _remoteAppContext,
                 methodName: Consts.RPC.Client.RunListResourceTemplates,
-                connectionId: connectionId!,
                 requestData: requestData,
                 cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
                 .ContinueWith(task =>
             {
                 var response = task.Result;
                 if (response.IsError)
-                    return ResponseData<ResponseResourceTemplate[]>.Error(requestData.RequestID, response.Message ?? "[Error] Got an error during invoking tool");
+                    return ResponseData<ResponseResourceTemplate[]>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking tool");
 
                 return response;
             }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);

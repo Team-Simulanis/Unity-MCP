@@ -12,9 +12,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
 {
     public class BaseHub<T> : Hub, IDisposable where T : Hub
     {
-        // Thread-safe collection to store connected clients, grouped by hub type
-        protected static readonly ConcurrentDictionary<Type, ConcurrentDictionary<string, bool>> ConnectedClients = new();
-
         protected readonly ILogger _logger;
         protected readonly IHubContext<T> _hubContext;
         protected readonly CompositeDisposable _disposables = new();
@@ -29,32 +26,14 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
         public override Task OnConnectedAsync()
         {
-            var clients = ConnectedClients.GetOrAdd(GetType(), _ => new());
-            if (!clients.TryAdd(Context.ConnectionId, true))
-                _logger.LogWarning("{0} Client '{1}' is already connected to {2}.", _guid, Context.ConnectionId, GetType().Name);
-
-            _logger.LogInformation("{0} Client connected: '{1}', Total connected clients for {2}: {3}", _guid, Context.ConnectionId, GetType().Name, clients.Count);
-
+            ClientUtils.AddClient(GetType(), Context.ConnectionId, _logger);
             // DisconnectOtherClients(clients, currentConnectionId: Context.ConnectionId);
             return base.OnConnectedAsync();
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            if (!ConnectedClients.TryGetValue(GetType(), out var clients))
-            {
-                _logger.LogWarning("{0} No connected clients found for {1}.", _guid, GetType().Name);
-                return base.OnDisconnectedAsync(exception);
-            }
-            if (clients.TryRemove(Context.ConnectionId, out _))
-            {
-                _logger.LogInformation("{0} Client disconnected: '{1}', Total connected clients for {2}: {3}", _guid, Context.ConnectionId, GetType().Name, clients.Count);
-            }
-            else
-            {
-                _logger.LogWarning("{0} Client '{1}' was not found in connected clients for {2}: {3}", _guid, Context.ConnectionId, GetType().Name, clients.Count);
-            }
-
+            ClientUtils.RemoveClient(GetType(), Context.ConnectionId, _logger);
             return base.OnDisconnectedAsync(exception);
         }
 

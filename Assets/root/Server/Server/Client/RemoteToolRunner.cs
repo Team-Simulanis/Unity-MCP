@@ -23,36 +23,34 @@ namespace com.IvanMurzak.Unity.MCP.Server
             _remoteAppContext = remoteAppContext ?? throw new ArgumentNullException(nameof(remoteAppContext));
         }
 
-        public Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool requestData, string? connectionId, CancellationToken cancellationToken = default)
+        public Task<IResponseData<ResponseCallTool>> RunCallTool(IRequestCallTool requestData, CancellationToken cancellationToken = default)
             => ClientUtils.InvokeAsync<IRequestCallTool, ResponseCallTool, RemoteApp>(
                 logger: _logger,
                 hubContext: _remoteAppContext,
                 methodName: Consts.RPC.Client.RunCallTool,
-                connectionId: connectionId,
                 requestData: requestData,
                 cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
                 .ContinueWith(task =>
             {
                 var response = task.Result;
                 if (response.IsError)
-                    return ResponseData<ResponseCallTool>.Error(requestData.RequestID, response.Message ?? "[Error] Got an error during invoking tool");
+                    return ResponseData<ResponseCallTool>.Error(requestData.RequestID, response.Message ?? "Got an error during invoking tool");
 
                 return response;
             }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
 
-        public Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool requestData, string? connectionId, CancellationToken cancellationToken = default)
+        public Task<IResponseData<ResponseListTool[]>> RunListTool(IRequestListTool requestData, CancellationToken cancellationToken = default)
             => ClientUtils.InvokeAsync<IRequestListTool, ResponseListTool[], RemoteApp>(
                 logger: _logger,
                 hubContext: _remoteAppContext,
                 methodName: Consts.RPC.Client.RunListTool,
-                connectionId: connectionId,
                 requestData: requestData,
                 cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token)
                 .ContinueWith(task =>
             {
                 var response = task.Result;
                 if (response.IsError)
-                    return ResponseData<ResponseListTool[]>.Error(requestData.RequestID, response.Message ?? "[Error] Got an error during listing tools");
+                    return ResponseData<ResponseListTool[]>.Error(requestData.RequestID, response.Message ?? "Got an error during listing tools");
 
                 return response;
             }, cancellationToken: CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken).Token);
