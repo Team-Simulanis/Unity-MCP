@@ -10,20 +10,20 @@ using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common.MCP
 {
-    public abstract class MethodWrapper
+    public class MethodWrapper
     {
         protected readonly MethodInfo _methodInfo;
         protected readonly object? _targetInstance;
         protected readonly Type? _targetType;
 
         protected readonly string? _description;
-        protected readonly ILogger _logger;
+        protected readonly ILogger? _logger;
         protected readonly JsonNode? _inputSchema;
 
         public JsonNode? InputSchema => _inputSchema;
         public string? Description => _description;
 
-        protected MethodWrapper(ILogger logger, MethodInfo methodInfo)
+        public MethodWrapper(ILogger? logger, MethodInfo methodInfo)
         {
             if (logger == null)
                 throw new ArgumentNullException(nameof(logger));
@@ -38,7 +38,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             _inputSchema = JsonUtils.GetSchema(methodInfo);
         }
 
-        protected MethodWrapper(ILogger logger, object targetInstance, MethodInfo methodInfo)
+        public MethodWrapper(ILogger? logger, object targetInstance, MethodInfo methodInfo)
         {
             if (logger == null)
                 throw new ArgumentNullException(nameof(logger));
@@ -56,7 +56,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             _inputSchema = JsonUtils.GetSchema(methodInfo);
         }
 
-        protected MethodWrapper(ILogger logger, Type targetType, MethodInfo methodInfo)
+        public MethodWrapper(ILogger? logger, Type targetType, MethodInfo methodInfo)
         {
             if (logger == null)
                 throw new ArgumentNullException(nameof(logger));
@@ -74,7 +74,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             _inputSchema = JsonUtils.GetSchema(methodInfo);
         }
 
-        protected virtual async Task<object?> Invoke(params object?[] parameters)
+        public virtual async Task<object?> Invoke(params object?[] parameters)
         {
             if (_methodInfo == null)
                 throw new InvalidOperationException("The method information is not initialized.");
@@ -103,7 +103,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             return result;
         }
 
-        protected virtual async Task<object?> Invoke(IReadOnlyDictionary<string, JsonElement>? namedParameters)
+        public virtual async Task<object?> Invoke(IReadOnlyDictionary<string, object>? namedParameters)
         {
             if (_methodInfo == null)
                 throw new InvalidOperationException("The method information is not initialized.");
@@ -170,7 +170,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             return finalParameters;
         }
 
-        protected object?[]? BuildParameters(IReadOnlyDictionary<string, JsonElement>? namedParameters)
+        protected object?[]? BuildParameters(IReadOnlyDictionary<string, object>? namedParameters)
         {
             if (namedParameters == null)
                 return null;
@@ -213,10 +213,10 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
         }
         void PrintParameters(object?[]? parameters)
         {
-            if (!_logger.IsEnabled(LogLevel.Debug))
+            if (!(_logger?.IsEnabled(LogLevel.Debug) ?? false))
                 return;
 
-            _logger.LogDebug("Invoke method: {0} {1}, Class: {2}", _methodInfo.ReturnType.Name, _methodInfo.Name, _targetType?.Name ?? "null");
+            _logger?.LogDebug("Invoke method: {0} {1}, Class: {2}", _methodInfo.ReturnType.Name, _methodInfo.Name, _targetType?.Name ?? "null");
 
             var methodParameters = _methodInfo.GetParameters();
             var maxLength = Math.Max(methodParameters.Length, parameters?.Length ?? 0);
@@ -232,7 +232,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             }
 
             var parameterLogs = string.Join(Environment.NewLine, result);
-            _logger.LogDebug("Invoke method: Parameters. Input: {0}, Provided: {1}\n{2}", methodParameters.Length, parameters?.Length, parameterLogs);
+            _logger?.LogDebug("Invoke method: Parameters. Input: {0}, Provided: {1}\n{2}", methodParameters.Length, parameters?.Length, parameterLogs);
         }
     }
 }

@@ -31,6 +31,25 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             }
             throw new ArgumentException($"[Error] Type '{type?.FullName}' not supported for serialization.");
         }
+        public static object Deserialize(SerializedMember data)
+        {
+            if (string.IsNullOrEmpty(data?.type))
+                throw new ArgumentException(Error.DataTypeIsEmpty());
+
+            var type = TypeUtils.GetType(data.type);
+            if (type == null)
+                throw new ArgumentException(Error.NotFoundType(data.type));
+
+            var deserializer = Registry.BuildDeserializersChain(type);
+            if (deserializer == null)
+                throw new ArgumentException($"[Error] Type '{type?.FullName}' not supported for deserialization.");
+        
+            if (McpPluginUnity.LogLevel.IsActive(LogLevel.Trace))
+                UnityEngine.Debug.Log($"[Serializer] {deserializer.GetType().Name} for type {type?.FullName}");
+
+            var obj = deserializer.Deserialize(data);
+            return obj;
+        }
         public static StringBuilder Populate(ref object obj, SerializedMember data, StringBuilder stringBuilder = null, int depth = 0,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
         {

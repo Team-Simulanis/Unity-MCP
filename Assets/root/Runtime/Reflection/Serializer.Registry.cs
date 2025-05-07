@@ -1,3 +1,4 @@
+#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -66,6 +67,14 @@ namespace com.IvanMurzak.Unity.MCP.Utils
                     if (!serializer.AllowCascadeSerialize)
                         break;
                 }
+            }
+            public static IReflectionSerializer? BuildDeserializersChain(Type type)
+            {
+                var serializers = FindRelevantSerializers(type);
+                foreach (var serializer in serializers)
+                    return serializer;
+
+                return null;
             }
             public static IEnumerable<IReflectionSerializer> BuildPopulatorsChain(Type type)
             {
