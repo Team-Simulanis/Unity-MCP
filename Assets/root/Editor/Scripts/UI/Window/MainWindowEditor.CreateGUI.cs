@@ -52,10 +52,15 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             var inputFieldHost = root.Query<TextField>("InputServerURL").First();
             inputFieldHost.value = McpPluginUnity.Host;
-            inputFieldHost.RegisterValueChangedCallback(evt =>
+            inputFieldHost.RegisterCallback<FocusOutEvent>(evt =>
             {
-                McpPluginUnity.Host = evt.newValue;
-                SaveChanges($"[AI Connector] Host Changed: {evt.newValue}");
+                var newValue = inputFieldHost.value;
+                if (McpPluginUnity.Host == newValue)
+                    return;
+                    
+                McpPluginUnity.Host = newValue;
+                SaveChanges($"[{nameof(MainWindowEditor)}] Host Changed: {newValue}");
+                Invalidate();
             });
 
             var btnConnectOrDisconnect = root.Query<Button>("btnConnectOrDisconnect").First();
@@ -88,6 +93,21 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                         HubConnectionState.Connecting => true,
                         _ => false
                     };
+                    inputFieldHost.tooltip = plugin.KeepConnected.CurrentValue
+                        ? "Editable only when disconnected from the MCP Server."
+                        : "The server URL. https://localhost:60606";
+
+                    // Update the style class
+                    if (inputFieldHost.isReadOnly)
+                    {
+                        inputFieldHost.AddToClassList("disabled-text-field");
+                        inputFieldHost.RemoveFromClassList("enabled-text-field");
+                    }
+                    else
+                    {
+                        inputFieldHost.AddToClassList("enabled-text-field");
+                        inputFieldHost.RemoveFromClassList("disabled-text-field");
+                    }
 
                     connectionStatusText.text = connectionState switch
                     {
@@ -190,6 +210,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 #elif UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
             ConfigureClientsMacAndLinux(root);
 #endif
+
             // Provide raw json configuration
             // -----------------------------------------------------------------
 

@@ -1,3 +1,4 @@
+using System;
 using com.IvanMurzak.Unity.MCP.Utils;
 using R3;
 using UnityEditor;
@@ -27,6 +28,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
         {
             if (McpPluginUnity.IsLogActive(LogLevel.Log))
                 Debug.Log(message);
+
             saveChangesMessage = message;
 
             Undo.RecordObject(McpPluginUnity.AssetFile, message); // Undo record started
@@ -40,10 +42,16 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
         private void OnEnable()
         {
+            // if (McpPluginUnity.IsLogActive(LogLevel.Trace))
+            //     Debug.Log($"[{nameof(MainWindowEditor)}] OnEnable");
+
             McpPluginUnity.SubscribeOnChanged(OnChanged);
         }
         private void OnDisable()
         {
+            // if (McpPluginUnity.IsLogActive(LogLevel.Trace))
+            //     Debug.Log($"[{nameof(MainWindowEditor)}] OnDisable");
+
             McpPluginUnity.UnsubscribeOnChanged(OnChanged);
             _disposables.Clear();
         }

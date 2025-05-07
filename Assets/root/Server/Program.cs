@@ -68,10 +68,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         {
                             logging.AddNLog();
                             logging.SetMinimumLevel(LogLevel.Information);
-                        })
-                        .WithConfig(config =>
-                        {
-
                         });
                 });
 
