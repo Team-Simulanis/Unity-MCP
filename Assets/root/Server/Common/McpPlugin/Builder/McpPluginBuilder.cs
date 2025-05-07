@@ -30,7 +30,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
             Func<string, Task<HubConnection>> hubConnectionBuilder = (string endpoint) =>
             {
-                var connectionConfig = ServiceProvider!.GetRequiredService<IOptions<ConnectionConfig>>().Value;
+                if (ServiceProvider == null)
+                    throw new InvalidOperationException("ServiceProvider is not initialized. Call Build() before using this method.");
+
+                var connectionConfig = ServiceProvider.GetRequiredService<IOptions<ConnectionConfig>>().Value;
                 var hubConnection = new HubConnectionBuilder()
                     .WithUrl(connectionConfig.Endpoint + endpoint)
                     .WithAutomaticReconnect(new FixedRetryPolicy(TimeSpan.FromSeconds(1)))
