@@ -17,20 +17,51 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [McpPluginTool
         (
             "Reflection_MethodCall",
-            Title = "Find method using reflection"
+            Title = "Call method using C# reflection"
         )]
-        [Description("Find method in the project using C# Reflection.")]
+        [Description(@"Call specific C# method using C# reflection. Receives input parameters and returns result.
+To browse available method use 'Reflection_MethodFind'.")]
         public string MethodCall
         (
-            [Description("Filter.")]
             MethodRef filter,
-            bool knownNamespace = false,
-            int classNameMatchLevel = 1,
-            int methodNameMatchLevel = 1,
-            int parametersMatchLevel = 10,
 
+            [Description("Set to true if 'Namespace' is known and full namespace name is specified in the 'filter.Namespace' property. Otherwise, set to false.")]
+            bool knownNamespace = false,
+
+            [Description(@"Minimal match level for 'ClassName'.
+0 - ignore 'filter.ClassName',
+1 - contains ignoring case,
+2 - contains case sensitive,
+3 - starts with ignoring case,
+4 - starts with case sensitive,
+5 - equals ignoring case,
+6 - equals case sensitive.")]
+            int classNameMatchLevel = 1,
+
+            [Description(@"Minimal match level for 'MethodName'.
+0 - ignore 'filter.MethodName',
+1 - contains ignoring case,
+2 - contains case sensitive,
+3 - starts with ignoring case,
+4 - starts with case sensitive,
+5 - equals ignoring case,
+6 - equals case sensitive.")]
+            int methodNameMatchLevel = 1,
+
+            [Description(@"Minimal match level for 'Parameters'.
+0 - ignore 'filter.Parameters',
+1 - parameters count is the same,
+2 - equals.")]
+            int parametersMatchLevel = 2,
+
+            [Description(@"Specify target object to call method on. It could be null if the method is static or if the is no target object.
+New instance of the object will be created if the method is instance method and the target object is null.")]
             SerializedMember? targetObject = null,
-            List<SerializedMember>? parameters = null,
+            
+            [Description(@"Method input parameters.")]
+            List<SerializedMember>? inputParameters = null,
+
+            [Description(@"Set to true if the method should be executed in the main thread. Otherwise, set to false.")]
             bool executeInMainThread = true
         )
         {
@@ -56,9 +87,9 @@ Found {methods.Count} method(s):
 
             Func<string> action = () =>
             {
-                var inputParameters = parameters
-                    .Select(p => (p.name, Serializer.Deserialize(p)))
-                    .ToImmutableDictionary(
+                var dictInputParameters = inputParameters
+                    ?.Select(p => (p.name, Serializer.Deserialize(p)))
+                    ?.ToImmutableDictionary(
                         keySelector: kvp => kvp.Item1,
                         elementSelector: kvp => kvp.Item2);
                         
@@ -79,7 +110,9 @@ Found {methods.Count} method(s):
                     methodWrapper = new MethodWrapper(logger: null, targetInstance: obj, method);
                 }
 
-                var result = methodWrapper.Invoke(inputParameters);                
+                var result = dictInputParameters != null
+                    ? methodWrapper.Invoke(dictInputParameters)
+                    : methodWrapper.Invoke();
 
                 return $"[Success] Execution result:\n```json\n{JsonUtils.Serialize(result)}\n```";
             };

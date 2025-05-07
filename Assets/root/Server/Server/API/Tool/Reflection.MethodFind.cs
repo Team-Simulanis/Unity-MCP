@@ -1,3 +1,4 @@
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
@@ -15,13 +16,45 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
         [Description("Find method in the project using C# Reflection.")]
         public Task<CallToolResponse> MethodFind
         (
-            [Description("Path to the scene file.")]
-            string path
+            MethodRef filter,
+            
+            [Description("Set to true if 'Namespace' is known and full namespace name is specified in the 'filter.Namespace' property. Otherwise, set to false.")]
+            bool knownNamespace = false,
+
+            [Description(@"Minimal match level for 'ClassName'.
+0 - ignore 'filter.ClassName',
+1 - contains ignoring case,
+2 - contains case sensitive,
+3 - starts with ignoring case,
+4 - starts with case sensitive,
+5 - equals ignoring case,
+6 - equals case sensitive.")]
+            int classNameMatchLevel = 1,
+
+            [Description(@"Minimal match level for 'MethodName'.
+0 - ignore 'filter.MethodName',
+1 - contains ignoring case,
+2 - contains case sensitive,
+3 - starts with ignoring case,
+4 - starts with case sensitive,
+5 - equals ignoring case,
+6 - equals case sensitive.")]
+            int methodNameMatchLevel = 1,
+
+            [Description(@"Minimal match level for 'Parameters'.
+0 - ignore 'filter.Parameters',
+1 - parameters count is the same,
+2 - equals.")]
+            int parametersMatchLevel = 2
         )
         {
             return ToolRouter.Call("Reflection_MethodFind", arguments =>
             {
-                arguments[nameof(path)] = path;
+                arguments[nameof(filter)] = filter;
+                arguments[nameof(knownNamespace)] = knownNamespace;
+                arguments[nameof(classNameMatchLevel)] = classNameMatchLevel;
+                arguments[nameof(methodNameMatchLevel)] = methodNameMatchLevel;
+                arguments[nameof(parametersMatchLevel)] = parametersMatchLevel;
             });
         }
     }

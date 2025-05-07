@@ -8,9 +8,14 @@ using System.Text.Json.Serialization;
 namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
 {
     [Description(@"Method reference. Used to find method in codebase of the project.
-'Namespace' (string) - namespace of the class. It may be empty if the class is in the global namespace.
-'ClassName' (string) - class name.
-'MethodName' (string) - method name.")]
+'Namespace' (string) - namespace of the class. It may be empty if the class is in the global namespace or the namespace is unknown.
+'ClassName' (string) - class name. Or substring of the class name.
+'MethodName' (string) - method name. Or substring of the method name.
+'Parameters' (List<Parameter>) - list of parameters. Each parameter is represented by a 'Parameter' object. 
+
+'Parameter' object contains two fields:
+'type' (string) - type of the parameter including namespace. Sample: 'System.String', 'System.Int32', 'UnityEngine.GameObject', etc.
+'name' (string) - name of the parameter. It may be empty if the name is unknown.")]
     public class MethodRef
     {
         public string? Namespace { get; set; }
