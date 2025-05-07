@@ -13,9 +13,10 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
         [McpServerTool
         (
             Name = "Reflection_MethodCall",
-            Title = "Find method using reflection"
+            Title = "Call method using C# reflection"
         )]
-        [Description("Find method in the project using C# Reflection.")]
+        [Description(@"Call specific C# method using C# reflection. Receives input parameters and returns result.
+To browse available method use 'Reflection_MethodFind'.")]
         public Task<CallToolResponse> MethodCall
         (
             MethodRef filter,
