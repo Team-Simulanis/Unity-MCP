@@ -27,7 +27,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             _mcpRunner = mcpRunner ?? throw new ArgumentNullException(nameof(mcpRunner));
             _connectionManager = connectionManager ?? throw new ArgumentNullException(nameof(connectionManager));
 
-            _connectionManager.Endpoint = Consts.Hub.DefaultEndpoint + Consts.Hub.RemoteApp;
+            _connectionManager.Endpoint = Consts.Hub.RemoteApp;
 
             _hubConnectionDisposable = connectionManager.HubConnection
                 .Subscribe(SubscribeOnServerEvents);

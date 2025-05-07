@@ -110,6 +110,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
                 foreach (var kv in mcpServers)
                 {
+                    var isPortMatched = kv.Value?["args"]?.AsArray()
+                        ?.Any(arg => arg?.GetValue<string>() == McpPluginUnity.Port.ToString()) ?? false;
+
                     var command = kv.Value?["command"]?.GetValue<string>();
                     if (!string.IsNullOrEmpty(command))
                     {
@@ -119,13 +122,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                             var normalizedCommand = Path.GetFullPath(command.Replace('/', Path.DirectorySeparatorChar));
                             var normalizedTarget = Path.GetFullPath(Startup.ServerExecutableFile.Replace('/', Path.DirectorySeparatorChar));
                             if (string.Equals(normalizedCommand, normalizedTarget, StringComparison.OrdinalIgnoreCase))
-                                return true;
+                                return isPortMatched;
                         }
                         catch
                         {
                             // If normalization fails, fallback to string comparison
                             if (string.Equals(command, Startup.ServerExecutableFile, StringComparison.OrdinalIgnoreCase))
-                                return true;
+                                return isPortMatched;
                         }
                     }
                 }

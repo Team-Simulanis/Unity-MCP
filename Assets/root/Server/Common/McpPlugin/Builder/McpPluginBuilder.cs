@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace com.IvanMurzak.Unity.MCP.Common
 {
@@ -15,6 +16,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         readonly IDictionary<string, IRunResource> _resources = new Dictionary<string, IRunResource>();
 
         public IServiceCollection Services => _services;
+        public ServiceProvider? ServiceProvider { get; private set; }
 
         public McpPluginBuilder(IServiceCollection? services = null)
         {
@@ -28,8 +30,12 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
             Func<string, Task<HubConnection>> hubConnectionBuilder = (string endpoint) =>
             {
+                if (ServiceProvider == null)
+                    throw new InvalidOperationException("ServiceProvider is not initialized. Call Build() before using this method.");
+
+                var connectionConfig = ServiceProvider.GetRequiredService<IOptions<ConnectionConfig>>().Value;
                 var hubConnection = new HubConnectionBuilder()
-                    .WithUrl(endpoint)
+                    .WithUrl(connectionConfig.Endpoint + endpoint)
                     .WithAutomaticReconnect(new FixedRetryPolicy(TimeSpan.FromSeconds(1)))
                     .WithServerTimeout(TimeSpan.FromSeconds(3))
                     .AddJsonProtocol(options =>
@@ -86,7 +92,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
         public IMcpPlugin Build()
         {
-            return _services.BuildServiceProvider().GetRequiredService<IMcpPlugin>();
+            ServiceProvider = _services.BuildServiceProvider();
+            return ServiceProvider.GetRequiredService<IMcpPlugin>();
         }
     }
 }

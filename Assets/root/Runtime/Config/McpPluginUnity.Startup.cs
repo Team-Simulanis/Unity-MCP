@@ -14,18 +14,15 @@ namespace com.IvanMurzak.Unity.MCP
     {
         public static void BuildAndStart()
         {
-            // if (McpPluginUnity.LogLevel.IsActive(LogLevel.Trace))
-            // {
-            //     var message = "<b><color=yellow>Startup</color></b>";
-            //     Debug.Log($"{Consts.Log.Tag} {message} <color=orange>ಠ‿ಠ</color>");
-            // }
-
             McpPlugin.StaticDisposeAsync();
 
             var mcpPlugin = new McpPluginBuilder()
                 .WithAppFeatures()
                 .WithConfig(config =>
                 {
+                    if (McpPluginUnity.LogLevel.IsActive(LogLevel.Log))
+                        Debug.Log($"{Consts.Log.Tag} MCP server address: {McpPluginUnity.Host}");
+
                     config.Endpoint = McpPluginUnity.Host;
                 })
                 .AddLogging(loggingBuilder =>
