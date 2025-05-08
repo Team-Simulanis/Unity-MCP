@@ -41,11 +41,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             return 0;
         }
 
-        static int Compare(ParameterInfo[] original, List<MethodRef.Parameter> value)
+        static int Compare(ParameterInfo[] original, List<MethodPointerRef.Parameter> value)
         {
             if (original == null && value == null)
                 return 2;
-            
+
             if (original == null || value == null)
                 return 0;
 
@@ -68,7 +68,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         }
 
         static IEnumerable<MethodInfo> FindMethods(
-            MethodRef filter,
+            MethodPointerRef filter,
             bool knownNamespace = false,
             int classNameMatchLevel = 1,
             int methodNameMatchLevel = 1,

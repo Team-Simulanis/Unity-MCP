@@ -10,7 +10,29 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public static partial class JsonUtils
     {
-        public static JsonNode? GetSchema(MethodInfo method)
+        public static JsonNode? GetSchema(Type type)
+        {
+            // Use JsonSchemaExporter to get the schema for each parameter type
+            var schema = JsonSchemaExporter.GetJsonSchemaAsNode(
+                jsonSerializerOptions,
+                type: type,
+                exporterOptions: new JsonSchemaExporterOptions
+                {
+                    TreatNullObliviousAsNonNullable = true
+                });
+
+            if (schema == null)
+                return null;
+
+            if (schema is JsonObject parameterSchemaObject)
+            {
+                var propertyDescription = type.GetCustomAttribute<DescriptionAttribute>()?.Description;
+                if (!string.IsNullOrEmpty(propertyDescription))
+                    parameterSchemaObject["description"] = JsonValue.Create(propertyDescription);
+            }
+            return schema;
+        }
+        public static JsonNode? GetArgumentsSchema(MethodInfo method)
         {
             if (method == null)
                 throw new ArgumentNullException(nameof(method));
@@ -32,14 +54,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             foreach (var parameter in parameters)
             {
                 // Use JsonSchemaExporter to get the schema for each parameter type
-                var parameterSchema = JsonSchemaExporter.GetJsonSchemaAsNode(
-                    jsonSerializerOptions,
-                    type: parameter.ParameterType,
-                    exporterOptions: new JsonSchemaExporterOptions
-                    {
-                        TreatNullObliviousAsNonNullable = true
-                    });
-
+                var parameterSchema = GetSchema(parameter.ParameterType);
                 if (parameterSchema == null)
                     continue;
 
@@ -47,8 +62,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
                 if (parameterSchema is JsonObject parameterSchemaObject)
                 {
-                    var propertyDescription = parameter.GetCustomAttribute<DescriptionAttribute>()?.Description
-                        ?? parameter.ParameterType.GetCustomAttribute<DescriptionAttribute>()?.Description;
+                    var propertyDescription = parameter.GetCustomAttribute<DescriptionAttribute>()?.Description;
                     if (!string.IsNullOrEmpty(propertyDescription))
                         parameterSchemaObject["description"] = JsonValue.Create(propertyDescription);
                 }

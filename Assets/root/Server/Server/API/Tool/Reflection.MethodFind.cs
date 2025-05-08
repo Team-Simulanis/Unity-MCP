@@ -16,8 +16,8 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
         [Description("Find method in the project using C# Reflection.")]
         public Task<CallToolResponse> MethodFind
         (
-            MethodRef filter,
-            
+            MethodPointerRef filter,
+
             [Description("Set to true if 'Namespace' is known and full namespace name is specified in the 'filter.Namespace' property. Otherwise, set to false.")]
             bool knownNamespace = false,
 

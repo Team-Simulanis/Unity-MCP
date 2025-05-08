@@ -36,7 +36,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             _logger = logger;
             _methodInfo = methodInfo;
             _description = methodInfo.GetCustomAttribute<DescriptionAttribute>()?.Description;
-            _inputSchema = JsonUtils.GetSchema(methodInfo);
+            _inputSchema = JsonUtils.GetArgumentsSchema(methodInfo);
         }
 
         public MethodWrapper(ILogger? logger, object targetInstance, MethodInfo methodInfo)
@@ -54,7 +54,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             _targetInstance = targetInstance;
             _methodInfo = methodInfo;
             _description = methodInfo.GetCustomAttribute<DescriptionAttribute>()?.Description;
-            _inputSchema = JsonUtils.GetSchema(methodInfo);
+            _inputSchema = JsonUtils.GetArgumentsSchema(methodInfo);
         }
 
         public MethodWrapper(ILogger? logger, Type targetType, MethodInfo methodInfo)
@@ -72,7 +72,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             _targetType = targetType;
             _methodInfo = methodInfo;
             _description = methodInfo.GetCustomAttribute<DescriptionAttribute>()?.Description;
-            _inputSchema = JsonUtils.GetSchema(methodInfo);
+            _inputSchema = JsonUtils.GetArgumentsSchema(methodInfo);
         }
 
         public virtual async Task<object?> Invoke(params object?[] parameters)

@@ -23,7 +23,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 To browse available method use 'Reflection_MethodFind'.")]
         public string MethodCall
         (
-            MethodRef filter,
+            MethodPointerRef filter,
 
             [Description("Set to true if 'Namespace' is known and full namespace name is specified in the 'filter.Namespace' property. Otherwise, set to false.")]
             bool knownNamespace = false,
@@ -57,7 +57,7 @@ To browse available method use 'Reflection_MethodFind'.")]
             [Description(@"Specify target object to call method on. It could be null if the method is static or if the is no target object.
 New instance of the object will be created if the method is instance method and the target object is null.")]
             SerializedMember? targetObject = null,
-            
+
             [Description(@"Method input parameters.")]
             List<SerializedMember>? inputParameters = null,
 
@@ -80,7 +80,7 @@ New instance of the object will be created if the method is instance method and 
                 return @$"[Error] Found more then one method. Only single method should be targeted. Please specify the method name more precisely.
 Found {methods.Count} method(s):
 ```json
-{JsonUtils.Serialize(methods.Select(method => new MethodRef(method)))}
+{JsonUtils.Serialize(methods.Select(method => new MethodDataRef(method)))}
 ```";
 
             var method = methods.First();
@@ -92,21 +92,21 @@ Found {methods.Count} method(s):
                     ?.ToImmutableDictionary(
                         keySelector: kvp => kvp.Item1,
                         elementSelector: kvp => kvp.Item2);
-                        
+
                 var methodWrapper = default(MethodWrapper);
 
                 if (string.IsNullOrEmpty(targetObject?.type))
                 {
                     // No object instance needed. Probably static method.
                     methodWrapper = new MethodWrapper(logger: null, method.DeclaringType, method);
-                } 
+                }
                 else
                 {
                     // Object instance needed. Probably instance method.
                     var obj = Serializer.Deserialize(targetObject);
                     if (obj == null)
                         return $"[Error] '{nameof(targetObject)}' deserialized instance is null. Please specify the '{nameof(targetObject)}' properly.";
-                    
+
                     methodWrapper = new MethodWrapper(logger: null, targetInstance: obj, method);
                 }
 
@@ -119,7 +119,7 @@ Found {methods.Count} method(s):
 
             if (executeInMainThread)
                 return MainThread.Run(action);
-            
+
             return action();
         }
     }

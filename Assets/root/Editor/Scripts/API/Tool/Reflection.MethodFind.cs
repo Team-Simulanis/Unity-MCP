@@ -1,8 +1,6 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 
@@ -18,7 +16,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         [Description("Find method in the project using C# Reflection.")]
         public string MethodFind
         (
-            MethodRef filter,
+            MethodPointerRef filter,
 
             [Description("Set to true if 'Namespace' is known and full namespace name is specified in the 'filter.Namespace' property. Otherwise, set to false.")]
             bool knownNamespace = false,
@@ -32,7 +30,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 5 - equals ignoring case,
 6 - equals case sensitive.")]
             int classNameMatchLevel = 1,
-            
+
             [Description(@"Minimal match level for 'MethodName'.
 0 - ignore 'filter.MethodName',
 1 - contains ignoring case,
@@ -62,7 +60,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 return $"[Success] Method not found.\n{filter}";
 
             var methodRefs = methods
-                .Select(method => new MethodRef(method))
+                .Select(method => new MethodDataRef(method))
                 .ToList();
 
             return $@"[Success] Found {methods.Count} method(s):

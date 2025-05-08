@@ -19,8 +19,8 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
 To browse available method use 'Reflection_MethodFind'.")]
         public Task<CallToolResponse> MethodCall
         (
-            MethodRef filter,
-            
+            MethodPointerRef filter,
+
             [Description("Set to true if 'Namespace' is known and full namespace name is specified in the 'filter.Namespace' property. Otherwise, set to false.")]
             bool knownNamespace = false,
 
@@ -53,7 +53,7 @@ To browse available method use 'Reflection_MethodFind'.")]
             [Description(@"Specify target object to call method on. It could be null if the method is static or if the is no target object.
 New instance of the object will be created if the method is instance method and the target object is null.")]
             SerializedMember? targetObject = null,
-            
+
             [Description(@"Method input parameters.")]
             List<SerializedMember>? inputParameters = null,
 
