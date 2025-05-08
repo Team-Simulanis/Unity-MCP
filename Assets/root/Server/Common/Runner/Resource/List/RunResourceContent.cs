@@ -1,6 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -66,7 +67,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         /// <returns>The result of the method execution, or null if the method is void.</returns>
         public async Task<ResponseResourceContent[]> Run(IDictionary<string, object?>? namedParameters)
         {
-            var result = await Invoke(namedParameters);
+            var result = await InvokeDict(namedParameters?.ToImmutableDictionary(x => x.Key, x => x.Value));
 
             if (_logger.IsEnabled(LogLevel.Trace))
                 _logger.LogTrace("Result: {result}", result.JsonSerialize());

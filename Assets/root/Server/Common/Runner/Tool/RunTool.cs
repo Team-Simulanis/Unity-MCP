@@ -1,6 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -65,7 +66,9 @@ namespace com.IvanMurzak.Unity.MCP.Common
         /// <returns>The result of the method execution, or null if the method is void.</returns>
         public async Task<ResponseCallTool> Run(IReadOnlyDictionary<string, JsonElement>? namedParameters)
         {
-            var result = await Invoke(namedParameters);
+            var result = await InvokeDict(namedParameters
+                ?.Select(kvp => kvp)
+                ?.ToDictionary(kvp => kvp.Key, kvp => (object)kvp.Value));
             return result as ResponseCallTool ?? ResponseCallTool.Success(result?.ToString());
         }
     }

@@ -22,6 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
         public string ClassName { get; set; } = string.Empty;
         public string MethodName { get; set; } = string.Empty;
         public List<Parameter>? Parameters { get; set; }
+        public bool IsStatic { get; set; }
 
         [JsonIgnore]
         public bool IsValid
@@ -39,9 +40,9 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
                     {
                         if (parameter == null)
                             return false;
-                        if (string.IsNullOrEmpty(parameter.type))
+                        if (string.IsNullOrEmpty(parameter.Type))
                             return false;
-                        if (string.IsNullOrEmpty(parameter.name))
+                        if (string.IsNullOrEmpty(parameter.Name))
                             return false;
                     }
                 }
@@ -56,12 +57,9 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
             ClassName = methodInfo.DeclaringType?.Name ?? string.Empty;
             MethodName = methodInfo.Name;
             Parameters = methodInfo.GetParameters()
-                ?.Select(parameter => new Parameter
-                {
-                    type = parameter.ParameterType.FullName,
-                    name = parameter.Name
-                })
+                ?.Select(parameter => new Parameter(parameter))
                 ?.ToList();
+            IsStatic = methodInfo.IsStatic;
         }
 
         public override string ToString() => Parameters == null
@@ -74,18 +72,23 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
 
         public class Parameter
         {
-            public string? type;
-            public string? name;
+            public string? Type { get; set; }
+            public string? Name { get; set; }
 
             public Parameter() { }
             public Parameter(string type, string? name)
             {
-                this.type = type;
-                this.name = name;
+                this.Type = type;
+                this.Name = name;
+            }
+            public Parameter(ParameterInfo parameter)
+            {
+                Type = parameter.ParameterType.FullName;
+                Name = parameter.Name;
             }
             public override string ToString()
             {
-                return $"{type} {name}";
+                return $"{Type} {Name}";
             }
         }
     }

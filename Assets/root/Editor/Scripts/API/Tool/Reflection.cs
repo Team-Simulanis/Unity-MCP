@@ -57,10 +57,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 var parameter = original[i];
                 var methodRefParameter = value[i];
 
-                if (parameter.Name != methodRefParameter.name)
+                if (parameter.Name != methodRefParameter.Name)
                     return 1;
 
-                if (parameter.ParameterType.Name != methodRefParameter.type)
+                if (parameter.ParameterType.Name != methodRefParameter.Type)
                     return 1;
             }
 
@@ -72,10 +72,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             bool knownNamespace = false,
             int classNameMatchLevel = 1,
             int methodNameMatchLevel = 1,
-            int parametersMatchLevel = 10)
+            int parametersMatchLevel = 10,
+            BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
         {
             // Prepare Namespace
-            filter.Namespace = filter.Namespace.Trim().Replace("null", string.Empty);
+            filter.Namespace = filter.Namespace?.Trim()?.Replace("null", string.Empty);
             if (string.IsNullOrEmpty(filter.ClassName))
                 filter.ClassName = null;
 
@@ -98,7 +99,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             var types = typesEnumerable.ToList();
 
             var methodEnumerable = types
-                .SelectMany(type => type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
+                .SelectMany(type => type.GetMethods(bindingFlags)
+                    // Is declared in the class
+                    .Where(method => method.DeclaringType == type))
                 .Where(method => method.DeclaringType != null && !method.DeclaringType.IsAbstract);
 
             if (methodNameMatchLevel > 0 && !string.IsNullOrEmpty(filter.MethodName))
@@ -122,7 +125,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                     .Where(entry => entry.MatchLevel >= parametersMatchLevel)
                     .OrderByDescending(entry => entry.MatchLevel)
                     .Select(entry => entry.Method);
-                    
+
             return methodEnumerable;
         }
 

@@ -111,7 +111,7 @@ Found {methods.Count} method(s):
                 }
 
                 var result = dictInputParameters != null
-                    ? methodWrapper.Invoke(dictInputParameters)
+                    ? methodWrapper.InvokeDict(dictInputParameters)
                     : methodWrapper.Invoke();
 
                 return $"[Success] Execution result:\n```json\n{JsonUtils.Serialize(result)}\n```";

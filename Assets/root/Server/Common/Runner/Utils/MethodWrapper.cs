@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -103,7 +104,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             return result;
         }
 
-        public virtual async Task<object?> Invoke(IReadOnlyDictionary<string, object>? namedParameters)
+        public virtual async Task<object?> InvokeDict(IReadOnlyDictionary<string, object?>? namedParameters)
         {
             if (_methodInfo == null)
                 throw new InvalidOperationException("The method information is not initialized.");
@@ -187,7 +188,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
                 {
                     if (value is JsonElement jsonElement)
                     {
-                        finalParameters[i] = JsonUtils.Deserialize(jsonElement, methodParameters[i].ParameterType);
+                        finalParameters[i] = Serialize JsonUtils.Deserialize(jsonElement, methodParameters[i].ParameterType);
                     }
                     else
                     {

@@ -1,6 +1,8 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common.Data;
@@ -61,7 +63,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         /// <returns>The result of the method execution, or null if the method is void.</returns>
         public async Task<ResponseListResource[]> Run(IDictionary<string, object?>? namedParameters)
         {
-            var result = await Invoke(namedParameters);
+            var result = await InvokeDict(namedParameters?.ToImmutableDictionary(x => x.Key, x => x.Value));
             return result as ResponseListResource[] ?? throw new InvalidOperationException($"The method did not return a valid {nameof(ResponseListResource)}[]. Instead returned {result?.GetType().Name}.");
         }
     }
