@@ -5,6 +5,7 @@ using System.Text;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Common.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 
@@ -60,7 +61,7 @@ Check the result of this command to see what was changed. The ignored fields and
                     }
                     objToModify = component;
                 }
-                Serializer.Populate(ref objToModify, gameObjectDiffs[i], stringBuilder);
+                Reflector.Instance.Populate(ref objToModify, gameObjectDiffs[i], stringBuilder);
             }
 
             return stringBuilder.ToString();

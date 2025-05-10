@@ -29,33 +29,23 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public static IMcpPluginBuilder WithTools<T>(this IMcpPluginBuilder builder)
             => WithTools(builder, typeof(T));
 
-        public static IMcpPluginBuilder WithTools(this IMcpPluginBuilder builder, Type targetType)
+        public static IMcpPluginBuilder WithTools(this IMcpPluginBuilder builder, Type classType)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
-            if (targetType == null)
-                throw new ArgumentNullException(nameof(targetType));
+            if (classType == null)
+                throw new ArgumentNullException(nameof(classType));
 
-            var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<RunTool>();
-
-            foreach (var method in targetType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance))
+            foreach (var method in classType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance))
             {
                 var attribute = method.GetCustomAttribute<McpPluginToolAttribute>();
                 if (attribute == null)
                     continue;
 
                 if (string.IsNullOrEmpty(attribute.Name))
-                    throw new ArgumentException($"Tool name cannot be null or empty. Type: {targetType.Name}, Method: {method.Name}");
+                    throw new ArgumentException($"Tool name cannot be null or empty. Type: {classType.Name}, Method: {method.Name}");
 
-                var className = targetType.GetCustomAttribute<McpPluginToolTypeAttribute>()?.Path ?? targetType.FullName;
-                if (className == null)
-                    throw new InvalidOperationException($"Type {targetType.Name} does not have a full name.");
-
-                var runner = method.IsStatic
-                    ? RunTool.CreateFromStaticMethod(logger, method, attribute.Title)
-                    : RunTool.CreateFromClassMethod(logger, targetType, method, attribute.Title);
-
-                builder.AddTool(attribute.Name, runner);
+                builder.WithTool(name: attribute.Name, classType: classType, methodInfo: method);
             }
             return builder;
         }

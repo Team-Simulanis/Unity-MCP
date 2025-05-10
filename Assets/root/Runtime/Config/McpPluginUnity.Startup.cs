@@ -1,6 +1,9 @@
 using System;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Json.Converters;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
+using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
+using com.IvanMurzak.Unity.MCP.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Utils;
 using Microsoft.Extensions.Logging;
 using UnityEngine;
@@ -42,7 +45,8 @@ namespace com.IvanMurzak.Unity.MCP
                 .WithToolsFromAssembly(AppDomain.CurrentDomain.GetAssemblies())
                 .WithPromptsFromAssembly(AppDomain.CurrentDomain.GetAssemblies())
                 .WithResourcesFromAssembly(AppDomain.CurrentDomain.GetAssemblies())
-                .Build();
+                .RegisterReflectionConverters(RegisterReflectionConverters)
+                .Build(new Reflector());
 
             if (McpPluginUnity.KeepConnected)
             {
@@ -53,6 +57,29 @@ namespace com.IvanMurzak.Unity.MCP
                 }
                 mcpPlugin.Connect();
             }
+        }
+
+        static void RegisterReflectionConverters(Reflector.Registry registry)
+        {
+            // Remove converters that are not needed in Unity
+            registry.Remove<RS_Generic<object>>();
+            registry.Remove<RS_Array>();
+
+            // Add Unity-specific converters
+            registry.Add(new RS_GenericUnity<object>());
+            registry.Add(new RS_ArrayUnity());
+
+            // Components
+            registry.Add(new RS_UnityEngineObject());
+            registry.Add(new RS_UnityEngineGameObject());
+            registry.Add(new RS_UnityEngineComponent());
+            registry.Add(new RS_UnityEngineTransform());
+            registry.Add(new RS_UnityEngineRenderer());
+            registry.Add(new RS_UnityEngineMeshFilter());
+
+            // Assets
+            registry.Add(new RS_UnityEngineMaterial());
+            registry.Add(new RS_UnityEngineSprite());
         }
 
         public static void RegisterJsonConverters()

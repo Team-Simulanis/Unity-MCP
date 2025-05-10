@@ -5,7 +5,9 @@ using System.Globalization;
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
-using com.IvanMurzak.Unity.MCP.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
+using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
+using com.IvanMurzak.Unity.MCP.Reflection.Convertor;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -29,7 +31,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 
         static void PrintSerializers<TTarget>()
         {
-            Debug.Log($"Serialize <b>[{typeof(TTarget)}]</b> priority:\n" + string.Join("\n", Serializer.Registry.GetAllSerializers()
+            Debug.Log($"Serialize <b>[{typeof(TTarget)}]</b> priority:\n" + string.Join("\n", Reflector.Instance.Convertors.GetAllSerializers()
                 .Select(x => $"{x.GetType()}: Priority: {x.SerializationPriority(typeof(TTarget))}")
                 .ToList()));
         }
@@ -39,19 +41,19 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             TestSerializerChain(typeof(TTarget), typeof(TSerializer), countOfSerializers);
 
             PrintSerializers<IEnumerable<TTarget>>();
-            TestSerializerChain(typeof(IEnumerable<TTarget>), typeof(RS_Array), countOfSerializers);
+            TestSerializerChain(typeof(IEnumerable<TTarget>), typeof(RS_ArrayUnity), countOfSerializers);
 
             PrintSerializers<List<TTarget>>();
-            TestSerializerChain(typeof(List<TTarget>), typeof(RS_Array), countOfSerializers);
+            TestSerializerChain(typeof(List<TTarget>), typeof(RS_ArrayUnity), countOfSerializers);
 
             PrintSerializers<TTarget[]>();
-            TestSerializerChain(typeof(TTarget[]), typeof(RS_Array), countOfSerializers);
+            TestSerializerChain(typeof(TTarget[]), typeof(RS_ArrayUnity), countOfSerializers);
 
             Debug.Log($"-------------------------------------------");
         }
         static void TestSerializerChain(Type type, Type serializerType, int countOfSerializers)
         {
-            var serializers = Serializer.Registry.BuildSerializersChain(type).ToList();
+            var serializers = Reflector.Instance.Convertors.BuildSerializersChain(type).ToList();
             Assert.AreEqual(countOfSerializers, serializers.Count, $"{type}: Only {countOfSerializers} serializer should be used.");
             Assert.AreEqual(serializerType, serializers[0].GetType(), $"{type}: The first serializer should be {serializerType}.");
         }
@@ -61,19 +63,19 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             TestPopulatorChain(typeof(TTarget), typeof(TSerializer), countOfSerializers);
 
             PrintSerializers<IEnumerable<TTarget>>();
-            TestPopulatorChain(typeof(IEnumerable<TTarget>), typeof(RS_Array), countOfSerializers);
+            TestPopulatorChain(typeof(IEnumerable<TTarget>), typeof(RS_ArrayUnity), countOfSerializers);
 
             PrintSerializers<List<TTarget>>();
-            TestPopulatorChain(typeof(List<TTarget>), typeof(RS_Array), countOfSerializers);
+            TestPopulatorChain(typeof(List<TTarget>), typeof(RS_ArrayUnity), countOfSerializers);
 
             PrintSerializers<TTarget[]>();
-            TestPopulatorChain(typeof(TTarget[]), typeof(RS_Array), countOfSerializers);
+            TestPopulatorChain(typeof(TTarget[]), typeof(RS_ArrayUnity), countOfSerializers);
 
             Debug.Log($"-------------------------------------------");
         }
         static void TestPopulatorChain(Type type, Type serializerType, int countOfSerializers)
         {
-            var serializers = Serializer.Registry.BuildPopulatorsChain(type).ToList();
+            var serializers = Reflector.Instance.Convertors.BuildPopulatorsChain(type).ToList();
             Assert.AreEqual(countOfSerializers, serializers.Count, $"{type.Name}: Only {countOfSerializers} serializer should be used.");
             Assert.AreEqual(serializerType, serializers[0].GetType(), $"{type.Name}: The first serializer should be {serializerType.Name}.");
         }
@@ -106,7 +108,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         {
             var material = new Material(Shader.Find("Standard"));
 
-            var serialized = Serializer.Serialize(material);
+            var serialized = Reflector.Instance.Serialize(material);
             var json = JsonUtils.Serialize(serialized);
             Debug.Log($"[{nameof(TestSerializer)}] Result:\n{json}");
 
@@ -117,7 +119,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             serialized.SetPropertyValue("_Color", colorValue);
 
             var objMaterial = (object)material;
-            Serializer.Populate(ref objMaterial, serialized);
+            Reflector.Instance.Populate(ref objMaterial, serialized);
 
             Assert.AreEqual(glossinessValue, material.GetFloat("_Glossiness"), 0.001f, $"Material property '_Glossiness' should be {glossinessValue}.");
             Assert.AreEqual(colorValue, material.GetColor("_Color"), $"Material property '_Glossiness' should be {glossinessValue}.");
@@ -134,7 +136,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 
             var materials = new[] { material1, material2 };
 
-            var serialized = Serializer.Serialize(materials);
+            var serialized = Reflector.Instance.Serialize(materials);
             var json = JsonUtils.Serialize(serialized);
             Debug.Log($"[{nameof(TestSerializer)}] Result:\n{json}");
 

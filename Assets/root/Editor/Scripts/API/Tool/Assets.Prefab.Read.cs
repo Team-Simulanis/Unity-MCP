@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Editor.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
@@ -49,7 +50,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             var components = prefab.GetComponents<UnityEngine.Component>();
             var componentsPreview = components
-                .Select((c, i) => Serializer.Serialize(c, name: $"[{i}]", recursive: false))
+                .Select((c, i) => Reflector.Instance.Serialize(c, name: $"[{i}]", recursive: false))
                 .ToList();
 
             return @$"[Success] Found Prefab at '{prefabAssetPath}'.

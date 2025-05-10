@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common.Data;
 using com.IvanMurzak.Unity.MCP.Common.MCP;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common
@@ -21,28 +22,28 @@ namespace com.IvanMurzak.Unity.MCP.Common
         /// Initializes the Command with the target method information.
         /// </summary>
         /// <param name="type">The type containing the static method.</param>
-        public static RunResourceContext CreateFromStaticMethod(ILogger logger, MethodInfo methodInfo)
-            => new RunResourceContext(logger, methodInfo);
+        public static RunResourceContext CreateFromStaticMethod(Reflector reflector, ILogger? logger, MethodInfo methodInfo)
+            => new RunResourceContext(reflector, logger, methodInfo);
 
         /// <summary>
         /// Initializes the Command with the target instance method information.
         /// </summary>
         /// <param name="targetInstance">The instance of the object containing the method.</param>
         /// <param name="methodInfo">The MethodInfo of the instance method to execute.</param>
-        public static RunResourceContext CreateFromInstanceMethod(ILogger logger, object targetInstance, MethodInfo methodInfo)
-            => new RunResourceContext(logger, targetInstance, methodInfo);
+        public static RunResourceContext CreateFromInstanceMethod(Reflector reflector, ILogger? logger, object targetInstance, MethodInfo methodInfo)
+            => new RunResourceContext(reflector, logger, targetInstance, methodInfo);
 
         /// <summary>
         /// Initializes the Command with the target instance method information.
         /// </summary>
         /// <param name="targetInstance">The instance of the object containing the method.</param>
         /// <param name="methodInfo">The MethodInfo of the instance method to execute.</param>
-        public static RunResourceContext CreateFromClassMethod(ILogger logger, Type targetType, MethodInfo methodInfo)
-            => new RunResourceContext(logger, targetType, methodInfo);
+        public static RunResourceContext CreateFromClassMethod(Reflector reflector, ILogger? logger, Type targetType, MethodInfo methodInfo)
+            => new RunResourceContext(reflector, logger, targetType, methodInfo);
 
-        public RunResourceContext(ILogger logger, MethodInfo methodInfo) : base(logger, methodInfo) { }
-        public RunResourceContext(ILogger logger, object targetInstance, MethodInfo methodInfo) : base(logger, targetInstance, methodInfo) { }
-        public RunResourceContext(ILogger logger, Type targetType, MethodInfo methodInfo) : base(logger, targetType, methodInfo) { }
+        public RunResourceContext(Reflector reflector, ILogger? logger, MethodInfo methodInfo) : base(reflector, logger, methodInfo) { }
+        public RunResourceContext(Reflector reflector, ILogger? logger, object targetInstance, MethodInfo methodInfo) : base(reflector, logger, targetInstance, methodInfo) { }
+        public RunResourceContext(Reflector reflector, ILogger? logger, Type targetType, MethodInfo methodInfo) : base(reflector, logger, targetType, methodInfo) { }
 
         /// <summary>
         /// Executes the target static method with the provided arguments.

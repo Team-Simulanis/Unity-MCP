@@ -60,7 +60,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 //.WithListResourceTemplatesHandler(ResourceRouter.ListResourceTemplates);
 
                 // Setup McpApp ----------------------------------------------------------------
-                builder.Services.AddMcpPlugin(configure =>
+                builder.Services.AddMcpPlugin(logger: null, configure =>
                 {
                     configure
                         .WithServerFeatures()

@@ -7,6 +7,7 @@ using System.Text.Json;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
@@ -43,7 +44,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             public static string NotFoundComponent(int componentInstanceID, IEnumerable<UnityEngine.Component> allComponents)
             {
                 var availableComponentsPreview = allComponents
-                    .Select((c, i) => Serializer.Serialize(c, name: $"[{i}]", recursive: false))
+                    .Select((c, i) => Reflector.Instance.Serialize(c, name: $"[{i}]", recursive: false))
                     .ToList();
                 var previewJson = JsonUtils.Serialize(availableComponentsPreview);
 
@@ -56,7 +57,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             {
                 var componentInstanceIDsString = string.Join(", ", componentRefs.Select(cr => cr.ToString()));
                 var availableComponentsPreview = allComponents
-                    .Select((c, i) => Serializer.Serialize(c, name: $"[{i}]", recursive: false))
+                    .Select((c, i) => Reflector.Instance.Serialize(c, name: $"[{i}]", recursive: false))
                     .ToList();
                 var previewJson = JsonUtils.Serialize(availableComponentsPreview);
 

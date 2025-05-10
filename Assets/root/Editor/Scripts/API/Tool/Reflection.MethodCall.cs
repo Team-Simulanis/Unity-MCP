@@ -8,6 +8,7 @@ using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 using com.IvanMurzak.Unity.MCP.Common.MCP;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
@@ -88,7 +89,7 @@ Found {methods.Count} method(s):
             Func<string> action = () =>
             {
                 var dictInputParameters = inputParameters
-                    ?.Select(p => (p.name, Serializer.Deserialize(p)))
+                    ?.Select(p => (p.name, Reflector.Instance.Deserialize(p)))
                     ?.ToImmutableDictionary(
                         keySelector: kvp => kvp.Item1,
                         elementSelector: kvp => kvp.Item2);
@@ -98,16 +99,16 @@ Found {methods.Count} method(s):
                 if (string.IsNullOrEmpty(targetObject?.type))
                 {
                     // No object instance needed. Probably static method.
-                    methodWrapper = new MethodWrapper(logger: null, method.DeclaringType, method);
+                    methodWrapper = new MethodWrapper(Reflector.Instance, logger: null, method.DeclaringType, method);
                 }
                 else
                 {
                     // Object instance needed. Probably instance method.
-                    var obj = Serializer.Deserialize(targetObject);
+                    var obj = Reflector.Instance.Deserialize(targetObject);
                     if (obj == null)
                         return $"[Error] '{nameof(targetObject)}' deserialized instance is null. Please specify the '{nameof(targetObject)}' properly.";
 
-                    methodWrapper = new MethodWrapper(logger: null, targetInstance: obj, method);
+                    methodWrapper = new MethodWrapper(Reflector.Instance, logger: null, targetInstance: obj, method);
                 }
 
                 var result = dictInputParameters != null

@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common.Data;
 using com.IvanMurzak.Unity.MCP.Common.MCP;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common
@@ -23,28 +24,28 @@ namespace com.IvanMurzak.Unity.MCP.Common
         /// Initializes the Command with the target method information.
         /// </summary>
         /// <param name="type">The type containing the static method.</param>
-        public static RunTool CreateFromStaticMethod(ILogger logger, MethodInfo methodInfo, string? title = null)
-            => new RunTool(logger, methodInfo) { Title = title };
+        public static RunTool CreateFromStaticMethod(Reflector reflector, ILogger? logger, MethodInfo methodInfo, string? title = null)
+            => new RunTool(reflector, logger, methodInfo) { Title = title };
 
         /// <summary>
         /// Initializes the Command with the target instance method information.
         /// </summary>
         /// <param name="targetInstance">The instance of the object containing the method.</param>
         /// <param name="methodInfo">The MethodInfo of the instance method to execute.</param>
-        public static RunTool CreateFromInstanceMethod(ILogger logger, object targetInstance, MethodInfo methodInfo, string? title = null)
-            => new RunTool(logger, targetInstance, methodInfo) { Title = title };
+        public static RunTool CreateFromInstanceMethod(Reflector reflector, ILogger? logger, object targetInstance, MethodInfo methodInfo, string? title = null)
+            => new RunTool(reflector, logger, targetInstance, methodInfo) { Title = title };
 
         /// <summary>
         /// Initializes the Command with the target instance method information.
         /// </summary>
         /// <param name="targetInstance">The instance of the object containing the method.</param>
         /// <param name="methodInfo">The MethodInfo of the instance method to execute.</param>
-        public static RunTool CreateFromClassMethod(ILogger logger, Type targetType, MethodInfo methodInfo, string? title = null)
-            => new RunTool(logger, targetType, methodInfo) { Title = title };
+        public static RunTool CreateFromClassMethod(Reflector reflector, ILogger? logger, Type classType, MethodInfo methodInfo, string? title = null)
+            => new RunTool(reflector, logger, classType, methodInfo) { Title = title };
 
-        public RunTool(ILogger logger, MethodInfo methodInfo) : base(logger, methodInfo) { }
-        public RunTool(ILogger logger, object targetInstance, MethodInfo methodInfo) : base(logger, targetInstance, methodInfo) { }
-        public RunTool(ILogger logger, Type targetType, MethodInfo methodInfo) : base(logger, targetType, methodInfo) { }
+        public RunTool(Reflector reflector, ILogger? logger, MethodInfo methodInfo) : base(reflector, logger, methodInfo) { }
+        public RunTool(Reflector reflector, ILogger? logger, object targetInstance, MethodInfo methodInfo) : base(reflector, logger, targetInstance, methodInfo) { }
+        public RunTool(Reflector reflector, ILogger? logger, Type classType, MethodInfo methodInfo) : base(reflector, logger, classType, methodInfo) { }
 
         /// <summary>
         /// Executes the target static method with the provided arguments.
@@ -68,7 +69,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
         {
             var result = await InvokeDict(namedParameters
                 ?.Select(kvp => kvp)
-                ?.ToDictionary(kvp => kvp.Key, kvp => (object)kvp.Value));
+                ?.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value));
             return result as ResponseCallTool ?? ResponseCallTool.Success(result?.ToString());
         }
     }

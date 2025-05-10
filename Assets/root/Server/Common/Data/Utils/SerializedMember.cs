@@ -98,7 +98,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Utils
             var json = JsonUtils.Serialize(value);
             return SetJsonValue(json);
         }
-        public SerializedMember SetJsonValue(string json)
+        public SerializedMember SetJsonValue(string? json)
         {
             if (string.IsNullOrEmpty(json))
             {
@@ -120,7 +120,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Utils
         public static SerializedMember FromJson(Type type, JsonElement json, string? name = null)
             => new SerializedMember(type, name).SetJsonValue(json);
 
-        public static SerializedMember FromJson(Type type, string json, string? name = null)
+        public static SerializedMember FromJson(Type type, string? json, string? name = null)
             => new SerializedMember(type, name).SetJsonValue(json);
 
         public static SerializedMember FromValue(Type type, object? value, string? name = null)

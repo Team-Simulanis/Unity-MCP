@@ -1,6 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
 
@@ -46,7 +47,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             EditorApplication.RepaintHierarchyWindow();
 
             return $"[Success] Prefab '{prefabAssetPath}' created from GameObject '{go.name}' (InstanceID: {instanceID}).\n" +
-                   $"Prefab GameObject:\n{Serializer.Serialize(prefabGo, recursive: false)}";
+                   $"Prefab GameObject:\n{Reflector.Instance.Serialize(prefabGo, recursive: false)}";
         });
     }
 }

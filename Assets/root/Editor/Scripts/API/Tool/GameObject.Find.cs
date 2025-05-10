@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
@@ -33,7 +34,7 @@ Also, it returns Components preview just for the target GameObject.")]
                 if (error != null)
                     return error;
 
-                var serializedGo = Serializer.Serialize(go, name: go.name, recursive: !briefData);
+                var serializedGo = Reflector.Instance.Serialize(go, name: go.name, recursive: !briefData);
                 var json = JsonUtils.Serialize(serializedGo);
                 return @$"[Success] Found GameObject.
 # Data:
