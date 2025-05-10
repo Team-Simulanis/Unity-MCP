@@ -107,7 +107,7 @@ Found {methods.Count} method(s):
                 if (string.IsNullOrEmpty(targetObject?.type))
                 {
                     // No object instance needed. Probably static method.
-                    methodWrapper = new MethodWrapper(Reflector.Instance, logger: null, method.DeclaringType, method);
+                    methodWrapper = new MethodWrapper(Reflector.Instance, logger: null, method);
                 }
                 else
                 {

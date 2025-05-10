@@ -80,7 +80,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             if (string.IsNullOrEmpty(filter.ClassName))
                 filter.ClassName = null;
 
-            var typesEnumerable = AllTypes;
+            var typesEnumerable = AllTypes
+                .Where(type => type.IsVisible)
+                .Where(type => !type.IsInterface);
 
             if (knownNamespace)
                 typesEnumerable = typesEnumerable.Where(type => type.Namespace == filter.Namespace);
