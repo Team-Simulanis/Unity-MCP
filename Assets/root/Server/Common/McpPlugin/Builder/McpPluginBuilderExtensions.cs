@@ -9,7 +9,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public static partial class McpPluginBuilderExtensions
     {
-        public static IServiceCollection AddMcpPlugin(this IServiceCollection services, ILogger? logger = null, Action<IMcpPluginBuilder>? configure = null)
+        public static IMcpPluginBuilder AddMcpPlugin(this IServiceCollection services, ILogger? logger = null, Action<IMcpPluginBuilder>? configure = null)
         {
             // Create an instance of McpAppBuilder
             var mcpPluginBuilder = new McpPluginBuilder(logger, services);
@@ -17,7 +17,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             // Allow additional configuration of McpAppBuilder
             configure?.Invoke(mcpPluginBuilder);
 
-            return services;
+            return mcpPluginBuilder;
         }
         public static IMcpPluginBuilder WithAppFeatures(this IMcpPluginBuilder builder)
         {

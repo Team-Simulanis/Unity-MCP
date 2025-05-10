@@ -81,7 +81,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
             _toolMethods.Add(new ToolMethodData
             (
-                name: attribute.Name,
                 classType: classType,
                 methodInfo: method,
                 attribute: attribute
@@ -177,50 +176,18 @@ namespace com.IvanMurzak.Unity.MCP.Common
             if (isBuilt)
                 throw new InvalidOperationException("The builder has already been built.");
 
-            _services.AddSingleton(BuildToolRunners(reflector));
-            _services.AddSingleton(BuildResourceRunners(reflector));
+            _services.AddSingleton(new ToolRunnerCollection(reflector, _logger)
+                .Add(_toolMethods)
+                .Add(_toolRunners));
+
+            _services.AddSingleton(new ResourceRunnerCollection(reflector, _logger)
+                .Add(_resourceMethods)
+                .Add(_resourceRunners));
 
             ServiceProvider = _services.BuildServiceProvider();
             isBuilt = true;
 
             return ServiceProvider.GetRequiredService<IMcpPlugin>();
-        }
-
-        IDictionary<string, IRunTool> BuildToolRunners(Reflector reflector)
-        {
-            var toolRunners = _toolMethods.ToDictionary(tool => tool.Name, tool =>
-                tool.MethodInfo.IsStatic
-                    ? RunTool.CreateFromStaticMethod(reflector, _logger, tool.MethodInfo, tool.Attribute.Title) as IRunTool
-                    : RunTool.CreateFromClassMethod(reflector, _logger, tool.ClassType, tool.MethodInfo, tool.Attribute.Title));
-
-            foreach (var kvp in _toolRunners)
-                toolRunners.Add(kvp.Key, kvp.Value);
-
-            return toolRunners;
-        }
-
-        IDictionary<string, IRunResource> BuildResourceRunners(Reflector reflector)
-        {
-            var resourceRunners = _resourceMethods
-                .Where(resource => !string.IsNullOrEmpty(resource.Attribute?.Name))
-                .ToDictionary(resource => resource.Attribute.Name!, resource => new RunResource
-                (
-                    route: resource.Attribute!.Route ?? throw new InvalidOperationException($"Method {resource.ClassType.FullName}{resource.GetContentMethod.Name} does not have a 'routing'."),
-                    name: resource.Attribute.Name ?? throw new InvalidOperationException($"Method {resource.ClassType.FullName}{resource.GetContentMethod.Name} does not have a 'name'."),
-                    description: resource.Attribute.Description,
-                    mimeType: resource.Attribute.MimeType,
-                    runnerGetContent: resource.GetContentMethod.IsStatic
-                        ? RunResourceContent.CreateFromStaticMethod(reflector, _logger, resource.GetContentMethod)
-                        : RunResourceContent.CreateFromClassMethod(reflector, _logger, resource.ClassType, resource.GetContentMethod),
-                    runnerListContext: resource.ListResourcesMethod.IsStatic
-                        ? RunResourceContext.CreateFromStaticMethod(reflector, _logger, resource.ListResourcesMethod)
-                        : RunResourceContext.CreateFromClassMethod(reflector, _logger, resource.ClassType, resource.ListResourcesMethod)
-                ) as IRunResource);
-
-            foreach (var kvp in _resourceRunners)
-                resourceRunners.Add(kvp.Key, kvp.Value);
-
-            return resourceRunners;
         }
     }
 }

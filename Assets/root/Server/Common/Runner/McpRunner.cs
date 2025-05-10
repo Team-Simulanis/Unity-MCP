@@ -16,10 +16,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
         static readonly JsonElement EmptyInputSchema = JsonDocument.Parse("{\"type\":\"object\"}").RootElement;
         
         protected readonly ILogger<McpRunner> _logger;
-        readonly IDictionary<string, IRunTool> _tools;
-        readonly IDictionary<string, IRunResource> _resources;
+        readonly ToolRunnerCollection _tools;
+        readonly ResourceRunnerCollection _resources;
 
-        public McpRunner(ILogger<McpRunner> logger, IDictionary<string, IRunTool> tools, IDictionary<string, IRunResource> resources)
+        public McpRunner(ILogger<McpRunner> logger, ToolRunnerCollection tools, ResourceRunnerCollection resources)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("Ctor.");

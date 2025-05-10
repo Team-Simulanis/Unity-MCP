@@ -6,14 +6,13 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public class ToolMethodData
     {
-        public string Name { get; set; }
+        public string Name => Attribute.Name;
         public Type ClassType { get; set; }
         public MethodInfo MethodInfo { get; set; }
         public McpPluginToolAttribute Attribute { get; set; }
 
-        public ToolMethodData(string name, Type classType, MethodInfo methodInfo, McpPluginToolAttribute attribute)
+        public ToolMethodData(Type classType, MethodInfo methodInfo, McpPluginToolAttribute attribute)
         {
-            Name = name;
             ClassType = classType;
             MethodInfo = methodInfo;
             Attribute = attribute;

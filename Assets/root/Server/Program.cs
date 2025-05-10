@@ -10,6 +10,7 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
@@ -69,7 +70,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                             logging.AddNLog();
                             logging.SetMinimumLevel(LogLevel.Information);
                         });
-                });
+                }).Build(new Reflector());
 
                 // builder.WebHost.UseUrls(Consts.Hub.DefaultEndpoint);
                 builder.WebHost.UseKestrel(options =>
