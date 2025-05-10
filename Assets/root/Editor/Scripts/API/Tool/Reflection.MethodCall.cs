@@ -64,8 +64,8 @@ Required:
             SerializedMember? targetObject = null,
 
             [Description(@"Method input parameters. Per each parameter specify:
-- name - parameter name.
 - type - full type name of the object to call method on.
+- name - parameter name.
 - value - serialized object value. It will be deserialized to the specified type.")]
             List<SerializedMember>? inputParameters = null,
 
@@ -95,6 +95,7 @@ Found {methods.Count} method(s):
 
             Func<string> action = () =>
             {
+                var convertors = Reflector.Instance.Convertors.GetAllSerializers();
                 var dictInputParameters = inputParameters
                     ?.Select(p => (p.name, Reflector.Instance.Deserialize(p)))
                     ?.ToImmutableDictionary(

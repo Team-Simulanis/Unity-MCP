@@ -21,7 +21,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
         public string? Namespace { get; set; }
         public string ClassName { get; set; } = string.Empty;
         public string MethodName { get; set; } = string.Empty;
-        public List<Parameter>? Parameters { get; set; }
+        public List<Parameter>? InputParameters { get; set; }
 
         [JsonIgnore]
         public bool IsValid
@@ -33,9 +33,9 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
                 if (string.IsNullOrEmpty(MethodName))
                     return false;
 
-                if (Parameters != null && Parameters.Count > 0)
+                if (InputParameters != null && InputParameters.Count > 0)
                 {
-                    foreach (var parameter in Parameters)
+                    foreach (var parameter in InputParameters)
                     {
                         if (parameter == null)
                             return false;
@@ -55,18 +55,18 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
             Namespace = methodInfo.DeclaringType?.Namespace;
             ClassName = methodInfo.DeclaringType?.Name ?? string.Empty;
             MethodName = methodInfo.Name;
-            Parameters = methodInfo.GetParameters()
+            InputParameters = methodInfo.GetParameters()
                 ?.Select(parameter => new Parameter(parameter))
                 ?.ToList();
         }
 
-        public override string ToString() => Parameters == null
+        public override string ToString() => InputParameters == null
             ? string.IsNullOrEmpty(Namespace)
                 ? $"MethodRef: {ClassName}.{MethodName}()"
                 : $"MethodRef: {Namespace}.{ClassName}.{MethodName}()"
             : string.IsNullOrEmpty(Namespace)
-                ? $"MethodRef: {ClassName}.{MethodName}({string.Join(", ", Parameters)})"
-                : $"MethodRef: {Namespace}.{ClassName}.{MethodName}({string.Join(", ", Parameters)})";
+                ? $"MethodRef: {ClassName}.{MethodName}({string.Join(", ", InputParameters)})"
+                : $"MethodRef: {Namespace}.{ClassName}.{MethodName}({string.Join(", ", InputParameters)})";
 
         public class Parameter
         {

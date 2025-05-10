@@ -120,7 +120,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                     .Select(method => new
                     {
                         Method = method,
-                        MatchLevel = Compare(method.GetParameters(), filter.Parameters)
+                        MatchLevel = Compare(method.GetParameters(), filter.InputParameters)
                     })
                     .Where(entry => entry.MatchLevel >= parametersMatchLevel)
                     .OrderByDescending(entry => entry.MatchLevel)
