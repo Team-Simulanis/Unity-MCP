@@ -45,8 +45,7 @@ namespace com.IvanMurzak.Unity.MCP
                 .WithToolsFromAssembly(AppDomain.CurrentDomain.GetAssemblies())
                 .WithPromptsFromAssembly(AppDomain.CurrentDomain.GetAssemblies())
                 .WithResourcesFromAssembly(AppDomain.CurrentDomain.GetAssemblies())
-                .RegisterReflectionConverters(RegisterReflectionConverters)
-                .Build(new Reflector());
+                .Build(CreateDefaultReflector());
 
             if (McpPluginUnity.KeepConnected)
             {
@@ -59,27 +58,31 @@ namespace com.IvanMurzak.Unity.MCP
             }
         }
 
-        static void RegisterReflectionConverters(Reflector.Registry registry)
+        static Reflector CreateDefaultReflector()
         {
+            var reflector = new Reflector();
+
             // Remove converters that are not needed in Unity
-            registry.Remove<RS_Generic<object>>();
-            registry.Remove<RS_Array>();
+            reflector.Convertors.Remove<RS_Generic<object>>();
+            reflector.Convertors.Remove<RS_Array>();
 
             // Add Unity-specific converters
-            registry.Add(new RS_GenericUnity<object>());
-            registry.Add(new RS_ArrayUnity());
+            reflector.Convertors.Add(new RS_GenericUnity<object>());
+            reflector.Convertors.Add(new RS_ArrayUnity());
 
             // Components
-            registry.Add(new RS_UnityEngineObject());
-            registry.Add(new RS_UnityEngineGameObject());
-            registry.Add(new RS_UnityEngineComponent());
-            registry.Add(new RS_UnityEngineTransform());
-            registry.Add(new RS_UnityEngineRenderer());
-            registry.Add(new RS_UnityEngineMeshFilter());
+            reflector.Convertors.Add(new RS_UnityEngineObject());
+            reflector.Convertors.Add(new RS_UnityEngineGameObject());
+            reflector.Convertors.Add(new RS_UnityEngineComponent());
+            reflector.Convertors.Add(new RS_UnityEngineTransform());
+            reflector.Convertors.Add(new RS_UnityEngineRenderer());
+            reflector.Convertors.Add(new RS_UnityEngineMeshFilter());
 
             // Assets
-            registry.Add(new RS_UnityEngineMaterial());
-            registry.Add(new RS_UnityEngineSprite());
+            reflector.Convertors.Add(new RS_UnityEngineMaterial());
+            reflector.Convertors.Add(new RS_UnityEngineSprite());
+
+            return reflector;
         }
 
         public static void RegisterJsonConverters()

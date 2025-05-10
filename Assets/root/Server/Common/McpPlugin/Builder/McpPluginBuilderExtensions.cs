@@ -39,11 +39,5 @@ namespace com.IvanMurzak.Unity.MCP.Common
             builder.Services.TryAddSingleton<IMcpRunner, McpRunner>();
             return builder;
         }
-
-        public static IMcpPluginBuilder RegisterReflectionConverters(this IMcpPluginBuilder builder, Action<Reflector.Registry> configure)
-        {
-            builder.Services.Configure(configure);
-            return builder;
-        }
     }
 }

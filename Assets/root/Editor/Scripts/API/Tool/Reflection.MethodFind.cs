@@ -57,7 +57,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             var methods = methodEnumerable.ToList();
             if (methods.Count == 0)
-                return $"[Success] Method not found.\n{filter}";
+                return $"[Success] Method not found. With request:\n{filter}";
 
             var methodRefs = methods
                 .Select(method => new MethodDataRef(method))
