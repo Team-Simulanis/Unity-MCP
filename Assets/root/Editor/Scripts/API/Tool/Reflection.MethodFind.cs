@@ -23,7 +23,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             [Description(@"Minimal match level for 'ClassName'.
 0 - ignore 'filter.ClassName',
-1 - contains ignoring case,
+1 - contains ignoring case (default value),
 2 - contains case sensitive,
 3 - starts with ignoring case,
 4 - starts with case sensitive,
@@ -33,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             [Description(@"Minimal match level for 'MethodName'.
 0 - ignore 'filter.MethodName',
-1 - contains ignoring case,
+1 - contains ignoring case (default value),
 2 - contains case sensitive,
 3 - starts with ignoring case,
 4 - starts with case sensitive,
@@ -42,10 +42,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             int methodNameMatchLevel = 1,
 
             [Description(@"Minimal match level for 'Parameters'.
-0 - ignore 'filter.Parameters',
+0 - ignore 'filter.Parameters' (default value),
 1 - parameters count is the same,
 2 - equals.")]
-            int parametersMatchLevel = 2
+            int parametersMatchLevel = 0
         )
         {
             var methodEnumerable = FindMethods(
