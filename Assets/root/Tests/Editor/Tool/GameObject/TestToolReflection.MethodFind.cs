@@ -16,7 +16,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator MethodFind_Transform()
         {
-            var methodInfo = typeof(UnityEngine.Transform).GetMethod(nameof(UnityEngine.Transform.LookAt));
+            var paramTypes = new[]
+            {
+                typeof(UnityEngine.Transform),
+                typeof(UnityEngine.Vector3)
+            };
+            var methodInfo = typeof(UnityEngine.Transform).GetMethod(nameof(UnityEngine.Transform.LookAt), paramTypes);
 
             var result = new Tool_Reflection().MethodFind(
                 filter: new MethodPointerRef(methodInfo),
