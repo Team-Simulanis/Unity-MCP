@@ -20,8 +20,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             "Reflection_MethodCall",
             Title = "Call method using C# reflection"
         )]
-        [Description(@"Call specific C# method using C# reflection. Receives input parameters and returns result.
-To browse available method use 'Reflection_MethodFind'.")]
+        [Description(@"Call C# method. It requires to receive proper method schema.
+Use 'Reflection_MethodFind' to find available method before using it.
+Receives input parameters and returns result.")]
         public string MethodCall
         (
             MethodPointerRef filter,
@@ -55,11 +56,17 @@ To browse available method use 'Reflection_MethodFind'.")]
 2 - equals (default value).")]
             int parametersMatchLevel = 2,
 
-            [Description(@"Specify target object to call method on. It could be null if the method is static or if the is no target object.
-New instance of the object will be created if the method is instance method and the target object is null.")]
+            [Description(@"Specify target object to call method on. Should be null if the method is static or if the is no specific target instance.
+New instance of the specified class will be created if the method is instance method and the targetObject is null.
+Required:
+- type - full type name of the object to call method on.
+- value - serialized object value. It will be deserialized to the specified type.")]
             SerializedMember? targetObject = null,
 
-            [Description(@"Method input parameters.")]
+            [Description(@"Method input parameters. Per each parameter specify:
+- name - parameter name.
+- type - full type name of the object to call method on.
+- value - serialized object value. It will be deserialized to the specified type.")]
             List<SerializedMember>? inputParameters = null,
 
             [Description(@"Set to true if the method should be executed in the main thread. Otherwise, set to false.")]
