@@ -59,6 +59,13 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
                 ?.Select(parameter => new Parameter(parameter))
                 ?.ToList();
         }
+        public MethodPointerRef(PropertyInfo methodInfo)
+        {
+            Namespace = methodInfo.DeclaringType?.Namespace;
+            ClassName = methodInfo.DeclaringType?.Name ?? string.Empty;
+            MethodName = methodInfo.Name;
+            InputParameters = null;
+        }
 
         public override string ToString() => InputParameters == null
             ? string.IsNullOrEmpty(Namespace)

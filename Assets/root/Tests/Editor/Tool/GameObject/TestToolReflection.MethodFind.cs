@@ -10,6 +10,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
     {
         void ResultValidation(string result)
         {
+            UnityEngine.Debug.Log(result);
             Assert.IsFalse(result.Contains("[Error]"), $"[Error] {result}");
             Assert.IsTrue(result.Contains("[Success]"), $"[Success] {result}");
         }
@@ -29,6 +30,20 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 classNameMatchLevel: 6,
                 methodNameMatchLevel: 6,
                 parametersMatchLevel: 2);
+
+            ResultValidation(result);
+            yield return null;
+        }
+        [UnityTest]
+        public IEnumerator MethodFind__UnityEditor_Build_NamedBuildTarget_TargetName()
+        {
+            var classType = typeof(UnityEditor.Build.NamedBuildTarget);
+            var name = nameof(UnityEditor.Build.NamedBuildTarget.TargetName);
+            var methodInfo = classType.GetProperty(name);
+
+            var result = new Tool_Reflection().MethodFind(
+                filter: new MethodPointerRef(methodInfo),
+                knownNamespace: true);
 
             ResultValidation(result);
             yield return null;
