@@ -25,6 +25,14 @@
             <ui:VisualElement name="divider" class="Divider" style="flex-grow: 1;" />
             <ui:Label text="Configure MCP Client" class="Header" />
             <ui:Label text="At least one client should be configured.&#10;Some clients need restart after configuration." class="section-desc" />
+            <ui:VisualElement name="ConfigureClient-VS-Code" class="Frame-Group" style="flex-grow: 1;">
+                <ui:Label text="VS Code" class="section-title" />
+                <ui:VisualElement class="row">
+                    <ui:VisualElement name="configureStatusCircle" class="status-indicator-circle status-indicator-circle-disconnected" />
+                    <ui:Label text="Not configured" name="configureStatusText" style="flex-grow: 1;" />
+                    <ui:Button name="btnConfigure" text="Configure" class="Button-Primary" />
+                </ui:VisualElement>
+            </ui:VisualElement>
             <ui:VisualElement name="ConfigureClient-Cursor" class="Frame-Group" style="flex-grow: 1;">
                 <ui:Label text="Cursor" class="section-title" />
                 <ui:VisualElement class="row">
@@ -35,14 +43,6 @@
             </ui:VisualElement>
             <ui:VisualElement name="ConfigureClient-Claude" class="Frame-Group" style="flex-grow: 1;">
                 <ui:Label text="Claude Desktop" class="section-title" />
-                <ui:VisualElement class="row">
-                    <ui:VisualElement name="configureStatusCircle" class="status-indicator-circle status-indicator-circle-disconnected" />
-                    <ui:Label text="Not configured" name="configureStatusText" style="flex-grow: 1;" />
-                    <ui:Button name="btnConfigure" text="Configure" class="Button-Primary" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-            <ui:VisualElement name="ConfigureClient-VS-Code" class="Frame-Group" style="flex-grow: 1;">
-                <ui:Label text="VS Code Insiders" class="section-title" />
                 <ui:VisualElement class="row">
                     <ui:VisualElement name="configureStatusCircle" class="status-indicator-circle status-indicator-circle-disconnected" />
                     <ui:Label text="Not configured" name="configureStatusText" style="flex-grow: 1;" />

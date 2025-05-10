@@ -58,8 +58,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
         // -------------------------------------------------------------------------------------------------------------------------------------------------
 
-        public static string RawJsonConfiguration(int port) => Consts.MCP_Client.ClaudeDesktop.Config(
+        public static string RawJsonConfiguration(int port, string bodyName = "mcpServers") => Consts.MCP_Client.ClaudeDesktop.Config(
             ServerExecutableFile.Replace('\\', '/'),
+            bodyName,
             port
         );
 
