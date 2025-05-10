@@ -25,7 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             {
                 var sourceDir = new DirectoryInfo(PackageCache)
                     .GetDirectories()
-                    .FirstOrDefault(d => d.Name.ToLower().Contains(PackageName.ToLower()))
+                    .FirstOrDefault(d => d.Name.ToLowerInvariant().Contains(PackageName.ToLowerInvariant()))
                     ?.FullName;
 
                 if (string.IsNullOrEmpty(sourceDir))
@@ -36,7 +36,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
         }
 
         // Server executable path
-        public static string ServerExecutableRootPath => Path.GetFullPath(Path.Combine(Application.dataPath, "../Library", ServerProjectName.ToLower()));
+        public static string ServerExecutableRootPath => Path.GetFullPath(Path.Combine(Application.dataPath, "../Library", ServerProjectName.ToLowerInvariant()));
         public static string ServerExecutableFolder => Path.Combine(ServerExecutableRootPath, "bin~", "Release", "net9.0");
         public static string ServerExecutableFile => Path.Combine(ServerExecutableFolder, $"{ServerProjectName}");
 
