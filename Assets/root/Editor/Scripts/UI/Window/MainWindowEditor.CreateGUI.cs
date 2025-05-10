@@ -57,7 +57,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 var newValue = inputFieldHost.value;
                 if (McpPluginUnity.Host == newValue)
                     return;
-                    
+
                 McpPluginUnity.Host = newValue;
                 SaveChanges($"[{nameof(MainWindowEditor)}] Host Changed: {newValue}");
                 Invalidate();

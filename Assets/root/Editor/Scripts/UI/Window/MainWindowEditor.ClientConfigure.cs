@@ -19,17 +19,23 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                     "Claude",
                     "claude_desktop_config.json"
-                ));
+                ),
+                bodyName: "mcpServers");
 
             ConfigureClient(root.Query<VisualElement>("ConfigureClient-VS-Code").First(),
-                configPath: "Unknown");
+                configPath: Path.Combine(
+                    ".vscode",
+                    "mcp.json"
+                ),
+                bodyName: "servers");
 
             ConfigureClient(root.Query<VisualElement>("ConfigureClient-Cursor").First(),
                 configPath: Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                     ".cursor",
                     "mcp.json"
-                ));
+                ),
+                bodyName: "mcpServers");
         }
 
         void ConfigureClientsMacAndLinux(VisualElement root)
@@ -41,26 +47,32 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     "Application Support",
                     "Claude",
                     "claude_desktop_config.json"
-                ));
+                ),
+                bodyName: "mcpServers");
 
             ConfigureClient(root.Query<VisualElement>("ConfigureClient-VS-Code").First(),
-                configPath: "Unknown");
+                configPath: Path.Combine(
+                    ".vscode",
+                    "mcp.json"
+                ),
+                bodyName: "servers");
 
             ConfigureClient(root.Query<VisualElement>("ConfigureClient-Cursor").First(),
                 configPath: Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                     ".cursor",
                     "mcp.json"
-                ));
+                ),
+                bodyName: "mcpServers");
         }
 
-        void ConfigureClient(VisualElement root, string configPath)
+        void ConfigureClient(VisualElement root, string configPath, string bodyName = "mcpServers")
         {
             var statusCircle = root.Query<VisualElement>("configureStatusCircle").First();
             var statusText = root.Query<Label>("configureStatusText").First();
             var btnConfigure = root.Query<Button>("btnConfigure").First();
 
-            var isConfiguredResult = IsMcpClientConfigured(configPath);
+            var isConfiguredResult = IsMcpClientConfigured(configPath, bodyName);
 
             statusCircle.RemoveFromClassList(USS_IndicatorClass_Connected);
             statusCircle.RemoveFromClassList(USS_IndicatorClass_Connecting);
@@ -75,7 +87,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             btnConfigure.RegisterCallback<ClickEvent>(evt =>
             {
-                var configureResult = ConfigureMcpClient(configPath);
+                var configureResult = ConfigureMcpClient(configPath, bodyName);
 
                 statusText.text = configureResult ? "Configured" : "Not Configured";
 
@@ -91,7 +103,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             });
         }
 
-        bool IsMcpClientConfigured(string configPath)
+        bool IsMcpClientConfigured(string configPath, string bodyName = "mcpServers")
         {
             if (string.IsNullOrEmpty(configPath) || !File.Exists(configPath))
                 return false;
@@ -104,7 +116,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 if (rootObj == null)
                     return false;
 
-                var mcpServers = rootObj["mcpServers"]?.AsObject();
+                var mcpServers = rootObj[bodyName]?.AsObject();
                 if (mcpServers == null)
                     return false;
 
@@ -142,7 +154,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 return false;
             }
         }
-        bool ConfigureMcpClient(string configPath)
+        bool ConfigureMcpClient(string configPath, string bodyName = "mcpServers")
         {
             if (string.IsNullOrEmpty(configPath))
                 return false;
@@ -152,7 +164,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 if (!File.Exists(configPath))
                 {
                     // Create the file if it doesn't exist
-                    File.WriteAllText(configPath, Startup.RawJsonConfiguration(McpPluginUnity.Port));
+                    File.WriteAllText(configPath, Startup.RawJsonConfiguration(McpPluginUnity.Port, bodyName));
                     return true;
                 }
 
@@ -164,15 +176,23 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     throw new Exception("Config file is not a valid JSON object.");
 
                 // Parse the injected config as JsonObject
-                var injectObj = JsonNode.Parse(Startup.RawJsonConfiguration(McpPluginUnity.Port))?.AsObject();
+                var injectObj = JsonNode.Parse(Startup.RawJsonConfiguration(McpPluginUnity.Port, bodyName))?.AsObject();
                 if (injectObj == null)
                     throw new Exception("Injected config is not a valid JSON object.");
 
                 // Get mcpServers from both
-                var mcpServers = rootObj["mcpServers"]?.AsObject();
-                var injectMcpServers = injectObj["mcpServers"]?.AsObject();
-                if (mcpServers == null || injectMcpServers == null)
-                    throw new Exception("Missing 'mcpServers' object in config.");
+                var mcpServers = rootObj[bodyName]?.AsObject();
+                var injectMcpServers = injectObj[bodyName]?.AsObject();
+                if (injectMcpServers == null)
+                    throw new Exception($"Missing '{bodyName}' object in config.");
+
+                if (mcpServers == null)
+                {
+                    // If mcpServers is null, create it
+                    rootObj[bodyName] = JsonNode.Parse(injectMcpServers.ToJsonString())?.AsObject();
+                    File.WriteAllText(configPath, rootObj.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+                    return IsMcpClientConfigured(configPath, bodyName);
+                }
 
                 // Find all command values in injectMcpServers
                 var injectCommands = injectMcpServers
@@ -201,7 +221,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 // Write back to file
                 File.WriteAllText(configPath, rootObj.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
-                return IsMcpClientConfigured(configPath);
+                return IsMcpClientConfigured(configPath, bodyName);
             }
             catch (Exception ex)
             {
