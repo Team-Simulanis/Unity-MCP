@@ -27,7 +27,9 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
             IsStatic = methodInfo.IsStatic;
             IsPublic = methodInfo.IsPublic;
             ReturnType = methodInfo.ReturnType.FullName;
-            ReturnSchema = JsonUtils.GetSchema(methodInfo.ReturnType);
+            ReturnSchema = methodInfo.ReturnType == typeof(void)
+                ? null
+                : JsonUtils.GetSchema(methodInfo.ReturnType);
         }
     }
 }

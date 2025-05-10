@@ -60,7 +60,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 if (parameter.Name != methodRefParameter.Name)
                     return 1;
 
-                if (parameter.ParameterType.Name != methodRefParameter.Type)
+                if (parameter.ParameterType.FullName != methodRefParameter.Type)
                     return 1;
             }
 
@@ -72,7 +72,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             bool knownNamespace = false,
             int classNameMatchLevel = 1,
             int methodNameMatchLevel = 1,
-            int parametersMatchLevel = 10,
+            int parametersMatchLevel = 2,
             BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
         {
             // Prepare Namespace
