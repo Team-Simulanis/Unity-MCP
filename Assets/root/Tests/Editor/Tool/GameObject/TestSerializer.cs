@@ -179,7 +179,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"Error getting field '{field.Name}'\n{ex}");
+                    Debug.LogError($"Error getting field '{type.Name}{field.Name}'\n{ex}");
                     throw ex;
                 }
             }
@@ -193,7 +193,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"Error getting property '{prop.Name}'\n{ex}");
+                    Debug.LogError($"Error getting property '{type.Name}{prop.Name}'\n{ex}");
                     throw ex;
                 }
             }
@@ -202,10 +202,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator Serialize_Deserialize()
         {
-            Test_Serialize_Deserialize(new UnityEngine.Vector3(1, 2, 3));
             Test_Serialize_Deserialize(100);
             Test_Serialize_Deserialize(true);
             Test_Serialize_Deserialize("hello world");
+            Test_Serialize_Deserialize(new UnityEngine.Vector3(1, 2, 3));
             Test_Serialize_Deserialize(new UnityEngine.Color(1, 0.5f, 0, 1));
             Test_Serialize_Deserialize(new UnityEditor.Build.NamedBuildTarget());
 

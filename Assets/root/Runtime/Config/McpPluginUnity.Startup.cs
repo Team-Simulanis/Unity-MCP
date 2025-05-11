@@ -71,7 +71,15 @@ namespace com.IvanMurzak.Unity.MCP
             reflector.Convertors.Add(new RS_ArrayUnity());
 
             // Unity types
+            reflector.Convertors.Add(new RS_UnityEngineColor32());
+            reflector.Convertors.Add(new RS_UnityEngineColor());
+            reflector.Convertors.Add(new RS_UnityEngineMatrix4x4());
+            reflector.Convertors.Add(new RS_UnityEngineQuaternion());
+            reflector.Convertors.Add(new RS_UnityEngineVector2());
+            reflector.Convertors.Add(new RS_UnityEngineVector2Int());
             reflector.Convertors.Add(new RS_UnityEngineVector3());
+            reflector.Convertors.Add(new RS_UnityEngineVector3Int());
+            reflector.Convertors.Add(new RS_UnityEngineVector4());
 
             // Components
             reflector.Convertors.Add(new RS_UnityEngineObject());
