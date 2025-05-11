@@ -70,6 +70,9 @@ namespace com.IvanMurzak.Unity.MCP
             reflector.Convertors.Add(new RS_GenericUnity<object>());
             reflector.Convertors.Add(new RS_ArrayUnity());
 
+            // Unity types
+            reflector.Convertors.Add(new RS_UnityEngineVector3());
+
             // Components
             reflector.Convertors.Add(new RS_UnityEngineObject());
             reflector.Convertors.Add(new RS_UnityEngineGameObject());

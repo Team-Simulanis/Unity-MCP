@@ -25,7 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
 
         protected virtual List<SerializedMember>? SerializeFields(Reflector reflector, object obj, BindingFlags flags)
         {
-            var serialized = default(List<SerializedMember>);
+            var serializedFields = default(List<SerializedMember>);
             var objType = obj.GetType();
 
             var fields = GetSerializableFields(reflector, objType, flags);
@@ -40,16 +40,16 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
                 var value = field.GetValue(obj);
                 var fieldType = field.FieldType;
 
-                serialized ??= new();
-                serialized.Add(reflector.Serialize(value, fieldType, name: field.Name, recursive: false, flags: flags));
+                serializedFields ??= new();
+                serializedFields.Add(reflector.Serialize(value, fieldType, name: field.Name, recursive: false, flags: flags));
             }
-            return serialized;
+            return serializedFields;
         }
         public abstract IEnumerable<FieldInfo>? GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags);
 
         protected virtual List<SerializedMember>? SerializeProperties(Reflector reflector, object obj, BindingFlags flags)
         {
-            var serialized = default(List<SerializedMember>);
+            var serializedProperties = default(List<SerializedMember>);
             var objType = obj.GetType();
 
             var properties = GetSerializableProperties(reflector, objType, flags);
@@ -65,12 +65,12 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
                     var value = prop.GetValue(obj);
                     var propType = prop.PropertyType;
 
-                    serialized ??= new();
-                    serialized.Add(reflector.Serialize(value, propType, name: prop.Name, recursive: false, flags: flags));
+                    serializedProperties ??= new();
+                    serializedProperties.Add(reflector.Serialize(value, propType, name: prop.Name, recursive: false, flags: flags));
                 }
                 catch { /* skip inaccessible properties */ }
             }
-            return serialized;
+            return serializedProperties;
         }
         public abstract IEnumerable<PropertyInfo>? GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags);
 

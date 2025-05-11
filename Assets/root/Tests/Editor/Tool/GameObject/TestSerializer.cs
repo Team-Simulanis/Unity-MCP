@@ -94,6 +94,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             TestSerializerChain<ObjectRef, RS_GenericUnity<object>>(1);
 
             TestSerializerChain<UnityEngine.Object, RS_UnityEngineObject>(1);
+            TestSerializerChain<UnityEngine.Vector3, RS_UnityEngineVector3>(1);
             TestSerializerChain<UnityEngine.Rigidbody, RS_UnityEngineComponent>(1);
             TestSerializerChain<UnityEngine.Animation, RS_UnityEngineComponent>(1);
             TestSerializerChain<UnityEngine.Material, RS_UnityEngineMaterial>(1);
