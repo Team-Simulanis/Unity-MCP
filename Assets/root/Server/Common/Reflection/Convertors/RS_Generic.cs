@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Utils;
 
@@ -23,18 +24,19 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
                         name = name,
                         type = type.FullName ?? string.Empty,
                         fields = SerializeFields(reflector, obj, flags),
-                        properties = SerializeProperties(reflector, obj, flags)
+                        properties = SerializeProperties(reflector, obj, flags),
+                        valueJsonElement = new JsonObject().ToJsonElement()
                     }
                     : SerializedMember.FromJson(type, JsonUtils.Serialize(obj), name: name);
             }
             throw new ArgumentException($"Unsupported type: {type.FullName}");
         }
-        protected override IEnumerable<FieldInfo> GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags)
+        public override IEnumerable<FieldInfo>? GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags)
             => objType.GetFields(flags)
                 .Where(field => field.GetCustomAttribute<ObsoleteAttribute>() == null)
                 .Where(field => field.IsPublic);
 
-        protected override IEnumerable<PropertyInfo> GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags)
+        public override IEnumerable<PropertyInfo>? GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags)
             => objType.GetProperties(flags)
                 .Where(prop => prop.GetCustomAttribute<ObsoleteAttribute>() == null)
                 .Where(prop => prop.CanRead);

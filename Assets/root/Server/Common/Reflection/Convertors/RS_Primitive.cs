@@ -25,11 +25,11 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
         protected override SerializedMember InternalSerialize(Reflector reflector, object? obj, Type? type, string? name = null, bool recursive = true, BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             => SerializedMember.FromValue(type, obj, name: name);
 
-        protected override IEnumerable<FieldInfo> GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags)
-            => throw new NotImplementedException("Primitive types do not support field serialization.");
+        public override IEnumerable<FieldInfo>? GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags)
+            => null;
 
-        protected override IEnumerable<PropertyInfo> GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags)
-            => throw new NotImplementedException("Primitive types do not support property serialization.");
+        public override IEnumerable<PropertyInfo>? GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags)
+            => null;
 
         protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value)
         {

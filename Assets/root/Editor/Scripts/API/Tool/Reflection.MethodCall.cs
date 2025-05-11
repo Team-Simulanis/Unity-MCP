@@ -119,9 +119,11 @@ Found {methods.Count} method(s):
                     methodWrapper = new MethodWrapper(Reflector.Instance, logger: null, targetInstance: obj, method);
                 }
 
-                var result = dictInputParameters != null
+                var task = dictInputParameters != null
                     ? methodWrapper.InvokeDict(dictInputParameters)
                     : methodWrapper.Invoke();
+
+                var result = task.Result;
 
                 return $"[Success] Execution result:\n```json\n{JsonUtils.Serialize(result)}\n```";
             };

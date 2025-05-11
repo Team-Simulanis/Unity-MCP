@@ -39,12 +39,12 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
             return SerializedMember.FromValue(type, serializedList, name: name);
         }
 
-        protected override IEnumerable<FieldInfo> GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags)
+        public override IEnumerable<FieldInfo>? GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags)
             => objType.GetFields(flags)
                 .Where(field => field.GetCustomAttribute<ObsoleteAttribute>() == null)
                 .Where(field => field.IsPublic);
 
-        protected override IEnumerable<PropertyInfo> GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags)
+        public override IEnumerable<PropertyInfo>? GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags)
             => objType.GetProperties(flags)
                 .Where(prop => prop.GetCustomAttribute<ObsoleteAttribute>() == null)
                 .Where(prop => prop.CanRead);

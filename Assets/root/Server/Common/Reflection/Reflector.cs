@@ -1,5 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
@@ -31,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection
                 throw new ArgumentException($"No type provided for serialization.");
 
             if (obj == null)
-                return SerializedMember.FromJson(type, null);
+                return SerializedMember.FromJson(type, json: null, name: name);
 
             foreach (var serializer in Convertors.BuildSerializersChain(type))
             {
@@ -61,6 +63,12 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection
             var obj = deserializer.Deserialize(this, data);
             return obj;
         }
+        public IEnumerable<FieldInfo>? GetSerializableFields(Type type,
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            => Convertors.BuildDeserializersChain(type)?.GetSerializableFields(this, type, flags);
+        public IEnumerable<PropertyInfo>? GetSerializableProperties(Type type,
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            => Convertors.BuildDeserializersChain(type)?.GetSerializableProperties(this, type, flags);
         public StringBuilder Populate(ref object obj, SerializedMember data, StringBuilder? stringBuilder = null, int depth = 0,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, ILogger? logger = null)
         {

@@ -69,11 +69,11 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
 
         public override string ToString() => InputParameters == null
             ? string.IsNullOrEmpty(Namespace)
-                ? $"MethodRef: {ClassName}.{MethodName}()"
-                : $"MethodRef: {Namespace}.{ClassName}.{MethodName}()"
+                ? $"{ClassName}.{MethodName}()"
+                : $"{Namespace}.{ClassName}.{MethodName}()"
             : string.IsNullOrEmpty(Namespace)
-                ? $"MethodRef: {ClassName}.{MethodName}({string.Join(", ", InputParameters)})"
-                : $"MethodRef: {Namespace}.{ClassName}.{MethodName}({string.Join(", ", InputParameters)})";
+                ? $"{ClassName}.{MethodName}({string.Join(", ", InputParameters)})"
+                : $"{Namespace}.{ClassName}.{MethodName}({string.Join(", ", InputParameters)})";
 
         public class Parameter
         {

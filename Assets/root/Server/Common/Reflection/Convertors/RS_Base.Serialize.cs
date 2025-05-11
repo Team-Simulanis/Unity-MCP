@@ -28,7 +28,11 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
             var serialized = default(List<SerializedMember>);
             var objType = obj.GetType();
 
-            foreach (var field in GetSerializableFields(reflector, objType, flags))
+            var fields = GetSerializableFields(reflector, objType, flags);
+            if (fields == null)
+                return null;
+
+            foreach (var field in fields)
             {
                 if (ignoredFields.Contains(field.Name))
                     continue;
@@ -41,14 +45,18 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
             }
             return serialized;
         }
-        protected abstract IEnumerable<FieldInfo> GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags);
+        public abstract IEnumerable<FieldInfo>? GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags);
 
         protected virtual List<SerializedMember>? SerializeProperties(Reflector reflector, object obj, BindingFlags flags)
         {
             var serialized = default(List<SerializedMember>);
             var objType = obj.GetType();
 
-            foreach (var prop in GetSerializableProperties(reflector, objType, flags))
+            var properties = GetSerializableProperties(reflector, objType, flags);
+            if (properties == null)
+                return null;
+
+            foreach (var prop in properties)
             {
                 if (ignoredProperties.Contains(prop.Name))
                     continue;
@@ -64,7 +72,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
             }
             return serialized;
         }
-        protected abstract IEnumerable<PropertyInfo> GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags);
+        public abstract IEnumerable<PropertyInfo>? GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags);
 
         protected abstract SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string? name = null, bool recursive = true,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);

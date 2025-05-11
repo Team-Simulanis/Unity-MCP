@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Reflection;
@@ -151,6 +152,61 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 
             // Assert.AreEqual(glossinessValue, material.GetFloat("_Glossiness"), 0.001f, $"Material property '_Glossiness' should be {glossinessValue}.");
             // Assert.AreEqual(colorValue, material.GetColor("_Color"), $"Material property '_Glossiness' should be {glossinessValue}.");
+
+            yield return null;
+        }
+
+        void Test_Serialize_Deserialize<T>(T sourceObj)
+        {
+            var type = typeof(T);
+            var serializedObj = Reflector.Instance.Serialize(sourceObj);
+            var deserializedObj = Reflector.Instance.Deserialize(serializedObj);
+
+            Debug.Log($"[{type.Name}] Source:\n```json\n{JsonUtils.Serialize(sourceObj)}\n```");
+            Debug.Log($"[{type.Name}] Serialized:\n```json\n{JsonUtils.Serialize(serializedObj)}\n```");
+            Debug.Log($"[{type.Name}] Deserialized:\n```json\n{JsonUtils.Serialize(deserializedObj)}\n```");
+
+            Assert.AreEqual(sourceObj.GetType(), deserializedObj.GetType(), $"Object type should be {sourceObj.GetType()}.");
+
+            foreach (var field in Reflector.Instance.GetSerializableFields(type) ?? Enumerable.Empty<FieldInfo>())
+            {
+                try
+                {
+                    var sourceValue = field.GetValue(sourceObj);
+                    var targetValue = field.GetValue(deserializedObj);
+                    Assert.AreEqual(sourceValue, targetValue, $"Field '{field.Name}' should be equal. Expected: {sourceValue}, Actual: {targetValue}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Error getting field '{field.Name}'\n{ex}");
+                    throw ex;
+                }
+            }
+            foreach (var prop in Reflector.Instance.GetSerializableProperties(type) ?? Enumerable.Empty<PropertyInfo>())
+            {
+                try
+                {
+                    var sourceValue = prop.GetValue(sourceObj);
+                    var targetValue = prop.GetValue(deserializedObj);
+                    Assert.AreEqual(sourceValue, targetValue, $"Property '{prop.Name}' should be equal. Expected: {sourceValue}, Actual: {targetValue}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Error getting property '{prop.Name}'\n{ex}");
+                    throw ex;
+                }
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator Serialize_Deserialize()
+        {
+            Test_Serialize_Deserialize(new UnityEngine.Vector3(1, 2, 3));
+            Test_Serialize_Deserialize(100);
+            Test_Serialize_Deserialize(true);
+            Test_Serialize_Deserialize("hello world");
+            Test_Serialize_Deserialize(new UnityEngine.Color(1, 0.5f, 0, 1));
+            Test_Serialize_Deserialize(new UnityEditor.Build.NamedBuildTarget());
 
             yield return null;
         }

@@ -9,7 +9,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
 {
     public partial class RS_ArrayUnity : RS_Array
     {
-        protected override IEnumerable<FieldInfo> GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags)
+        public override IEnumerable<FieldInfo>? GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags)
             => objType.GetFields(flags)
                 .Where(field => field.GetCustomAttribute<ObsoleteAttribute>() == null)
                 .Where(field => field.IsPublic || field.IsPrivate && field.GetCustomAttribute<SerializeField>() != null);

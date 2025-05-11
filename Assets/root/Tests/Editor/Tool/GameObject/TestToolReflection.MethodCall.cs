@@ -1,5 +1,6 @@
 using System.Collections;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Editor.API;
 using UnityEngine.TestTools;
 
@@ -26,8 +27,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var name = "get_" + nameof(UnityEditor.Build.NamedBuildTarget.TargetName);
             var methodInfo = classType.GetMethod(name);
 
+            var obj = new UnityEditor.Build.NamedBuildTarget();
+            var serializedObj = Reflector.Instance.Serialize(obj);
+
             ResultValidation(new Tool_Reflection().MethodCall(
-                filter: new MethodPointerRef(methodInfo)));
+                filter: new MethodPointerRef(methodInfo),
+                targetObject: serializedObj));
 
             yield return null;
         }

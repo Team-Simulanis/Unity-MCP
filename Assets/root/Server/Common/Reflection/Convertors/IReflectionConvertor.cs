@@ -1,5 +1,6 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
@@ -26,5 +27,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
         bool SetProperty(Reflector reflector, ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+        IEnumerable<FieldInfo>? GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags);
+        IEnumerable<PropertyInfo>? GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags);
     }
 }
