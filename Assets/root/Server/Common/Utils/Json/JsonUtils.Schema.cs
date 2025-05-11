@@ -5,16 +5,90 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Schema;
+using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Common
 {
     public static partial class JsonUtils
     {
+        public static JsonNode? GetSchema<T>() => GetSchema(typeof(T));
         public static JsonNode? GetSchema(Type type)
         {
+            // Handle nullable types
+            var underlyingNullableType = Nullable.GetUnderlyingType(type);
+            if (underlyingNullableType != null)
+                type = underlyingNullableType;
+
+            if (type == typeof(SerializedMember))
+            {
+                // Handle SerializedMember type separately
+                return new JsonObject
+                {
+                    ["type"] = "object",
+                    ["properties"] = new JsonObject
+                    {
+                        ["type"] = new JsonObject
+                        {
+                            ["type"] = "string",
+                            ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
+                        },
+                        ["name"] = new JsonObject { ["type"] = "string" },
+                        ["value"] = new JsonObject { ["type"] = "object" },
+                        ["fields"] = new JsonObject
+                        {
+                            ["type"] = "array",
+                            ["items"] = new JsonObject
+                            {
+                                ["type"] = new JsonObject
+                                {
+                                    ["type"] = "string",
+                                    ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
+                                },
+                                ["name"] = new JsonObject { ["type"] = "string" },
+                                ["value"] = new JsonObject { ["type"] = "object" },
+                                ["properties"] = new JsonObject
+                                {
+                                    ["type"] = new JsonObject
+                                    {
+                                        ["type"] = "string",
+                                        ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
+                                    },
+                                    ["name"] = new JsonObject { ["type"] = "string" }
+                                },
+                                ["required"] = new JsonArray { "type", "name", "value" }
+                            }
+                        },
+                        ["properties"] = new JsonObject
+                        {
+                            ["type"] = "array",
+                            ["items"] = new JsonObject
+                            {
+                                ["type"] = new JsonObject
+                                {
+                                    ["type"] = "string",
+                                    ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
+                                },
+                                ["name"] = new JsonObject { ["type"] = "string" },
+                                ["value"] = new JsonObject { ["type"] = "object" },
+                                ["properties"] = new JsonObject
+                                {
+                                    ["type"] = new JsonObject
+                                    {
+                                        ["type"] = "string",
+                                        ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
+                                    },
+                                    ["name"] = new JsonObject { ["type"] = "string" }
+                                },
+                                ["required"] = new JsonArray { "type", "name", "value" }
+                            }
+                        }
+                    },
+                    ["required"] = new JsonArray { "type" }
+                };
+            }
+
             // Use JsonSchemaExporter to get the schema for each parameter type
-            var schema = JsonSchemaExporter.GetJsonSchemaAsNode(
-                jsonSerializerOptions,
+            var schema = jsonSerializerOptions.GetJsonSchemaAsNode(
                 type: type,
                 exporterOptions: new JsonSchemaExporterOptions
                 {
@@ -29,6 +103,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 var propertyDescription = type.GetCustomAttribute<DescriptionAttribute>()?.Description;
                 if (!string.IsNullOrEmpty(propertyDescription))
                     parameterSchemaObject["description"] = JsonValue.Create(propertyDescription);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Unexpected schema type for '{type.FullName}'.\nJson Schema type: {schema.GetType()}\n");
             }
             return schema;
         }

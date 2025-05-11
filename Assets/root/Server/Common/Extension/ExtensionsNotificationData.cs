@@ -4,7 +4,7 @@ using com.IvanMurzak.Unity.MCP.Common.Data;
 
 namespace com.IvanMurzak.Unity.MCP.Common
 {
-    public static class NotificationDataExtensions
+    public static class ExtensionsNotificationData
     {
         public static IRequestNotification SetName(this IRequestNotification data, string name)
         {

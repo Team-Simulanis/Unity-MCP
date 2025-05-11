@@ -6,7 +6,7 @@ using UnityEngine.TestTools;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
-    public partial class TestToolReflection
+    public partial class TestToolReflection : BaseTest
     {
         [UnityTest]
         public IEnumerator MethodCall_UnityEditor_EditorUserBuildSettings_get_activeBuildTarget()

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common
 {
-    public static class LogLevelExtensions
+    public static class ExtensionsLogLevel
     {
         public static bool IsEnabled(this LogLevel logLevel, LogLevel targetLogLevel)
             => logLevel <= targetLogLevel;

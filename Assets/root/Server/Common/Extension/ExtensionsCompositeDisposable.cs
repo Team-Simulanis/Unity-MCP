@@ -4,7 +4,7 @@ using R3;
 
 namespace com.IvanMurzak.Unity.MCP.Common
 {
-    public static class CompositeDisposableExtensions
+    public static class ExtensionsCompositeDisposable
     {
         public static CancellationToken ToCancellationToken(this CompositeDisposable disposables)
         {

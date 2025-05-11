@@ -5,7 +5,7 @@ using com.IvanMurzak.Unity.MCP.Common.Data;
 
 namespace com.IvanMurzak.Unity.MCP.Common
 {
-    public static class RequestCallToolExtensions
+    public static class ExtensionsRequestCallTool
     {
         public static IRequestCallTool SetName(this IRequestCallTool data, string name)
         {

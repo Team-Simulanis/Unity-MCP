@@ -6,22 +6,6 @@ namespace com.IvanMurzak.Unity.MCP.Utils
 {
     public static class ExtensionsObjectRef
     {
-        public static UnityEngine.Object? FindObject(this ObjectRef objectRef)
-        {
-            if (objectRef == null)
-                return null;
-
-#if UNITY_EDITOR
-            if (objectRef.instanceID != 0)
-                return UnityEditor.EditorUtility.InstanceIDToObject(objectRef.instanceID);
-
-            if (!string.IsNullOrEmpty(objectRef.assetPath))
-                return UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(objectRef.assetPath);
-#endif
-
-            return null;
-        }
-
         public static ObjectRef? ToObjectRef(this JsonElement? jsonElement)
         {
             if (jsonElement == null)

@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
-    public partial class TestToolGameObject
+    public partial class TestToolGameObject : BaseTest
     {
         [UnityTest]
         public IEnumerator GetComponents()

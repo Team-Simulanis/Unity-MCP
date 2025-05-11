@@ -15,21 +15,8 @@ using UnityEngine.TestTools;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
-    public partial class TestSerializer
+    public partial class TestSerializer : BaseTest
     {
-        [UnitySetUp]
-        public IEnumerator SetUp()
-        {
-            Debug.Log($"[{nameof(TestToolGameObject)}] SetUp");
-            yield return null;
-        }
-        [UnityTearDown]
-        public IEnumerator TearDown()
-        {
-            Debug.Log($"[{nameof(TestToolGameObject)}] TearDown");
-            yield return null;
-        }
-
         static void PrintSerializers<TTarget>()
         {
             Debug.Log($"Serialize <b>[{typeof(TTarget)}]</b> priority:\n" + string.Join("\n", Reflector.Instance.Convertors.GetAllSerializers()

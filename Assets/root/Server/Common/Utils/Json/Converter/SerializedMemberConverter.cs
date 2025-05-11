@@ -50,7 +50,6 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                 }
             }
 
-
             return member;
         }
 

@@ -6,25 +6,12 @@ using UnityEngine.TestTools;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
-    public partial class TestToolGameObject
+    public partial class TestToolGameObject : BaseTest
     {
         const string GO_ParentName = "root";
         const string GO_Child1Name = "child1";
         const string GO_Child2Name = "child2";
 
-        [UnitySetUp]
-        public IEnumerator SetUp()
-        {
-            Debug.Log($"[{nameof(TestToolGameObject)}] SetUp");
-            yield return null;
-        }
-        [UnityTearDown]
-        public IEnumerator TearDown()
-        {
-            Debug.Log($"[{nameof(TestToolGameObject)}] TearDown");
-            DestroyAllGameObjectsInActiveScene();
-            yield return null;
-        }
         public static void DestroyAllGameObjectsInActiveScene()
         {
             var scene = SceneManager.GetActiveScene();
