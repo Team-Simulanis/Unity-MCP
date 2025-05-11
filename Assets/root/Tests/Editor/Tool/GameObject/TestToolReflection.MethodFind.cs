@@ -35,7 +35,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             yield return null;
         }
         [UnityTest]
-        public IEnumerator MethodFind__UnityEditor_Build_NamedBuildTarget_TargetName()
+        public IEnumerator MethodFind_UnityEditor_Build_NamedBuildTarget_TargetName()
         {
             var classType = typeof(UnityEditor.Build.NamedBuildTarget);
             var name = nameof(UnityEditor.Build.NamedBuildTarget.TargetName);

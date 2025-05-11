@@ -25,7 +25,13 @@ namespace com.IvanMurzak.Unity.MCP.Server
             {
                 var builder = WebApplication.CreateBuilder(args);
 
-                builder.Logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Information);
+                // Configure all logs to go to stderr. This is needed for MCP STDIO server to work properly.
+                builder.Logging.AddConsole(consoleLogOptions => consoleLogOptions.LogToStandardErrorThreshold = LogLevel.Trace);
+
+                // Replace default logging with NLog
+                // builder.Logging.ClearProviders();
+                builder.Logging.AddNLog();
+
                 builder.Services.AddSignalR(configure =>
                 {
                     configure.EnableDetailedErrors = true;
@@ -35,13 +41,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     configure.HandshakeTimeout = TimeSpan.FromSeconds(5);
                     configure.JsonSerialize(JsonUtils.JsonSerializerOptions);
                 });
-
-                // Configure all logs to go to stderr. This is needed for MCP STDIO server to work properly.
-                builder.Logging.AddConsole(consoleLogOptions => consoleLogOptions.LogToStandardErrorThreshold = LogLevel.Trace);
-
-                // Replace default logging with NLog
-                // builder.Logging.ClearProviders();
-                builder.Logging.AddNLog();
 
                 // Setup MCP server ---------------------------------------------------------------
                 builder.Services
