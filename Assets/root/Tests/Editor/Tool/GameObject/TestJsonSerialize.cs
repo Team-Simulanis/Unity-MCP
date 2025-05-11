@@ -2,11 +2,9 @@ using System;
 using System.Collections;
 using System.Globalization;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Utils;
 using NUnit.Framework;
-using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
@@ -37,7 +35,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator Classes()
         {
-            var go = new GameObject("TestObject");
+            var go = new UnityEngine.GameObject("TestObject");
             ValidateType(go.ToObjectRef());
 
             yield return null;
@@ -63,15 +61,22 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         }
 
         [UnityTest]
-        public IEnumerator Unity()
+        public IEnumerator UnityComponent()
         {
-            var go = new GameObject("TestObject");
-            ValidateType(go.AddComponent<UnityEngine.Rigidbody>().ToObjectRef());
-            ValidateType(new UnityEngine.Animation().ToObjectRef());
-            ValidateType(new UnityEngine.Material(Shader.Find("Standard")).ToObjectRef());
+            var go = new UnityEngine.GameObject("TestObject");
             ValidateType(go.transform.ToObjectRef());
+            ValidateType(go.AddComponent<UnityEngine.Rigidbody>().ToObjectRef());
             ValidateType(go.AddComponent<UnityEngine.SpriteRenderer>().ToObjectRef());
             ValidateType(go.AddComponent<UnityEngine.MeshRenderer>().ToObjectRef());
+
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator UnityAsset()
+        {
+            ValidateType(new UnityEngine.Animation().ToObjectRef());
+            ValidateType(new UnityEngine.Material(UnityEngine.Shader.Find("Standard")).ToObjectRef());
 
             yield return null;
         }
