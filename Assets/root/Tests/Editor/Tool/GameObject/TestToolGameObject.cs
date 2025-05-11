@@ -1,8 +1,5 @@
-using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.TestTools;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
@@ -12,12 +9,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         const string GO_Child1Name = "child1";
         const string GO_Child2Name = "child2";
 
-        public static void DestroyAllGameObjectsInActiveScene()
-        {
-            var scene = SceneManager.GetActiveScene();
-            foreach (var go in scene.GetRootGameObjects())
-                Object.DestroyImmediate(go);
-        }
         void ResultValidation(string result)
         {
             Debug.Log($"[{nameof(TestToolGameObject)}] Result:\n{result}");
