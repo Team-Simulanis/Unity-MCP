@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor

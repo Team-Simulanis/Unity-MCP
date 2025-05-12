@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
 {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json
 {

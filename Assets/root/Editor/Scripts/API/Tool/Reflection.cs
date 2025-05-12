@@ -60,7 +60,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 if (parameter.Name != methodRefParameter.Name)
                     return 1;
 
-                if (parameter.ParameterType.FullName != methodRefParameter.Type)
+                if (parameter.ParameterType.FullName != methodRefParameter.TypeName)
                     return 1;
             }
 

@@ -39,7 +39,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
                     {
                         if (parameter == null)
                             return false;
-                        if (string.IsNullOrEmpty(parameter.Type))
+                        if (string.IsNullOrEmpty(parameter.TypeName))
                             return false;
                         if (string.IsNullOrEmpty(parameter.Name))
                             return false;
@@ -77,23 +77,23 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
 
         public class Parameter
         {
-            public string? Type { get; set; }
+            public string? TypeName { get; set; }
             public string? Name { get; set; }
 
             public Parameter() { }
             public Parameter(string type, string? name)
             {
-                this.Type = type;
+                this.TypeName = type;
                 this.Name = name;
             }
             public Parameter(ParameterInfo parameter)
             {
-                Type = parameter.ParameterType.FullName;
+                TypeName = parameter.ParameterType.FullName;
                 Name = parameter.Name;
             }
             public override string ToString()
             {
-                return $"{Type} {Name}";
+                return $"{TypeName} {Name}";
             }
         }
     }

@@ -152,18 +152,13 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     }
                 }
 
-                // Look for the nested properties and process them
-                if (obj.TryGetPropertyValue("properties", out var propertiesNode))
+                foreach (var kvp in obj)
                 {
-                    // PostprocessFields(propertiesNode);
-                    if (propertiesNode is JsonObject propertiesObj)
-                        foreach (var kvp in propertiesObj)
-                            PostprocessFields(kvp.Value);
+                    if (kvp.Key == "type")
+                        continue;
 
-                    // if (propertiesNode is JsonArray propertiesArr)
-                    //     foreach (var item in propertiesArr)
-                    //         if (item != null)
-                    // PostprocessFields(item);
+                    if (kvp.Value != null)
+                        PostprocessFields(kvp.Value);
                 }
             }
             if (node is JsonArray arr)

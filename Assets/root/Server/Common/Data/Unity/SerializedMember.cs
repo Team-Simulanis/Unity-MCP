@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace com.IvanMurzak.Unity.MCP.Common.Data.Utils
+namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
 {
     [Serializable]
     public class SerializedMember

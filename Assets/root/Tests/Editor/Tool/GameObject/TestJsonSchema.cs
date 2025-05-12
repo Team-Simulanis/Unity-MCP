@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text.Json.Nodes;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 

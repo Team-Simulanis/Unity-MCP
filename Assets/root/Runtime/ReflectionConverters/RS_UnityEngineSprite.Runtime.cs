@@ -3,7 +3,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor

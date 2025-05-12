@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.MCP;
 using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Utils;

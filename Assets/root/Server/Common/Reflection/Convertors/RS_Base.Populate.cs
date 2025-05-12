@@ -3,7 +3,7 @@ using System;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Utils;
 using static com.IvanMurzak.Unity.MCP.Common.Reflection.Reflector;
 
