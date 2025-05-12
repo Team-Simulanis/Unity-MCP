@@ -21,7 +21,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var typeNodes = FindAllTypeProperties(schema, "type");
             foreach (var typeNode in typeNodes)
             {
-                var typeValue = default(string);
                 switch (typeNode)
                 {
                     // case JsonObject obj:
@@ -31,7 +30,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                     //     Assert.Fail($"Unexpected type node for '{type.FullName}': JsonArray");
                     //     break;
                     case JsonValue value:
-                        typeValue = value.ToString();
+                        var typeValue = value.ToString();
                         Assert.IsFalse(string.IsNullOrEmpty(typeValue), $"Type node for '{type.FullName}' is empty");
                         Assert.IsFalse(typeValue == "null", $"Type node for '{type.FullName}' is \"null\" string");
                         break;

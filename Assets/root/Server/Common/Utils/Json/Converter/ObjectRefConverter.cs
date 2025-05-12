@@ -1,13 +1,25 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
-    public class ObjectRefConverter : JsonConverter<ObjectRef>
+    public class ObjectRefConverter : JsonConverter<ObjectRef>, IJsonSchemeConvertor
     {
+        public JsonNode GetScheme() => new JsonObject
+        {
+            ["type"] = "object",
+            ["properties"] = new JsonObject
+            {
+                ["instanceID"] = new JsonObject { ["type"] = "integer" },
+                ["assetPath"] = new JsonObject { ["type"] = "string" }
+            },
+            ["required"] = new JsonArray { "instanceID" }
+        };
+
         public override ObjectRef? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType == JsonTokenType.Null)
