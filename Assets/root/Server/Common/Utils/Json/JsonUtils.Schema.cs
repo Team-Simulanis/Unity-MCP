@@ -132,11 +132,20 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 // Fixing "type" field. It should be not nullable, because current LLM models doesn't support nullable types
                 if (obj.TryGetPropertyValue("type", out var typeNode))
                 {
-                    if (typeNode is not JsonValue)
+                    if (typeNode is JsonValue typeValue)
+                    {
+                        if (typeNode.ToString() == "array")
+                            if (obj.TryGetPropertyValue("items", out var itemsNode))
+                                PostprocessFields(itemsNode);
+                    }
+                    else
                     {
                         if (typeNode is JsonArray typeArray)
                         {
-                            var correctTypeValue = typeArray.FirstOrDefault(x => x is JsonValue value && value.ToString() != "null");
+                            var correctTypeValue = typeArray
+                                .FirstOrDefault(x => x is JsonValue value && value.ToString() != "null")
+                                ?.ToString();
+
                             if (correctTypeValue != null)
                                 obj["type"] = JsonValue.Create(correctTypeValue.ToString());
                         }
@@ -146,10 +155,22 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 // Look for the nested properties and process them
                 if (obj.TryGetPropertyValue("properties", out var propertiesNode))
                 {
+                    // PostprocessFields(propertiesNode);
                     if (propertiesNode is JsonObject propertiesObj)
                         foreach (var kvp in propertiesObj)
                             PostprocessFields(kvp.Value);
+
+                    // if (propertiesNode is JsonArray propertiesArr)
+                    //     foreach (var item in propertiesArr)
+                    //         if (item != null)
+                    // PostprocessFields(item);
                 }
+            }
+            if (node is JsonArray arr)
+            {
+                foreach (var item in arr)
+                    if (item != null)
+                        PostprocessFields(item);
             }
         }
 

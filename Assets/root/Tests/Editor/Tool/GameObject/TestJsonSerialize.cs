@@ -45,6 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         public IEnumerator Structs()
         {
             ValidateType(DateTime.Now);
+            ValidateType(TimeSpan.FromSeconds(10));
 
             yield return null;
         }
@@ -52,10 +53,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator UnityStructs()
         {
+            ValidateType(new UnityEngine.Color32(1, 50, 33, 255));
+            ValidateType(UnityEngine.Color.cyan);
             ValidateType(UnityEngine.Vector3.up);
             ValidateType(UnityEngine.Vector3Int.up);
             ValidateType(UnityEngine.Vector2.up);
             ValidateType(UnityEngine.Vector2Int.up);
+            ValidateType(UnityEngine.Quaternion.identity);
+            ValidateType(UnityEngine.Matrix4x4.identity);
 
             yield return null;
         }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Globalization;
 using System.Text.Json.Nodes;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -15,6 +16,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         static void ValidateType(Type type)
         {
             var schema = JsonUtils.GetSchema(type);
+            UnityEngine.Debug.Log($"Schema for '{type.FullName}': {schema}");
+
             Assert.IsNotNull(schema, $"Schema for '{type.FullName}' is null");
 
             var typeNodes = JsonUtils.FindAllProperties(schema, "type");
@@ -28,7 +31,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                         Assert.IsFalse(typeValue == "null", $"Type node for '{type.FullName}' is \"null\" string");
                         break;
                     default:
-                        Assert.Fail($"Unexpected type node for '{type.FullName}': {typeNode}");
+                        Assert.Fail($"Unexpected type node for '{type.FullName}'.\nThe 'type' node has the type '{typeNode.GetType().Name}':\n{typeNode}");
                         break;
                 }
             }
@@ -52,6 +55,18 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             // ValidateType<object>();
             ValidateType<ObjectRef>();
 
+            ValidateType<GameObjectData>();
+            ValidateType<GameObjectRef>();
+            ValidateType<GameObjectRefList>();
+
+            ValidateType<ComponentData>();
+            ValidateType<ComponentDataLight>();
+            ValidateType<ComponentRef>();
+            ValidateType<ComponentRefList>();
+
+            ValidateType<MethodDataRef>();
+            ValidateType<MethodPointerRef>();
+
             yield return null;
         }
 
@@ -59,6 +74,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         public IEnumerator Structs()
         {
             ValidateType<DateTime>();
+            ValidateType<TimeSpan>();
 
             yield return null;
         }
@@ -66,10 +82,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator UnityStructs()
         {
+            ValidateType<UnityEngine.Color32>();
+            ValidateType<UnityEngine.Color>();
             ValidateType<UnityEngine.Vector3>();
             ValidateType<UnityEngine.Vector3Int>();
             ValidateType<UnityEngine.Vector2>();
             ValidateType<UnityEngine.Vector2Int>();
+            ValidateType<UnityEngine.Quaternion>();
+            ValidateType<UnityEngine.Matrix4x4>();
 
             yield return null;
         }
