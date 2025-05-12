@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Text.Json.Nodes;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 using NUnit.Framework;
@@ -15,6 +17,54 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         {
             var schema = JsonUtils.GetSchema(type);
             Assert.IsNotNull(schema, $"Schema for '{type.FullName}' is null");
+
+            var typeNodes = FindAllTypeProperties(schema, "type");
+            foreach (var typeNode in typeNodes)
+            {
+                var typeValue = default(string);
+                switch (typeNode)
+                {
+                    // case JsonObject obj:
+                    //     Assert.Fail($"Unexpected type node for '{type.FullName}': JsonObject");
+                    //     break;
+                    // case JsonArray arr:
+                    //     Assert.Fail($"Unexpected type node for '{type.FullName}': JsonArray");
+                    //     break;
+                    case JsonValue value:
+                        typeValue = value.ToString();
+                        Assert.IsFalse(string.IsNullOrEmpty(typeValue), $"Type node for '{type.FullName}' is empty");
+                        Assert.IsFalse(typeValue == "null", $"Type node for '{type.FullName}' is \"null\" string");
+                        break;
+                    default:
+                        Assert.Fail($"Unexpected type node for '{type.FullName}': {typeNode}");
+                        break;
+                }
+            }
+        }
+
+        static List<JsonNode?> FindAllTypeProperties(JsonNode? node, string fieldName)
+        {
+            var result = new List<JsonNode?>();
+            if (node is JsonObject obj)
+            {
+                foreach (var kvp in obj)
+                {
+                    if (kvp.Key == fieldName)
+                        result.Add(kvp.Value);
+
+                    if (kvp.Value != null)
+                        result.AddRange(FindAllTypeProperties(kvp.Value, fieldName));
+                }
+            }
+            else if (node is JsonArray arr)
+            {
+                foreach (var item in arr)
+                {
+                    if (item != null)
+                        result.AddRange(FindAllTypeProperties(item, fieldName));
+                }
+            }
+            return result;
         }
 
         [UnityTest]
