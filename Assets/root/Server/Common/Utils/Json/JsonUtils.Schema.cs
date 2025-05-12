@@ -1,6 +1,8 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -19,20 +21,28 @@ namespace com.IvanMurzak.Unity.MCP.Common
             if (underlyingNullableType != null)
                 type = underlyingNullableType;
 
+            var schema = default(JsonNode);
+
             var jsonConverter = jsonSerializerOptions.GetConverter(type);
             if (jsonConverter is IJsonSchemeConvertor schemeConvertor)
-                return schemeConvertor.GetScheme();
-
-            // Use JsonSchemaExporter to get the schema for each parameter type
-            var schema = jsonSerializerOptions.GetJsonSchemaAsNode(
-                type: type,
-                exporterOptions: new JsonSchemaExporterOptions
-                {
-                    TreatNullObliviousAsNonNullable = true
-                });
+            {
+                schema = schemeConvertor.GetScheme();
+            }
+            else
+            {
+                // Use JsonSchemaExporter to get the schema for each parameter type
+                schema = jsonSerializerOptions.GetJsonSchemaAsNode(
+                    type: type,
+                    exporterOptions: new JsonSchemaExporterOptions
+                    {
+                        TreatNullObliviousAsNonNullable = true
+                    });
+            }
 
             if (schema == null)
                 return null;
+
+            PostprocessFields(schema);
 
             if (schema is JsonObject parameterSchemaObject)
             {
@@ -86,6 +96,61 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     required.Add(parameter.Name!);
             }
             return schema;
+        }
+
+        public static List<JsonNode> FindAllProperties(JsonNode node, string fieldName)
+        {
+            var result = new List<JsonNode>();
+            if (node is JsonObject obj)
+            {
+                foreach (var kvp in obj)
+                {
+                    if (kvp.Key == fieldName)
+                        result.Add(kvp.Value);
+
+                    if (kvp.Value != null)
+                        result.AddRange(FindAllProperties(kvp.Value, fieldName));
+                }
+            }
+            else if (node is JsonArray arr)
+            {
+                foreach (var item in arr)
+                {
+                    if (item != null)
+                        result.AddRange(FindAllProperties(item, fieldName));
+                }
+            }
+            return result;
+        }
+        public static void PostprocessFields(JsonNode node)
+        {
+            if (node == null)
+                return;
+
+            if (node is JsonObject obj)
+            {
+                // Fixing "type" field. It should be not nullable, because current LLM models doesn't support nullable types
+                if (obj.TryGetPropertyValue("type", out var typeNode))
+                {
+                    if (typeNode is not JsonValue)
+                    {
+                        if (typeNode is JsonArray typeArray)
+                        {
+                            var correctTypeValue = typeArray.FirstOrDefault(x => x is JsonValue value && value.ToString() != "null");
+                            if (correctTypeValue != null)
+                                obj["type"] = JsonValue.Create(correctTypeValue.ToString());
+                        }
+                    }
+                }
+
+                // Look for the nested properties and process them
+                if (obj.TryGetPropertyValue("properties", out var propertiesNode))
+                {
+                    if (propertiesNode is JsonObject propertiesObj)
+                        foreach (var kvp in propertiesObj)
+                            PostprocessFields(kvp.Value);
+                }
+            }
         }
 
         public static JsonElement? ToJsonElement(this JsonNode? node)

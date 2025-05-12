@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json.Nodes;
 using com.IvanMurzak.Unity.MCP.Common;
@@ -18,17 +17,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var schema = JsonUtils.GetSchema(type);
             Assert.IsNotNull(schema, $"Schema for '{type.FullName}' is null");
 
-            var typeNodes = FindAllTypeProperties(schema, "type");
+            var typeNodes = JsonUtils.FindAllProperties(schema, "type");
             foreach (var typeNode in typeNodes)
             {
                 switch (typeNode)
                 {
-                    // case JsonObject obj:
-                    //     Assert.Fail($"Unexpected type node for '{type.FullName}': JsonObject");
-                    //     break;
-                    // case JsonArray arr:
-                    //     Assert.Fail($"Unexpected type node for '{type.FullName}': JsonArray");
-                    //     break;
                     case JsonValue value:
                         var typeValue = value.ToString();
                         Assert.IsFalse(string.IsNullOrEmpty(typeValue), $"Type node for '{type.FullName}' is empty");
@@ -39,31 +32,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                         break;
                 }
             }
-        }
-
-        static List<JsonNode?> FindAllTypeProperties(JsonNode? node, string fieldName)
-        {
-            var result = new List<JsonNode?>();
-            if (node is JsonObject obj)
-            {
-                foreach (var kvp in obj)
-                {
-                    if (kvp.Key == fieldName)
-                        result.Add(kvp.Value);
-
-                    if (kvp.Value != null)
-                        result.AddRange(FindAllTypeProperties(kvp.Value, fieldName));
-                }
-            }
-            else if (node is JsonArray arr)
-            {
-                foreach (var item in arr)
-                {
-                    if (item != null)
-                        result.AddRange(FindAllTypeProperties(item, fieldName));
-                }
-            }
-            return result;
         }
 
         [UnityTest]
