@@ -1,12 +1,46 @@
 using System;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
-    public class ColorConverter : JsonConverter<Color>
+    public class ColorConverter : JsonConverter<Color>, IJsonSchemeConvertor
     {
+        public JsonNode GetScheme() => new JsonObject
+        {
+            ["type"] = "object",
+            ["properties"] = new JsonObject
+            {
+                ["r"] = new JsonObject
+                {
+                    ["type"] = "number",
+                    ["minimum"] = 0,
+                    ["maximum"] = 1
+                },
+                ["g"] = new JsonObject
+                {
+                    ["type"] = "number",
+                    ["minimum"] = 0,
+                    ["maximum"] = 1
+                },
+                ["b"] = new JsonObject
+                {
+                    ["type"] = "number",
+                    ["minimum"] = 0,
+                    ["maximum"] = 1
+                },
+                ["a"] = new JsonObject
+                {
+                    ["type"] = "number",
+                    ["minimum"] = 0,
+                    ["maximum"] = 1
+                }
+            },
+            ["required"] = new JsonArray { "r", "g", "b", "a" }
+        };
+
         public override Color Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.StartObject)

@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Schema;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Json;
 
 namespace com.IvanMurzak.Unity.MCP.Common
 {
@@ -86,6 +87,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     ["required"] = new JsonArray { "type" }
                 };
             }
+
+            var jsonConverter = jsonSerializerOptions.GetConverter(type);
+            if (jsonConverter is IJsonSchemeConvertor schemeConvertor)
+                return schemeConvertor.GetScheme();
 
             // Use JsonSchemaExporter to get the schema for each parameter type
             var schema = jsonSerializerOptions.GetJsonSchemaAsNode(

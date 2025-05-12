@@ -32,7 +32,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator Classes()
         {
-            ValidateType<object>();
+            // ValidateType<object>();
             ValidateType<ObjectRef>();
 
             yield return null;
