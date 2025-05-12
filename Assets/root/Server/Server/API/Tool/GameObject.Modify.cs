@@ -1,5 +1,4 @@
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
