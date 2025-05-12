@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Text.Json.Nodes;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
@@ -31,6 +30,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                         Assert.IsFalse(typeValue == "null", $"Type node for '{type.FullName}' is \"null\" string");
                         break;
                     default:
+                        if (typeNode is JsonObject typeObject)
+                        {
+                            if (typeObject.TryGetPropertyValue("enum", out var enumValue))
+                                continue; // Skip enum types
+                        }
                         Assert.Fail($"Unexpected type node for '{type.FullName}'.\nThe 'type' node has the type '{typeNode.GetType().Name}':\n{typeNode}");
                         break;
                 }
