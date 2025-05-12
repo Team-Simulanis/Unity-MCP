@@ -6,7 +6,7 @@ using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
-    public class InstanceIDConverter : JsonConverter<ObjectRef>
+    public class ObjectRefConverter : JsonConverter<ObjectRef>
     {
         public override ObjectRef? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

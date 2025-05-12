@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Schema;
-using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Json;
 
 namespace com.IvanMurzak.Unity.MCP.Common
@@ -19,74 +18,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
             var underlyingNullableType = Nullable.GetUnderlyingType(type);
             if (underlyingNullableType != null)
                 type = underlyingNullableType;
-
-            if (type == typeof(SerializedMember))
-            {
-                // Handle SerializedMember type separately
-                return new JsonObject
-                {
-                    ["type"] = "object",
-                    ["properties"] = new JsonObject
-                    {
-                        ["type"] = new JsonObject
-                        {
-                            ["type"] = "string",
-                            ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
-                        },
-                        ["name"] = new JsonObject { ["type"] = "string" },
-                        ["value"] = new JsonObject { ["type"] = "object" },
-                        ["fields"] = new JsonObject
-                        {
-                            ["type"] = "array",
-                            ["items"] = new JsonObject
-                            {
-                                ["type"] = new JsonObject
-                                {
-                                    ["type"] = "string",
-                                    ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
-                                },
-                                ["name"] = new JsonObject { ["type"] = "string" },
-                                ["value"] = new JsonObject { ["type"] = "object" },
-                                ["properties"] = new JsonObject
-                                {
-                                    ["type"] = new JsonObject
-                                    {
-                                        ["type"] = "string",
-                                        ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
-                                    },
-                                    ["name"] = new JsonObject { ["type"] = "string" }
-                                },
-                                ["required"] = new JsonArray { "type", "name", "value" }
-                            }
-                        },
-                        ["properties"] = new JsonObject
-                        {
-                            ["type"] = "array",
-                            ["items"] = new JsonObject
-                            {
-                                ["type"] = new JsonObject
-                                {
-                                    ["type"] = "string",
-                                    ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
-                                },
-                                ["name"] = new JsonObject { ["type"] = "string" },
-                                ["value"] = new JsonObject { ["type"] = "object" },
-                                ["properties"] = new JsonObject
-                                {
-                                    ["type"] = new JsonObject
-                                    {
-                                        ["type"] = "string",
-                                        ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
-                                    },
-                                    ["name"] = new JsonObject { ["type"] = "string" }
-                                },
-                                ["required"] = new JsonArray { "type", "name", "value" }
-                            }
-                        }
-                    },
-                    ["required"] = new JsonArray { "type" }
-                };
-            }
 
             var jsonConverter = jsonSerializerOptions.GetConverter(type);
             if (jsonConverter is IJsonSchemeConvertor schemeConvertor)

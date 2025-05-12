@@ -2,13 +2,78 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
-    public class SerializedMemberConverter : JsonConverter<SerializedMember>
+    public class SerializedMemberConverter : JsonConverter<SerializedMember>, IJsonSchemeConvertor
     {
+        public JsonNode GetScheme() => new JsonObject
+        {
+            ["type"] = "object",
+            ["properties"] = new JsonObject
+            {
+                ["type"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
+                },
+                ["name"] = new JsonObject { ["type"] = "string" },
+                ["value"] = new JsonObject { ["type"] = "object" },
+                ["fields"] = new JsonObject
+                {
+                    ["type"] = "array",
+                    ["items"] = new JsonObject
+                    {
+                        ["type"] = new JsonObject
+                        {
+                            ["type"] = "string",
+                            ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
+                        },
+                        ["name"] = new JsonObject { ["type"] = "string" },
+                        ["value"] = new JsonObject { ["type"] = "object" },
+                        ["properties"] = new JsonObject
+                        {
+                            ["type"] = new JsonObject
+                            {
+                                ["type"] = "string",
+                                ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
+                            },
+                            ["name"] = new JsonObject { ["type"] = "string" }
+                        },
+                        ["required"] = new JsonArray { "type", "name", "value" }
+                    }
+                },
+                ["properties"] = new JsonObject
+                {
+                    ["type"] = "array",
+                    ["items"] = new JsonObject
+                    {
+                        ["type"] = new JsonObject
+                        {
+                            ["type"] = "string",
+                            ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
+                        },
+                        ["name"] = new JsonObject { ["type"] = "string" },
+                        ["value"] = new JsonObject { ["type"] = "object" },
+                        ["properties"] = new JsonObject
+                        {
+                            ["type"] = new JsonObject
+                            {
+                                ["type"] = "string",
+                                ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
+                            },
+                            ["name"] = new JsonObject { ["type"] = "string" }
+                        },
+                        ["required"] = new JsonArray { "type", "name", "value" }
+                    }
+                }
+            },
+            ["required"] = new JsonArray { "type" }
+        };
+
         public override SerializedMember? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType == JsonTokenType.Null)
