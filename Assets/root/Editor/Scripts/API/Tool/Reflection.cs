@@ -24,7 +24,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 return 0;
 
             if (original.Equals(value, StringComparison.OrdinalIgnoreCase))
-                return original.Equals(value)
+                return original.Equals(value, StringComparison.Ordinal)
                     ? 6
                     : 5;
 
@@ -137,7 +137,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
         public static class Error
         {
-            public static string MoreThenOneMethodFound(List<MethodInfo> methods)
+            public static string MoreThanOneMethodFound(List<MethodInfo> methods)
             {
                 var methodsString = JsonUtils.Serialize(methods.Select(method => new MethodDataRef(method)));
                 return @$"[Error] Found more then one method. Only single method should be targeted. Please specify the method name more precisely.

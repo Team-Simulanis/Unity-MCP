@@ -104,7 +104,7 @@ Required:
                     : null;
 
                 if (method == null)
-                    return Error.MoreThenOneMethodFound(methods);
+                    return Error.MoreThanOneMethodFound(methods);
             }
             else
             {
