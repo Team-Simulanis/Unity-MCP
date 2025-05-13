@@ -23,20 +23,31 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
             var schema = default(JsonNode);
 
-            var jsonConverter = jsonSerializerOptions.GetConverter(type);
-            if (jsonConverter is IJsonSchemeConvertor schemeConvertor)
+            try
             {
-                schema = schemeConvertor.GetScheme();
+                var jsonConverter = jsonSerializerOptions.GetConverter(type);
+                if (jsonConverter is IJsonSchemeConvertor schemeConvertor)
+                {
+                    schema = schemeConvertor.GetScheme();
+                }
+                else
+                {
+                    // Use JsonSchemaExporter to get the schema for each parameter type
+                    schema = jsonSerializerOptions.GetJsonSchemaAsNode(
+                        type: type,
+                        exporterOptions: new JsonSchemaExporterOptions
+                        {
+                            TreatNullObliviousAsNonNullable = true
+                        });
+                }
             }
-            else
+            catch (Exception ex)
             {
-                // Use JsonSchemaExporter to get the schema for each parameter type
-                schema = jsonSerializerOptions.GetJsonSchemaAsNode(
-                    type: type,
-                    exporterOptions: new JsonSchemaExporterOptions
-                    {
-                        TreatNullObliviousAsNonNullable = true
-                    });
+                // Handle exceptions and return null or an error message
+                return new JsonObject()
+                {
+                    ["error"] = $"Failed to get schema for '{type.FullName}': {ex.Message}"
+                };
             }
 
             if (schema == null)
@@ -52,7 +63,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
             }
             else
             {
-                throw new InvalidOperationException($"Unexpected schema type for '{type.FullName}'.\nJson Schema type: {schema.GetType()}\n");
+                return new JsonObject()
+                {
+                    ["error"] = $"Unexpected schema type for '{type.FullName}'. Json Schema type: {schema.GetType()}"
+                };
             }
             return schema;
         }
