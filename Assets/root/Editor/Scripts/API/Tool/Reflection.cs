@@ -82,7 +82,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             var typesEnumerable = AllTypes
                 .Where(type => type.IsVisible)
-                .Where(type => !type.IsInterface);
+                .Where(type => !type.IsInterface)
+                .Where(type => !type.IsAbstract)
+                .Where(type => !type.IsGenericTypeDefinition)
+                .Where(type => !type.IsGenericType);
 
             if (knownNamespace)
                 typesEnumerable = typesEnumerable.Where(type => type.Namespace == filter.Namespace);
