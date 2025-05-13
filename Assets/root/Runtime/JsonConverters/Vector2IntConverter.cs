@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
-    public class Vector2IntConverter : JsonConverter<Vector2Int>, IJsonSchemeConvertor
+    public class Vector2IntConverter : JsonConverter<Vector2Int>, IJsonSchemaConverter
     {
         public JsonNode GetScheme() => new JsonObject
         {

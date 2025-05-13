@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
-    public class Matrix4x4Converter : JsonConverter<Matrix4x4>, IJsonSchemeConvertor
+    public class Matrix4x4Converter : JsonConverter<Matrix4x4>, IJsonSchemaConverter
     {
         public JsonNode GetScheme() => new JsonObject
         {

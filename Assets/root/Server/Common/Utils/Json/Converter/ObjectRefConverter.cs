@@ -7,7 +7,7 @@ using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
-    public class ObjectRefConverter : JsonConverter<ObjectRef>, IJsonSchemeConvertor
+    public class ObjectRefConverter : JsonConverter<ObjectRef>, IJsonSchemaConverter
     {
         public JsonNode GetScheme() => new JsonObject
         {

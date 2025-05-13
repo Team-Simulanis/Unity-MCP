@@ -26,7 +26,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             try
             {
                 var jsonConverter = jsonSerializerOptions.GetConverter(type);
-                if (jsonConverter is IJsonSchemeConvertor schemeConvertor)
+                if (jsonConverter is IJsonSchemaConverter schemeConvertor)
                 {
                     schema = schemeConvertor.GetScheme();
                 }

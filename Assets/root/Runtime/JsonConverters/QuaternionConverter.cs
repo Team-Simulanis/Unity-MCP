@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
-    public class QuaternionConverter : JsonConverter<Quaternion>, IJsonSchemeConvertor
+    public class QuaternionConverter : JsonConverter<Quaternion>, IJsonSchemaConverter
     {
         public JsonNode GetScheme() => new JsonObject
         {

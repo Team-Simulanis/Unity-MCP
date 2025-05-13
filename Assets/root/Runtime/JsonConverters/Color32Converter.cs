@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
-    public class Color32Converter : JsonConverter<Color32>, IJsonSchemeConvertor
+    public class Color32Converter : JsonConverter<Color32>, IJsonSchemaConverter
     {
         public JsonNode GetScheme() => new JsonObject
         {

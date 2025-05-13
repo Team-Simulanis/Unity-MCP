@@ -8,7 +8,7 @@ using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
-    public class SerializedMemberConverter : JsonConverter<SerializedMember>, IJsonSchemeConvertor
+    public class SerializedMemberConverter : JsonConverter<SerializedMember>, IJsonSchemaConverter
     {
         public static JsonNode Schema => new JsonObject
         {
