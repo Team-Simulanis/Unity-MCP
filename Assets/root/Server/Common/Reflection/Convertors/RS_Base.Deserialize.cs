@@ -38,9 +38,9 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
                         fieldInfo.SetValue(result, fieldValue);
                 }
             }
-            if (data.properties != null)
+            if (data.props != null)
             {
-                foreach (var property in data.properties)
+                foreach (var property in data.props)
                 {
                     if (string.IsNullOrEmpty(property.name))
                         continue;

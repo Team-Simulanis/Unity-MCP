@@ -24,6 +24,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 new JsonStringEnumConverter(),
                 new ObjectRefConverter(),
                 new SerializedMemberConverter(),
+                new SerializedMemberListConverter(),
 
                 // new SerializedMemberConverterFactory()
             }

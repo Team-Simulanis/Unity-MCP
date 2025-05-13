@@ -26,7 +26,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                         name = name,
                         typeName = type.FullName,
                         fields = SerializeFields(reflector, obj, flags),
-                        properties = SerializeProperties(reflector, obj, flags)
+                        props = SerializeProperties(reflector, obj, flags)
                     }.SetValue(new ObjectRef(unityObject.GetInstanceID()));
                 }
                 else

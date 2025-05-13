@@ -49,8 +49,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
                 foreach (var field in data.fields)
                     ModifyField(reflector, ref obj, field, stringBuilder, depth: nextDepth, flags: flags, logger: logger);
 
-            if (data.properties != null)
-                foreach (var property in data.properties)
+            if (data.props != null)
+                foreach (var property in data.props)
                     ModifyProperty(reflector, ref obj, property, stringBuilder, depth: nextDepth, flags: flags, logger: logger);
 
             return stringBuilder;

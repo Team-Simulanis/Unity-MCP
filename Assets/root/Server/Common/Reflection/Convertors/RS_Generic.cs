@@ -27,7 +27,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
                         name = name,
                         typeName = type.FullName ?? string.Empty,
                         fields = SerializeFields(reflector, obj, flags),
-                        properties = SerializeProperties(reflector, obj, flags),
+                        props = SerializeProperties(reflector, obj, flags),
                         valueJsonElement = new JsonObject().ToJsonElement()
                     }
                     : SerializedMember.FromJson(type, JsonUtils.Serialize(obj), name: name);
