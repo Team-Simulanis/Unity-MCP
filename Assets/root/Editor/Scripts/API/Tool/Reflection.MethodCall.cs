@@ -111,8 +111,8 @@ Required:
                 method = methods.First();
             }
 
-            inputParameters.EnhanceNames(method);
-            inputParameters.EnhanceTypes(method);
+            inputParameters?.EnhanceNames(method);
+            inputParameters?.EnhanceTypes(method);
 
             // if (!inputParameters.IsMatch(method, out var matchError))
             //     return $"[Error] {matchError}";
