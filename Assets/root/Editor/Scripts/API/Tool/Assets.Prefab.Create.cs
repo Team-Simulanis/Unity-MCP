@@ -46,8 +46,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             EditorUtility.SetDirty(go);
             EditorApplication.RepaintHierarchyWindow();
 
+            var result = Reflector.Instance.Serialize(
+                prefabGo,
+                recursive: false,
+                logger: McpPlugin.Instance.Logger
+            );
+
             return $"[Success] Prefab '{prefabAssetPath}' created from GameObject '{go.name}' (InstanceID: {instanceID}).\n" +
-                   $"Prefab GameObject:\n{Reflector.Instance.Serialize(prefabGo, recursive: false)}";
+                   $"Prefab GameObject:\n{result}";
         });
     }
 }

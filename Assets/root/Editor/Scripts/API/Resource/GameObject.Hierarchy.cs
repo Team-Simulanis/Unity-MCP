@@ -38,7 +38,16 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 if (go == null)
                     throw new System.Exception($"[Error] GameObject '{path}' not found.");
 
-                return ResponseResourceContent.CreateText(uri, JsonUtils.Serialize(Reflector.Instance.Serialize(go)), Consts.MimeType.TextJson).MakeArray();
+                return ResponseResourceContent.CreateText(
+                    uri,
+                    JsonUtils.Serialize(
+                        Reflector.Instance.Serialize(
+                            go,
+                            logger: McpPlugin.Instance.Logger
+                        )
+                    ),
+                    Consts.MimeType.TextJson
+                ).MakeArray();
             });
         }
 

@@ -10,6 +10,7 @@ using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Common.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -22,7 +23,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 nameof(UnityEngine.GameObject.transform),
                 nameof(UnityEngine.GameObject.scene)
             });
-        protected override SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string name = null, bool recursive = true, BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+        protected override SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string name = null, bool recursive = true,
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             var unityObject = obj as UnityEngine.GameObject;
             if (recursive)
@@ -30,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 return new SerializedMember()
                 {
                     name = name,
-                    type = type.FullName,
+                    className = type.FullName,
                     fields = SerializeFields(reflector, obj, flags),
                     properties = SerializeProperties(reflector, obj, flags)
                 }.SetValue(new ObjectRef(unityObject.GetInstanceID()));
@@ -42,7 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }
         }
 
-        protected override List<SerializedMember> SerializeFields(Reflector reflector, object obj, BindingFlags flags)
+        protected override List<SerializedMember> SerializeFields(Reflector reflector, object obj, BindingFlags flags, ILogger? logger = null)
         {
             var serializedFields = base.SerializeFields(reflector, obj, flags) ?? new();
 
@@ -55,25 +58,33 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             {
                 var component = components[i];
                 var componentType = component.GetType();
-                var componentSerialized = reflector.Serialize(component, componentType, name: $"component_{i}", recursive: true, flags: flags);
+                var componentSerialized = reflector.Serialize(
+                    obj: component,
+                    type: componentType,
+                    name: $"component_{i}",
+                    recursive: true,
+                    flags: flags,
+                    logger: logger
+                );
                 serializedFields.Add(componentSerialized);
             }
             return serializedFields;
         }
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value)
+        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, ILogger? logger = null)
         {
             return true;
         }
 
         protected override StringBuilder? ModifyField(Reflector reflector, ref object obj, SerializedMember fieldValue, StringBuilder? stringBuilder = null, int depth = 0,
-            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+            ILogger? logger = null)
         {
             var go = obj as UnityEngine.GameObject;
 
-            var type = TypeUtils.GetType(fieldValue.type);
+            var type = TypeUtils.GetType(fieldValue.className);
             if (type == null)
-                return stringBuilder?.AppendLine($"[Error] Type not found: {fieldValue.type}");
+                return stringBuilder?.AppendLine($"[Error] Type not found: {fieldValue.className}");
 
             // If not a component, use base method
             if (!typeof(UnityEngine.Component).IsAssignableFrom(type))
@@ -101,7 +112,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 return stringBuilder?.AppendLine($"[Error] Component not found. Use 'instanceID' or name 'component_[index]' to specify the component.");
 
             var componentObject = (object)component;
-            return reflector.Populate(ref componentObject, fieldValue);
+            return reflector.Populate(ref componentObject, fieldValue, logger: logger);
         }
     }
 }

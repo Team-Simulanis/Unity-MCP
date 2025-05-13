@@ -8,12 +8,15 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
 {
     public partial class RS_Generic<T> : RS_NotArray<T>
     {
-        protected override SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string? name = null, bool recursive = true, BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+        protected override SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string? name = null, bool recursive = true,
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             var isStruct = type.IsValueType && !type.IsPrimitive && !type.IsEnum;
             if (type.IsClass || isStruct)
@@ -22,7 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
                     ? new SerializedMember()
                     {
                         name = name,
-                        type = type.FullName ?? string.Empty,
+                        className = type.FullName ?? string.Empty,
                         fields = SerializeFields(reflector, obj, flags),
                         properties = SerializeProperties(reflector, obj, flags),
                         valueJsonElement = new JsonObject().ToJsonElement()
@@ -31,17 +34,17 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
             }
             throw new ArgumentException($"Unsupported type: {type.FullName}");
         }
-        public override IEnumerable<FieldInfo>? GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags)
+        public override IEnumerable<FieldInfo>? GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags, ILogger? logger = null)
             => objType.GetFields(flags)
                 .Where(field => field.GetCustomAttribute<ObsoleteAttribute>() == null)
                 .Where(field => field.IsPublic);
 
-        public override IEnumerable<PropertyInfo>? GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags)
+        public override IEnumerable<PropertyInfo>? GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags, ILogger? logger = null)
             => objType.GetProperties(flags)
                 .Where(prop => prop.GetCustomAttribute<ObsoleteAttribute>() == null)
                 .Where(prop => prop.CanRead);
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value)
+        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, ILogger? logger = null)
         {
             var parsedValue = value == null
                 ? TypeUtils.GetDefaultValue(type)
@@ -51,7 +54,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
         }
 
         public override bool SetAsField(Reflector reflector, ref object obj, Type type, FieldInfo fieldInfo, SerializedMember? value, StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             var parsedValue = value?.valueJsonElement == null
                 ? TypeUtils.GetDefaultValue(type)
@@ -62,7 +66,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
         }
 
         public override bool SetAsProperty(Reflector reflector, ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             var parsedValue = value?.valueJsonElement == null
                 ? TypeUtils.GetDefaultValue(type)
@@ -73,7 +78,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
         }
 
         public override bool SetField(Reflector reflector, ref object obj, Type type, FieldInfo fieldInfo, SerializedMember? value,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             var parsedValue = value?.valueJsonElement == null
                 ? TypeUtils.GetDefaultValue(type)
@@ -83,7 +89,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
         }
 
         public override bool SetProperty(Reflector reflector, ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             var parsedValue = value?.valueJsonElement == null
                 ? TypeUtils.GetDefaultValue(type)

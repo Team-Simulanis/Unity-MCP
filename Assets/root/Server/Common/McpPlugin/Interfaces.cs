@@ -4,12 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common.Data;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
 using R3;
 
 namespace com.IvanMurzak.Unity.MCP.Common
 {
     public interface IMcpPlugin : IConnection, IDisposableAsync
     {
+        ILogger Logger { get; }
         IMcpRunner McpRunner { get; }
     }
     public interface IConnection : IDisposableAsync

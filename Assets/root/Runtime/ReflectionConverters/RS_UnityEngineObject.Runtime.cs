@@ -4,19 +4,25 @@ using System;
 using System.Reflection;
 using System.Text;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineObject<T> : RS_GenericUnity<T> where T : UnityEngine.Object
     {
+        public override object? Deserialize(Reflector reflector, SerializedMember data, ILogger? logger = null)
+            => null;
+
         public override bool SetAsField(ref object obj, Type type, FieldInfo fieldInfo, SerializedMember? value, StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             return false;
         }
 
         public override bool SetAsProperty(ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             return false;
         }

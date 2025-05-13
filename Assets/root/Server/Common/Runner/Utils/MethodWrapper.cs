@@ -75,6 +75,11 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
 
             // Build the final parameters array, filling in default values where necessary
             var finalParameters = BuildParameters(_reflector, parameters);
+
+            // _if (_logger?.IsEnabled(LogLevel.Debug) ?? false)
+            //     ? $"Invoke method: {_methodInfo.ReturnType.Name} {_methodInfo.Name}({string.Join(", ", namedParameters!.Select(x => $"{x.Value?.GetType()?.Name ?? "null"} {x.Key}"))})"
+            //     : $"Invoke method: {_methodInfo.ReturnType.Name} {_methodInfo.Name}()");
+
             PrintParameters(finalParameters);
 
             // Invoke the method (static or instance)
@@ -101,6 +106,12 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
 
             // Build the final parameters array, filling in default values where necessary
             var finalParameters = BuildParameters(_reflector, namedParameters);
+
+            // if (_logger?.IsEnabled(LogLevel.Debug) ?? false)
+            //     _logger.LogTrace((namedParameters?.Count ?? 0) > 0
+            //         ? $"Invoke method: {_methodInfo.ReturnType.Name} {_methodInfo.Name}({string.Join(", ", namedParameters!.Select(x => $"{x.Value?.GetType()?.Name ?? "null"} {x.Key}"))})"
+            //         : $"Invoke method: {_methodInfo.ReturnType.Name} {_methodInfo.Name}()");
+
             PrintParameters(finalParameters);
 
             // Invoke the method (static or instance)
@@ -148,7 +159,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
                             if (serializedParameter == null)
                                 throw new ArgumentException($"Failed to parse {nameof(SerializedMember)} for parameter '{methodParameters[i].Name}'");
 
-                            finalParameters[i] = reflector.Deserialize(serializedParameter);
+                            finalParameters[i] = reflector.Deserialize(serializedParameter, _logger);
                         }
                     }
                     else
@@ -166,6 +177,17 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
                 {
                     throw new ArgumentException($"No value provided for parameter '{methodParameters[i].Name}' and no default value is defined.");
                 }
+            }
+
+            // Validate parameters
+            for (int i = 0; i < methodParameters.Length; i++)
+            {
+                var parameter = methodParameters[i];
+                if (finalParameters[i] == null)
+                    continue;
+
+                if (!parameter.ParameterType.IsInstanceOfType(finalParameters[i]))
+                    throw new ArgumentException($"Parameter '{parameter.Name}' type mismatch. Expected '{parameter.ParameterType}', but got '{finalParameters[i]?.GetType()}'.");
             }
 
             return finalParameters;
@@ -200,7 +222,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
                             if (serializedParameter == null)
                                 throw new ArgumentException($"Failed to parse {nameof(SerializedMember)} for parameter '{methodParameters[i].Name}'");
 
-                            finalParameters[i] = reflector.Deserialize(serializedParameter);
+                            finalParameters[i] = reflector.Deserialize(serializedParameter, _logger);
                         }
                     }
                     else
@@ -223,6 +245,17 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
                 }
             }
 
+            // Validate parameters
+            for (int i = 0; i < methodParameters.Length; i++)
+            {
+                var parameter = methodParameters[i];
+                if (finalParameters[i] == null)
+                    continue;
+
+                if (!parameter.ParameterType.IsInstanceOfType(finalParameters[i]))
+                    throw new ArgumentException($"Parameter '{parameter.Name}' type mismatch. Expected '{parameter.ParameterType}', but got '{finalParameters[i]?.GetType()}'.");
+            }
+
             return finalParameters;
         }
         void PrintParameters(object?[]? parameters)
@@ -230,7 +263,11 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             if (!(_logger?.IsEnabled(LogLevel.Debug) ?? false))
                 return;
 
-            _logger?.LogDebug("Invoke method: {0} {1}, Class: {2}", _methodInfo.ReturnType.Name, _methodInfo.Name, _classType?.Name ?? "null");
+            _logger.LogDebug((parameters?.Length ?? 0) > 0
+                ? $"Invoke method: {_methodInfo.ReturnType.Name} {_methodInfo.Name}({string.Join(", ", parameters!.Select(x => $"{x?.GetType()?.Name ?? "null"}"))})"
+                : $"Invoke method: {_methodInfo.ReturnType.Name} {_methodInfo.Name}()");
+
+            // _logger?.LogDebug("Invoke method: {0} {1}, Class: {2}", _methodInfo.ReturnType.Name, _methodInfo.Name, _classType?.Name ?? "null");
 
             var methodParameters = _methodInfo.GetParameters();
             var maxLength = Math.Max(methodParameters.Length, parameters?.Length ?? 0);
@@ -246,7 +283,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             }
 
             var parameterLogs = string.Join(Environment.NewLine, result);
-            _logger?.LogDebug("Invoke method: Parameters. Input: {0}, Provided: {1}\n{2}", methodParameters.Length, parameters?.Length, parameterLogs);
+            _logger?.LogDebug("Invoke method: Input: {0}, Provided: {1}\n{2}\n", methodParameters.Length, parameters?.Length, parameterLogs);
         }
     }
 }

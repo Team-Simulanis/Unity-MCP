@@ -15,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
             ["type"] = "object",
             ["properties"] = new JsonObject
             {
-                ["type"] = new JsonObject
+                ["className"] = new JsonObject
                 {
                     ["type"] = "string",
                     ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
@@ -27,51 +27,45 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                     ["type"] = "array",
                     ["items"] = new JsonObject
                     {
-                        ["type"] = new JsonObject
-                        {
-                            ["type"] = "string",
-                            ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
-                        },
-                        ["name"] = new JsonObject { ["type"] = "string" },
-                        ["value"] = new JsonObject { ["type"] = "object" },
+                        ["type"] = "object",
                         ["properties"] = new JsonObject
                         {
-                            ["type"] = new JsonObject
+                            ["className"] = new JsonObject
                             {
                                 ["type"] = "string",
                                 ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
                             },
-                            ["name"] = new JsonObject { ["type"] = "string" }
+                            ["name"] = new JsonObject { ["type"] = "string" },
+                            ["value"] = new JsonObject { ["type"] = "object" },
+                            ["fields"] = new JsonObject { ["type"] = "array" },
+                            ["props"] = new JsonObject { ["type"] = "array" },
                         },
-                        ["required"] = new JsonArray { "type", "name", "value" }
+                        ["required"] = new JsonArray { "className", "name", "value" }
                     }
                 },
-                ["properties"] = new JsonObject
+                ["props"] = new JsonObject
                 {
                     ["type"] = "array",
                     ["items"] = new JsonObject
                     {
-                        ["type"] = new JsonObject
-                        {
-                            ["type"] = "string",
-                            ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
-                        },
-                        ["name"] = new JsonObject { ["type"] = "string" },
-                        ["value"] = new JsonObject { ["type"] = "object" },
+                        ["type"] = "object",
                         ["properties"] = new JsonObject
                         {
-                            ["type"] = new JsonObject
+                            ["className"] = new JsonObject
                             {
                                 ["type"] = "string",
                                 ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
                             },
-                            ["name"] = new JsonObject { ["type"] = "string" }
+                            ["name"] = new JsonObject { ["type"] = "string" },
+                            ["value"] = new JsonObject { ["type"] = "object" },
+                            ["fields"] = new JsonObject { ["type"] = "array" },
+                            ["props"] = new JsonObject { ["type"] = "array" },
                         },
-                        ["required"] = new JsonArray { "type", "name", "value" }
+                        ["required"] = new JsonArray { "className", "name", "value" }
                     }
                 }
             },
-            ["required"] = new JsonArray { "type" }
+            ["required"] = new JsonArray { "className", "value" }
         };
 
         public override SerializedMember? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -96,8 +90,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                         case "name":
                             member.name = reader.GetString() ?? "[FAILED TO READ]";
                             break;
-                        case "type":
-                            member.type = reader.GetString() ?? "[FAILED TO READ]";
+                        case "className":
+                            member.className = reader.GetString() ?? "[FAILED TO READ]";
                             break;
                         case "value":
                             member.valueJsonElement = JsonElement.ParseValue(ref reader);
@@ -105,7 +99,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                         case "fields":
                             member.fields = JsonUtils.Deserialize<List<SerializedMember>>(ref reader, options);
                             break;
-                        case "properties":
+                        case "props":
                             member.properties = JsonUtils.Deserialize<List<SerializedMember>>(ref reader, options);
                             break;
                         default:
@@ -129,7 +123,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
             writer.WriteStartObject();
 
             writer.WriteString("name", value.name);
-            writer.WriteString("type", value.type);
+            writer.WriteString("className", value.className);
 
             if (value.valueJsonElement.HasValue)
             {
@@ -143,7 +137,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
             }
             if (value.properties != null && value.properties.Count > 0)
             {
-                writer.WritePropertyName("properties");
+                writer.WritePropertyName("props");
                 JsonSerializer.Serialize(writer, value.properties, options);
             }
 

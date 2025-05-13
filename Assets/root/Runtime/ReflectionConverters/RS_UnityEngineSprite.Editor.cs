@@ -7,12 +7,15 @@ using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineSprite : RS_UnityEngineObject<UnityEngine.Sprite>
     {
-        public override StringBuilder Populate(Reflector reflector, ref object obj, SerializedMember data, int depth = 0, StringBuilder stringBuilder = null, BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+        public override StringBuilder Populate(Reflector reflector, ref object obj, SerializedMember data, int depth = 0, StringBuilder stringBuilder = null,
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             var instanceID = data.GetInstanceID();
             if (instanceID == 0)

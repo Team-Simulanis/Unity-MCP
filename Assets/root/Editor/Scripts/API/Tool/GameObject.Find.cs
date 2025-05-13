@@ -34,7 +34,12 @@ Also, it returns Components preview just for the target GameObject.")]
                 if (error != null)
                     return error;
 
-                var serializedGo = Reflector.Instance.Serialize(go, name: go.name, recursive: !briefData);
+                var serializedGo = Reflector.Instance.Serialize(
+                    go,
+                    name: go.name,
+                    recursive: !briefData,
+                    logger: McpPlugin.Instance.Logger
+                );
                 var json = JsonUtils.Serialize(serializedGo);
                 return @$"[Success] Found GameObject.
 # Data:

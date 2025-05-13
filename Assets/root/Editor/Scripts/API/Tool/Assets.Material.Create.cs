@@ -42,7 +42,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            var result = Reflector.Instance.Serialize(material, name: material.name);
+            var result = Reflector.Instance.Serialize(
+                material,
+                name: material.name,
+                logger: McpPlugin.Instance.Logger
+            );
             return $"[Success] Material instanceID '{material.GetInstanceID()}' created at '{assetPath}'.\n{result}";
         });
     }

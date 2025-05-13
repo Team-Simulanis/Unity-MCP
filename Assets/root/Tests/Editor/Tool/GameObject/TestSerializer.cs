@@ -125,7 +125,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 
             var materials = new[] { material1, material2 };
 
-            var serialized = Reflector.Instance.Serialize(materials);
+            var serialized = Reflector.Instance.Serialize(materials, logger: McpPlugin.Instance.Logger);
             var json = JsonUtils.Serialize(serialized);
             Debug.Log($"[{nameof(TestSerializer)}] Result:\n{json}");
 
@@ -147,8 +147,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         void Test_Serialize_Deserialize<T>(T sourceObj)
         {
             var type = typeof(T);
-            var serializedObj = Reflector.Instance.Serialize(sourceObj);
-            var deserializedObj = Reflector.Instance.Deserialize(serializedObj);
+            var serializedObj = Reflector.Instance.Serialize(sourceObj, logger: McpPlugin.Instance.Logger);
+            var deserializedObj = Reflector.Instance.Deserialize(serializedObj, McpPlugin.Instance.Logger);
 
             Debug.Log($"[{type.Name}] Source:\n```json\n{JsonUtils.Serialize(sourceObj)}\n```");
             Debug.Log($"[{type.Name}] Serialized:\n```json\n{JsonUtils.Serialize(serializedObj)}\n```");

@@ -11,8 +11,9 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
     public class SerializedMember
     {
         [JsonInclude] public string? name = string.Empty; // needed for Unity's JsonUtility serialization
-        [JsonInclude] public string type = string.Empty; // needed for Unity's JsonUtility serialization
+        [JsonInclude] public string className = string.Empty; // needed for Unity's JsonUtility serialization
         [JsonInclude] public List<SerializedMember>? fields; // needed for Unity's JsonUtility serialization
+        [JsonPropertyName("props")]
         [JsonInclude] public List<SerializedMember>? properties; // needed for Unity's JsonUtility serialization
 
         [JsonInclude, JsonPropertyName("value")]
@@ -23,7 +24,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
         protected SerializedMember(Type type, string? name = null)
         {
             this.name = name;
-            this.type = type.FullName ?? throw new ArgumentNullException(nameof(type));
+            this.className = type.FullName ?? throw new ArgumentNullException(nameof(type));
         }
 
         public SerializedMember SetName(string? name)

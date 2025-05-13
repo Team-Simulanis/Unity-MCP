@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.MCP;
 using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Utils;
@@ -67,7 +66,7 @@ Required:
 - type - full type name of the object to call method on.
 - name - parameter name.
 - value - serialized object value. It will be deserialized to the specified type.")]
-            List<SerializedMember>? inputParameters = null,
+            SerializedMemberList? inputParameters = null,
 
             [Description(@"Set to true if the method should be executed in the main thread. Otherwise, set to false.")]
             bool executeInMainThread = true
@@ -96,27 +95,26 @@ Found {methods.Count} method(s):
             Func<string> action = () =>
             {
                 var convertors = Reflector.Instance.Convertors.GetAllSerializers();
-                var dictInputParameters = inputParameters
-                    ?.Select(p => (p.name, Reflector.Instance.Deserialize(p)))
-                    ?.ToImmutableDictionary(
-                        keySelector: kvp => kvp.Item1,
-                        elementSelector: kvp => kvp.Item2);
+                var dictInputParameters = inputParameters?.ToImmutableDictionary(
+                    keySelector: p => p.name,
+                    elementSelector: p => Reflector.Instance.Deserialize(p, McpPlugin.Instance.Logger)
+                );
 
                 var methodWrapper = default(MethodWrapper);
 
-                if (string.IsNullOrEmpty(targetObject?.type))
+                if (string.IsNullOrEmpty(targetObject?.className))
                 {
                     // No object instance needed. Probably static method.
-                    methodWrapper = new MethodWrapper(Reflector.Instance, logger: null, method);
+                    methodWrapper = new MethodWrapper(Reflector.Instance, logger: McpPlugin.Instance.Logger, method);
                 }
                 else
                 {
                     // Object instance needed. Probably instance method.
-                    var obj = Reflector.Instance.Deserialize(targetObject);
+                    var obj = Reflector.Instance.Deserialize(targetObject, McpPlugin.Instance.Logger);
                     if (obj == null)
                         return $"[Error] '{nameof(targetObject)}' deserialized instance is null. Please specify the '{nameof(targetObject)}' properly.";
 
-                    methodWrapper = new MethodWrapper(Reflector.Instance, logger: null, targetInstance: obj, method);
+                    methodWrapper = new MethodWrapper(Reflector.Instance, logger: McpPlugin.Instance.Logger, targetInstance: obj, method);
                 }
 
                 var task = dictInputParameters != null
@@ -124,7 +122,6 @@ Found {methods.Count} method(s):
                     : methodWrapper.Invoke();
 
                 var result = task.Result;
-
                 return $"[Success] Execution result:\n```json\n{JsonUtils.Serialize(result)}\n```";
             };
 

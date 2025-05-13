@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Utils
 {
-    using LogLevelMirosoft = Microsoft.Extensions.Logging.LogLevel;
+    using LogLevelMicrosoft = Microsoft.Extensions.Logging.LogLevel;
 
     public class UnityLogger : ILogger
     {
@@ -19,9 +19,9 @@ namespace com.IvanMurzak.Unity.MCP.Utils
 
         public IDisposable BeginScope<TState>(TState state) => null!;
 
-        public bool IsEnabled(LogLevelMirosoft logLevel) => true;
+        public bool IsEnabled(LogLevelMicrosoft logLevel) => true;
 
-        public void Log<TState>(LogLevelMirosoft logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevelMicrosoft logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             if (formatter == null) throw new ArgumentNullException(nameof(formatter));
             if (state == null) throw new ArgumentNullException(nameof(state));
@@ -29,26 +29,26 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             // Map LogLevel to short names
             string logLevelShort = logLevel switch
             {
-                LogLevelMirosoft.Critical => Consts.Log.Crit,
-                LogLevelMirosoft.Error => Consts.Log.Fail,
-                LogLevelMirosoft.Warning => Consts.Log.Warn,
-                LogLevelMirosoft.Information => Consts.Log.Info,
-                LogLevelMirosoft.Debug => Consts.Log.Dbug,
-                LogLevelMirosoft.Trace => Consts.Log.Trce,
+                LogLevelMicrosoft.Critical => Consts.Log.Crit,
+                LogLevelMicrosoft.Error => Consts.Log.Fail,
+                LogLevelMicrosoft.Warning => Consts.Log.Warn,
+                LogLevelMicrosoft.Information => Consts.Log.Info,
+                LogLevelMicrosoft.Debug => Consts.Log.Dbug,
+                LogLevelMicrosoft.Trace => Consts.Log.Trce,
                 _ => "none: "
             };
 
             var message = $"{Consts.Log.Color.LevelStart}{logLevelShort}{Consts.Log.Color.LevelEnd}{Consts.Log.Tag} {Consts.Log.Color.CategoryStart}{_categoryName}{Consts.Log.Color.CategoryEnd} {formatter(state, exception)}";
             switch (logLevel)
             {
-                case LogLevelMirosoft.Critical:
-                case LogLevelMirosoft.Error:
+                case LogLevelMicrosoft.Critical:
+                case LogLevelMicrosoft.Error:
                     UnityEngine.Debug.LogError(message);
                     if (exception != null)
                         UnityEngine.Debug.LogException(exception);
                     break;
 
-                case LogLevelMirosoft.Warning:
+                case LogLevelMicrosoft.Warning:
                     UnityEngine.Debug.LogWarning(message);
                     break;
 

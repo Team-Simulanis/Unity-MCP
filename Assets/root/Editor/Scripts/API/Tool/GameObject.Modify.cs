@@ -48,7 +48,7 @@ Check the result of this command to see what was changed. The ignored fields and
                     continue;
                 }
                 var objToModify = (object)go;
-                var type = TypeUtils.GetType(gameObjectDiffs[i].type);
+                var type = TypeUtils.GetType(gameObjectDiffs[i].className);
                 if (typeof(UnityEngine.Component).IsAssignableFrom(type))
                 {
                     var component = go.GetComponent(type);

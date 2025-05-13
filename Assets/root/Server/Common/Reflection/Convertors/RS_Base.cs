@@ -1,6 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
 using com.IvanMurzak.Unity.MCP.Common.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
 {
@@ -11,7 +12,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
         public virtual bool AllowCascadeSerialize => false;
         public virtual bool AllowCascadePopulate => false;
 
-        public virtual int SerializationPriority(Type type)
+        public virtual int SerializationPriority(Type type, ILogger? logger = null)
         {
             if (type == typeof(T))
                 return MAX_DEPTH + 1;

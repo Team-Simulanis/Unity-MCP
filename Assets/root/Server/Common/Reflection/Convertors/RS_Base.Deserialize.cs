@@ -2,14 +2,15 @@
 using System.Reflection;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
 {
     public abstract partial class RS_Base<T> : IReflectionConvertor
     {
-        public virtual object? Deserialize(Reflector reflector, SerializedMember data)
+        public virtual object? Deserialize(Reflector reflector, SerializedMember data, ILogger? logger = null)
         {
-            var type = TypeUtils.GetType(data.type);
+            var type = TypeUtils.GetType(data.className);
             if (type == null)
                 return null;
 
@@ -24,7 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
                     if (string.IsNullOrEmpty(field.name))
                         continue;
 
-                    var fieldType = TypeUtils.GetType(field.type);
+                    var fieldType = TypeUtils.GetType(field.className);
                     if (fieldType == null)
                         continue;
 
@@ -44,7 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
                     if (string.IsNullOrEmpty(property.name))
                         continue;
 
-                    var fieldType = TypeUtils.GetType(property.type);
+                    var fieldType = TypeUtils.GetType(property.className);
                     if (fieldType == null)
                         continue;
 

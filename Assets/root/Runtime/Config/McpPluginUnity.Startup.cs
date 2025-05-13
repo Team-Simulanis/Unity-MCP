@@ -23,7 +23,7 @@ namespace com.IvanMurzak.Unity.MCP
                 .WithAppFeatures()
                 .WithConfig(config =>
                 {
-                    if (McpPluginUnity.LogLevel.IsActive(LogLevel.Log))
+                    if (McpPluginUnity.LogLevel.IsActive(LogLevel.Info))
                         Debug.Log($"{Consts.Log.Tag} MCP server address: {McpPluginUnity.Host}");
 
                     config.Endpoint = McpPluginUnity.Host;
@@ -35,7 +35,8 @@ namespace com.IvanMurzak.Unity.MCP
                     loggingBuilder.SetMinimumLevel(McpPluginUnity.LogLevel switch
                     {
                         LogLevel.Trace => LogLevelMicrosoft.Trace,
-                        LogLevel.Log => LogLevelMicrosoft.Information,
+                        LogLevel.Debug => LogLevelMicrosoft.Debug,
+                        LogLevel.Info => LogLevelMicrosoft.Information,
                         LogLevel.Warning => LogLevelMicrosoft.Warning,
                         LogLevel.Error => LogLevelMicrosoft.Error,
                         LogLevel.Exception => LogLevelMicrosoft.Critical,
@@ -49,7 +50,7 @@ namespace com.IvanMurzak.Unity.MCP
 
             if (McpPluginUnity.KeepConnected)
             {
-                if (McpPluginUnity.LogLevel.IsActive(LogLevel.Log))
+                if (McpPluginUnity.LogLevel.IsActive(LogLevel.Info))
                 {
                     var message = "<b><color=yellow>Connecting</color></b>";
                     Debug.Log($"{Consts.Log.Tag} {message} <color=orange>ಠ‿ಠ</color>");

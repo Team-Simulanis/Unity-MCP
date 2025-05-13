@@ -2,12 +2,13 @@ namespace com.IvanMurzak.Unity.MCP.Utils
 {
     public enum LogLevel
     {
-        Trace = -1, // show all messages
-        Log = 0,  // show only Log, Warning, Error, Exception messages
-        Warning = 1,  // show only Warning, Error, Exception messages
-        Error = 2,  // show only Error, Exception messages
-        Exception = 3,  // show only Exception messages
-        None = 4   // show no messages
+        Trace = 0, // show all messages
+        Debug = 1,  // show only Debug, Info, Warning, Error, Exception messages
+        Info = 2,   // show only Info, Warning, Error, Exception messages
+        Warning = 3,  // show only Warning, Error, Exception messages
+        Error = 4,  // show only Error, Exception messages
+        Exception = 5,  // show only Exception messages
+        None = 6   // show no messages
     }
     public static class LogLevelEx
     {

@@ -7,13 +7,15 @@ using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Utils;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineGameObject : RS_GenericUnity<UnityEngine.GameObject>
     {
         public override bool SetAsField(Reflector reflector, ref object obj, Type type, FieldInfo fieldInfo, SerializedMember? value, StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             var refObj = value.valueJsonElement.ToObjectRef().FindObject();
             stringBuilder?.AppendLine($"[Success] Field '{value.name}' modified to '{refObj?.GetInstanceID()}'.");
@@ -23,7 +25,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         }
 
         public override bool SetAsProperty(Reflector reflector, ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             var refObj = value.valueJsonElement.ToObjectRef().FindObject();
             stringBuilder?.AppendLine($"[Success] Property '{value.name}' modified to '{refObj?.GetInstanceID()}'.");

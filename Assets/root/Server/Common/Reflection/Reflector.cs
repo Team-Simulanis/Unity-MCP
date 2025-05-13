@@ -1,6 +1,5 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -25,7 +24,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection
         }
 
         public SerializedMember Serialize(object? obj, Type? type = null, string? name = null, bool recursive = true,
-            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, ILogger? logger = null)
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+            ILogger? logger = null)
         {
             type ??= obj?.GetType();
 
@@ -39,7 +39,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection
             {
                 logger?.LogTrace("[Serializer] {0} for type {1}", serializer.GetType().Name, type?.FullName);
 
-                var serializedMember = serializer.Serialize(this, obj, type: type, name: name, recursive, flags);
+                var serializedMember = serializer.Serialize(this, obj, type: type, name: name, recursive, flags, logger);
                 if (serializedMember != null)
                     return serializedMember;
             }
@@ -47,12 +47,12 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection
         }
         public object? Deserialize(SerializedMember data, ILogger? logger = null)
         {
-            if (string.IsNullOrEmpty(data?.type))
+            if (string.IsNullOrEmpty(data?.className))
                 throw new ArgumentException(Error.DataTypeIsEmpty());
 
-            var type = TypeUtils.GetType(data.type);
+            var type = TypeUtils.GetType(data.className);
             if (type == null)
-                throw new ArgumentException(Error.NotFoundType(data.type));
+                throw new ArgumentException(Error.NotFoundType(data.className));
 
             var deserializer = Convertors.BuildDeserializersChain(type);
             if (deserializer == null)
@@ -60,67 +60,74 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection
 
             logger?.LogTrace($"[Serializer] {deserializer.GetType().Name} for type {type?.FullName}");
 
-            var obj = deserializer.Deserialize(this, data);
+            var obj = deserializer.Deserialize(this, data, logger);
             return obj;
         }
+
         public IEnumerable<FieldInfo>? GetSerializableFields(Type type,
-            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-            => Convertors.BuildDeserializersChain(type)?.GetSerializableFields(this, type, flags);
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+            ILogger? logger = null)
+            => Convertors.BuildDeserializersChain(type)?.GetSerializableFields(this, type, flags, logger);
+
         public IEnumerable<PropertyInfo>? GetSerializableProperties(Type type,
-            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-            => Convertors.BuildDeserializersChain(type)?.GetSerializableProperties(this, type, flags);
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+            ILogger? logger = null)
+            => Convertors.BuildDeserializersChain(type)?.GetSerializableProperties(this, type, flags, logger);
+
         public StringBuilder Populate(ref object obj, SerializedMember data, StringBuilder? stringBuilder = null, int depth = 0,
-            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, ILogger? logger = null)
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+            ILogger? logger = null)
         {
             stringBuilder ??= new StringBuilder();
 
-            if (string.IsNullOrEmpty(data?.type))
+            if (string.IsNullOrEmpty(data?.className))
                 return stringBuilder.AppendLine(new string(' ', depth) + Error.DataTypeIsEmpty());
 
-            var type = TypeUtils.GetType(data.type);
+            var type = TypeUtils.GetType(data.className);
             if (type == null)
-                return stringBuilder.AppendLine(new string(' ', depth) + Error.NotFoundType(data.type));
+                return stringBuilder.AppendLine(new string(' ', depth) + Error.NotFoundType(data.className));
 
             if (obj == null)
                 return stringBuilder.AppendLine(new string(' ', depth) + Error.TargetObjectIsNull());
 
-            TypeUtils.CastTo(obj, data.type, out var error);
+            TypeUtils.CastTo(obj, data.className, out var error);
             if (error != null)
                 return stringBuilder.AppendLine(new string(' ', depth) + error);
 
             if (!type.IsAssignableFrom(obj.GetType()))
-                return stringBuilder.AppendLine(new string(' ', depth) + Error.TypeMismatch(data.type, obj.GetType().FullName ?? string.Empty));
+                return stringBuilder.AppendLine(new string(' ', depth) + Error.TypeMismatch(data.className, obj.GetType().FullName ?? string.Empty));
 
             foreach (var convertor in Convertors.BuildPopulatorsChain(type))
-                convertor.Populate(this, ref obj, data, stringBuilder: stringBuilder, flags: flags);
+                convertor.Populate(this, ref obj, data, stringBuilder: stringBuilder, flags: flags, logger: logger);
 
             return stringBuilder;
         }
 
         public StringBuilder PopulateAsProperty(ref object obj, PropertyInfo propertyInfo, SerializedMember data, StringBuilder? stringBuilder = null, int depth = 0,
-            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+            ILogger? logger = null)
         {
             stringBuilder ??= new StringBuilder();
 
-            if (string.IsNullOrEmpty(data?.type))
+            if (string.IsNullOrEmpty(data?.className))
                 return stringBuilder.AppendLine(new string(' ', depth) + Error.DataTypeIsEmpty());
 
-            var type = TypeUtils.GetType(data.type);
+            var type = TypeUtils.GetType(data.className);
             if (type == null)
-                return stringBuilder.AppendLine(new string(' ', depth) + Error.NotFoundType(data.type));
+                return stringBuilder.AppendLine(new string(' ', depth) + Error.NotFoundType(data.className));
 
             if (obj == null)
                 return stringBuilder.AppendLine(new string(' ', depth) + Error.TargetObjectIsNull());
 
-            TypeUtils.CastTo(obj, data.type, out var error);
+            TypeUtils.CastTo(obj, data.className, out var error);
             if (error != null)
                 return stringBuilder.AppendLine(new string(' ', depth) + error);
 
             if (!type.IsAssignableFrom(obj.GetType()))
-                return stringBuilder.AppendLine(new string(' ', depth) + Error.TypeMismatch(data.type, obj.GetType().FullName ?? string.Empty));
+                return stringBuilder.AppendLine(new string(' ', depth) + Error.TypeMismatch(data.className, obj.GetType().FullName ?? string.Empty));
 
             foreach (var convertor in Convertors.BuildPopulatorsChain(type))
-                convertor.Populate(this, ref obj, data, stringBuilder: stringBuilder, flags: flags);
+                convertor.Populate(this, ref obj, data, stringBuilder: stringBuilder, flags: flags, logger: logger);
 
             return stringBuilder;
         }

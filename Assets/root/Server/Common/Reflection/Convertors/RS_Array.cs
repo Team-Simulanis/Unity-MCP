@@ -7,12 +7,13 @@ using System.Text;
 using System.Text.Json;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
 {
     public partial class RS_Array : RS_Base<Array>
     {
-        public override int SerializationPriority(Type type)
+        public override int SerializationPriority(Type type, ILogger? logger = null)
         {
             if (type.IsArray)
                 return MAX_DEPTH + 1;
@@ -27,35 +28,37 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
                 : 0;
         }
 
-        protected override SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string? name = null, bool recursive = true, BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+        protected override SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string? name = null, bool recursive = true,
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             int index = 0;
             var serializedList = new List<SerializedMember>();
             var enumerable = (System.Collections.IEnumerable)obj;
 
             foreach (var element in enumerable)
-                serializedList.Add(reflector.Serialize(element, type: element?.GetType(), name: $"[{index++}]", recursive: recursive, flags: flags));
+                serializedList.Add(reflector.Serialize(element, type: element?.GetType(), name: $"[{index++}]", recursive: recursive, flags: flags, logger: logger));
 
             return SerializedMember.FromValue(type, serializedList, name: name);
         }
 
-        public override IEnumerable<FieldInfo>? GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags)
+        public override IEnumerable<FieldInfo>? GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags, ILogger? logger = null)
             => objType.GetFields(flags)
                 .Where(field => field.GetCustomAttribute<ObsoleteAttribute>() == null)
                 .Where(field => field.IsPublic);
 
-        public override IEnumerable<PropertyInfo>? GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags)
+        public override IEnumerable<PropertyInfo>? GetSerializableProperties(Reflector reflector, Type objType, BindingFlags flags, ILogger? logger = null)
             => objType.GetProperties(flags)
                 .Where(prop => prop.GetCustomAttribute<ObsoleteAttribute>() == null)
                 .Where(prop => prop.CanRead);
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value)
+        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, ILogger? logger = null)
         {
             var parsedList = JsonUtils.Deserialize<List<SerializedMember>>(value.Value);
             var enumerable = parsedList
                 .Select(element =>
                 {
-                    var elementType = TypeUtils.GetType(element.type);
+                    var elementType = TypeUtils.GetType(element.className);
                     var elementValue = JsonUtils.Deserialize(element.valueJsonElement.Value, elementType);
                     return elementValue;
                 });
@@ -67,7 +70,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
         }
 
         public override bool SetAsField(Reflector reflector, ref object obj, Type type, FieldInfo fieldInfo, SerializedMember? value, StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             var parsedList = value?.valueJsonElement == null
                 ? TypeUtils.GetDefaultValue<List<SerializedMember>>()
@@ -75,7 +79,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
             var enumerable = parsedList
                 .Select(element =>
                 {
-                    var elementType = TypeUtils.GetType(element.type);
+                    var elementType = TypeUtils.GetType(element.className);
                     var elementValue = element.valueJsonElement == null
                         ? TypeUtils.GetDefaultValue(type)
                         : JsonUtils.Deserialize(element.valueJsonElement.Value, elementType);
@@ -91,13 +95,14 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
         }
 
         public override bool SetAsProperty(Reflector reflector, ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, StringBuilder? stringBuilder = null,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             var parsedList = JsonUtils.Deserialize<List<SerializedMember>>(value.valueJsonElement.Value);
             var enumerable = parsedList
                 .Select(element =>
                 {
-                    var elementType = TypeUtils.GetType(element.type);
+                    var elementType = TypeUtils.GetType(element.className);
                     var elementValue = JsonUtils.Deserialize(element.valueJsonElement.Value, elementType);
                     return elementValue;
                 });
@@ -111,7 +116,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
         }
 
         public override bool SetField(Reflector reflector, ref object obj, Type type, FieldInfo fieldInfo, SerializedMember? value,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             var parsedValue = value?.valueJsonElement == null
                 ? TypeUtils.GetDefaultValue(type)
@@ -121,7 +127,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
         }
 
         public override bool SetProperty(Reflector reflector, ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value,
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             var parsedValue = value?.valueJsonElement == null
                 ? TypeUtils.GetDefaultValue(type)

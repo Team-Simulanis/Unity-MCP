@@ -9,6 +9,7 @@ using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using UnityEngine;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
@@ -17,7 +18,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         const string FieldShader = "shader";
         const string FieldName = "name";
 
-        protected override SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string name = null, bool recursive = true, BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+        protected override SerializedMember InternalSerialize(Reflector reflector, object obj, Type type, string name = null, bool recursive = true,
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            ILogger? logger = null)
         {
             var material = obj as Material;
             var shader = material.shader;
@@ -61,7 +64,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return new SerializedMember()
             {
                 name = name,
-                type = type.FullName,
+                className = type.FullName,
                 fields = new List<SerializedMember>()
                 {
                     SerializedMember.FromValue(name: FieldName, value: material.name),
@@ -71,7 +74,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             }.SetValue(new ObjectRef(material.GetInstanceID()));
         }
 
-        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value)
+        protected override bool SetValue(Reflector reflector, ref object obj, Type type, JsonElement? value, ILogger? logger = null)
         {
             var serialized = JsonUtils.Deserialize<SerializedMember>(value.Value);
             var material = obj as Material;
@@ -85,7 +88,8 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         }
 
         protected override StringBuilder? ModifyField(Reflector reflector, ref object obj, SerializedMember fieldValue, StringBuilder? stringBuilder = null, int depth = 0,
-            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+            ILogger? logger = null)
         {
             var material = obj as Material;
 
