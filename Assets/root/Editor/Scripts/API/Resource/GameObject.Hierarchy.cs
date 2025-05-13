@@ -1,6 +1,7 @@
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Editor.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor.SceneManagement;
@@ -37,7 +38,16 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 if (go == null)
                     throw new System.Exception($"[Error] GameObject '{path}' not found.");
 
-                return ResponseResourceContent.CreateText(uri, JsonUtils.Serialize(Serializer.Serialize(go)), Consts.MimeType.TextJson).MakeArray();
+                return ResponseResourceContent.CreateText(
+                    uri,
+                    JsonUtils.Serialize(
+                        Reflector.Instance.Serialize(
+                            go,
+                            logger: McpPlugin.Instance.Logger
+                        )
+                    ),
+                    Consts.MimeType.TextJson
+                ).MakeArray();
             });
         }
 

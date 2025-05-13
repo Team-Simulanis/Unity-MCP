@@ -1,12 +1,44 @@
 using System;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
-    public class Matrix4x4Converter : JsonConverter<Matrix4x4>
+    public class Matrix4x4Converter : JsonConverter<Matrix4x4>, IJsonSchemeConvertor
     {
+        public JsonNode GetScheme() => new JsonObject
+        {
+            ["type"] = "object",
+            ["properties"] = new JsonObject
+            {
+                ["m00"] = new JsonObject { ["type"] = "number" },
+                ["m01"] = new JsonObject { ["type"] = "number" },
+                ["m02"] = new JsonObject { ["type"] = "number" },
+                ["m03"] = new JsonObject { ["type"] = "number" },
+                ["m10"] = new JsonObject { ["type"] = "number" },
+                ["m11"] = new JsonObject { ["type"] = "number" },
+                ["m12"] = new JsonObject { ["type"] = "number" },
+                ["m13"] = new JsonObject { ["type"] = "number" },
+                ["m20"] = new JsonObject { ["type"] = "number" },
+                ["m21"] = new JsonObject { ["type"] = "number" },
+                ["m22"] = new JsonObject { ["type"] = "number" },
+                ["m23"] = new JsonObject { ["type"] = "number" },
+                ["m30"] = new JsonObject { ["type"] = "number" },
+                ["m31"] = new JsonObject { ["type"] = "number" },
+                ["m32"] = new JsonObject { ["type"] = "number" },
+                ["m33"] = new JsonObject { ["type"] = "number" }
+            },
+            ["required"] = new JsonArray
+            {
+                "m00", "m01", "m02", "m03",
+                "m10", "m11", "m12", "m13",
+                "m20", "m21", "m22", "m23",
+                "m30", "m31", "m32", "m33"
+            }
+        };
+
         public override Matrix4x4 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.StartObject)

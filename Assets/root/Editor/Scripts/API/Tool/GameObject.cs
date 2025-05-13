@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text.Json;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
@@ -35,15 +35,20 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             public static string TypeMismatch(string typeName, string expectedTypeName)
                 => $"[Error] Type mismatch. Expected '{expectedTypeName}', but got '{typeName}'.";
             public static string InvalidComponentPropertyType(SerializedMember serializedProperty, PropertyInfo propertyInfo)
-                => $"[Error] Invalid component property type '{serializedProperty.type}' for '{propertyInfo.Name}'. Expected '{propertyInfo.PropertyType.FullName}'.";
+                => $"[Error] Invalid component property type '{serializedProperty.typeName}' for '{propertyInfo.Name}'. Expected '{propertyInfo.PropertyType.FullName}'.";
             public static string InvalidComponentFieldType(SerializedMember serializedProperty, FieldInfo propertyInfo)
-                => $"[Error] Invalid component property type '{serializedProperty.type}' for '{propertyInfo.Name}'. Expected '{propertyInfo.FieldType.FullName}'.";
+                => $"[Error] Invalid component property type '{serializedProperty.typeName}' for '{propertyInfo.Name}'. Expected '{propertyInfo.FieldType.FullName}'.";
             public static string InvalidComponentType(string typeName)
                 => $"[Error] Invalid component type '{typeName}'. It should be a valid Component Type.";
             public static string NotFoundComponent(int componentInstanceID, IEnumerable<UnityEngine.Component> allComponents)
             {
                 var availableComponentsPreview = allComponents
-                    .Select((c, i) => Serializer.Serialize(c, name: $"[{i}]", recursive: false))
+                    .Select((c, i) => Reflector.Instance.Serialize(
+                        c,
+                        name: $"[{i}]",
+                        recursive: false,
+                        logger: McpPlugin.Instance.Logger
+                    ))
                     .ToList();
                 var previewJson = JsonUtils.Serialize(availableComponentsPreview);
 
@@ -56,7 +61,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             {
                 var componentInstanceIDsString = string.Join(", ", componentRefs.Select(cr => cr.ToString()));
                 var availableComponentsPreview = allComponents
-                    .Select((c, i) => Serializer.Serialize(c, name: $"[{i}]", recursive: false))
+                    .Select((c, i) => Reflector.Instance.Serialize(
+                        c,
+                        name: $"[{i}]",
+                        recursive: false,
+                        logger: McpPlugin.Instance.Logger
+                    ))
                     .ToList();
                 var previewJson = JsonUtils.Serialize(availableComponentsPreview);
 

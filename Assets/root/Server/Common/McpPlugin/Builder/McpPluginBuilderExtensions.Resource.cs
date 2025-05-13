@@ -30,49 +30,20 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public static IMcpPluginBuilder WithResources<T>(this IMcpPluginBuilder builder)
             => WithResources(builder, typeof(T));
 
-        public static IMcpPluginBuilder WithResources(this IMcpPluginBuilder builder, Type targetType)
+        public static IMcpPluginBuilder WithResources(this IMcpPluginBuilder builder, Type classType)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
-            if (targetType == null)
-                throw new ArgumentNullException(nameof(targetType));
+            if (classType == null)
+                throw new ArgumentNullException(nameof(classType));
 
-            var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<RunResourceContent>();
-
-            foreach (var method in targetType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance))
+            foreach (var method in classType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance))
             {
                 var attribute = method.GetCustomAttribute<McpPluginResourceAttribute>();
                 if (attribute == null)
                     continue;
 
-                var listContextMethodName = attribute.ListResources ?? throw new InvalidOperationException($"Method {method.Name} does not have a 'ListResources'.");
-                var listContextMethod = targetType.GetMethod(listContextMethodName);
-                if (listContextMethod == null)
-                    throw new InvalidOperationException($"Method {targetType.FullName}{listContextMethodName} not found in type {targetType.Name}.");
-
-                if (!method.ReturnType.IsArray ||
-                    !typeof(ResponseResourceContent).IsAssignableFrom(method.ReturnType.GetElementType()))
-                    throw new InvalidOperationException($"Method {targetType.FullName}{method.Name} must return {nameof(ResponseResourceContent)} array.");
-
-                if (!listContextMethod.ReturnType.IsArray ||
-                    !typeof(ResponseListResource).IsAssignableFrom(listContextMethod.ReturnType.GetElementType()))
-                    throw new InvalidOperationException($"Method {targetType.FullName}{listContextMethod.Name} must return {nameof(ResponseListResource)} array.");
-
-                var resourceParams = new RunResource
-                (
-                    route: attribute!.Route ?? throw new InvalidOperationException($"Method {targetType.FullName}{method.Name} does not have a 'routing'."),
-                    name: attribute.Name ?? throw new InvalidOperationException($"Method {targetType.FullName}{method.Name} does not have a 'name'."),
-                    description: attribute.Description,
-                    mimeType: attribute.MimeType,
-                    runnerGetContent: method.IsStatic
-                        ? RunResourceContent.CreateFromStaticMethod(logger, method)
-                        : RunResourceContent.CreateFromClassMethod(logger, targetType, method),
-                    runnerListContext: listContextMethod.IsStatic
-                        ? RunResourceContext.CreateFromStaticMethod(logger, listContextMethod)
-                        : RunResourceContext.CreateFromClassMethod(logger, targetType, listContextMethod)
-                );
-
-                builder.AddResource(resourceParams!);
+                builder.WithResource(classType: classType, getContentMethod: method);
             }
             return builder;
         }

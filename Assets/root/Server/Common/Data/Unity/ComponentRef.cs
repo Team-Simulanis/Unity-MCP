@@ -12,22 +12,22 @@ Use one of the following properties:
     public class ComponentRef
     {
         [Description("Component 'instanceID' (int). Priority: 1. (Recommended)")]
-        public int instanceID { get; set; } = 0;
+        public int InstanceID { get; set; } = 0;
         [Description("Component 'index'. Priority: 2.")]
-        public int index { get; set; } = -1;
+        public int Index { get; set; } = -1;
         [Description("Component 'type'. Priority: 3. Full name of the component type.")]
-        public string? type { get; set; } = null;
+        public string? TypeName { get; set; } = null;
 
         [JsonIgnore]
         public bool IsValid
         {
             get
             {
-                if (instanceID != 0)
+                if (InstanceID != 0)
                     return true;
-                if (index >= 0)
+                if (Index >= 0)
                     return true;
-                if (!string.IsNullOrEmpty(type))
+                if (!string.IsNullOrEmpty(TypeName))
                     return true;
                 return false;
             }
@@ -37,12 +37,12 @@ Use one of the following properties:
 
         public override string ToString()
         {
-            if (instanceID != 0)
-                return $"Component instanceID='{instanceID}'";
-            if (index >= 0)
-                return $"Component index='{index}'";
-            if (!string.IsNullOrEmpty(type))
-                return $"Component type='{type}'";
+            if (InstanceID != 0)
+                return $"Component instanceID='{InstanceID}'";
+            if (Index >= 0)
+                return $"Component index='{Index}'";
+            if (!string.IsNullOrEmpty(TypeName))
+                return $"Component type='{TypeName}'";
             return "Component unknown";
         }
     }

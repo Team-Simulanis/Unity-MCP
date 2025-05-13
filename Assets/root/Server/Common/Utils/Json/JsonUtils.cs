@@ -17,13 +17,14 @@ namespace com.IvanMurzak.Unity.MCP.Common
             //ReferenceHandler = ReferenceHandler.Preserve,
             WriteIndented = true,
             TypeInfoResolver = JsonTypeInfoResolver.Combine(
-                new DefaultJsonTypeInfoResolver() // Add custom resolvers if needed
+                new DefaultJsonTypeInfoResolver()
             ),
             Converters =
             {
                 new JsonStringEnumConverter(),
-                new InstanceIDConverter(),
+                new ObjectRefConverter(),
                 new SerializedMemberConverter(),
+
                 // new SerializedMemberConverterFactory()
             }
         };

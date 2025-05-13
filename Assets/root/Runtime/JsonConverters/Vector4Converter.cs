@@ -1,12 +1,26 @@
 using System;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
-    public class Vector4Converter : JsonConverter<Vector4>
+    public class Vector4Converter : JsonConverter<Vector4>, IJsonSchemeConvertor
     {
+        public JsonNode GetScheme() => new JsonObject
+        {
+            ["type"] = "object",
+            ["properties"] = new JsonObject
+            {
+                ["x"] = new JsonObject { ["type"] = "number" },
+                ["y"] = new JsonObject { ["type"] = "number" },
+                ["z"] = new JsonObject { ["type"] = "number" },
+                ["w"] = new JsonObject { ["type"] = "number" }
+            },
+            ["required"] = new JsonArray { "x", "y", "z", "w" }
+        };
+
         public override Vector4 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.StartObject)

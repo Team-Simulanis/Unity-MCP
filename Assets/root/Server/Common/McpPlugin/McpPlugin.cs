@@ -13,23 +13,26 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public const string Version = "0.7.0";
 
         readonly ILogger<McpPlugin> _logger;
-        readonly IRpcRouter _rpcRouter;
+        readonly IRpcRouter? _rpcRouter;
         readonly CompositeDisposable _disposables = new();
 
-        public IMcpRunner McpRunner { get; private set; }
-        public ReadOnlyReactiveProperty<HubConnectionState> ConnectionState => _rpcRouter.ConnectionState;
-        public ReadOnlyReactiveProperty<bool> KeepConnected => _rpcRouter.KeepConnected;
 
-        public McpPlugin(ILogger<McpPlugin> logger, IRpcRouter rpcRouter, IMcpRunner mcpRunner)
+        public ILogger Logger => _logger;
+        public IMcpRunner McpRunner { get; private set; }
+        public ReadOnlyReactiveProperty<HubConnectionState> ConnectionState => _rpcRouter?.ConnectionState
+            ?? new ReactiveProperty<HubConnectionState>(HubConnectionState.Disconnected);
+        public ReadOnlyReactiveProperty<bool> KeepConnected => _rpcRouter?.KeepConnected
+            ?? new ReactiveProperty<bool>(false);
+
+        public McpPlugin(ILogger<McpPlugin> logger, IMcpRunner mcpRunner, IRpcRouter? rpcRouter = null)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _logger.LogTrace("{0} Ctor. Version: {Version}", typeof(McpPlugin).Name, Version);
 
-            _rpcRouter = rpcRouter ?? throw new ArgumentNullException(nameof(rpcRouter));
-
             McpRunner = mcpRunner ?? throw new ArgumentNullException(nameof(mcpRunner));
 
-            _rpcRouter.ConnectionState
+            _rpcRouter = rpcRouter;
+            _rpcRouter?.ConnectionState
                 .Where(state => state == HubConnectionState.Connected)
                 .Subscribe(state =>
                 {
@@ -52,10 +55,10 @@ namespace com.IvanMurzak.Unity.MCP.Common
         }
 
         public Task<bool> Connect(CancellationToken cancellationToken = default)
-            => _rpcRouter.Connect(cancellationToken);
+            => _rpcRouter?.Connect(cancellationToken) ?? Task.FromResult(false);
 
         public Task Disconnect(CancellationToken cancellationToken = default)
-            => _rpcRouter.Disconnect(cancellationToken);
+            => _rpcRouter?.Disconnect(cancellationToken) ?? Task.FromResult(false);
 
         public void Dispose()
         {
@@ -76,7 +79,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
 
             try
             {
-                await _rpcRouter.DisposeAsync();
+                if (_rpcRouter != null)
+                    await _rpcRouter.DisposeAsync();
             }
             catch (Exception ex)
             {

@@ -1,6 +1,6 @@
 using System.Collections;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Editor.API;
 using com.IvanMurzak.Unity.MCP.Utils;
 using NUnit.Framework;
@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
-    public partial class TestToolGameObject
+    public partial class TestToolGameObject : BaseTest
     {
         [UnityTest]
         public IEnumerator ModifyComponent_Vector3()
@@ -29,7 +29,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                 .AddProperty(SerializedMember.FromValue(name: nameof(child.transform.position),
                     value: newPosition)));
 
-            var result = new Tool_GameObject().Modify(gameObjectDiffs: data.MakeArray(),
+            var result = new Tool_GameObject().Modify(
+                gameObjectDiffs: new SerializedMemberList(data),
                 gameObjectRefs: new Common.Data.Unity.GameObjectRefList
                 {
                     new Common.Data.Unity.GameObjectRef()
@@ -65,7 +66,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
                     type: typeof(Material),
                     value: new ObjectRef(sharedMaterial.GetInstanceID()))));
 
-            var result = new Tool_GameObject().Modify(gameObjectDiffs: data.MakeArray(), 
+            var result = new Tool_GameObject().Modify(
+                gameObjectDiffs: new SerializedMemberList(data),
                 gameObjectRefs: new Common.Data.Unity.GameObjectRefList
                 {
                     new Common.Data.Unity.GameObjectRef()

@@ -1,5 +1,4 @@
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
 using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
@@ -23,7 +22,7 @@ Each field and property requires to have 'type' and 'name' fields to identify th
 Follow the object schema to specify what to change, ignore values that should not be modified. Keep the original data structure.
 Any unknown or wrong located fields and properties will be ignored.
 Check the result of this command to see what was changed. The ignored fields and properties will be listed.")]
-            SerializedMember[] gameObjectDiffs,
+            SerializedMemberList gameObjectDiffs,
             GameObjectRefList gameObjectRefs
         )
         {

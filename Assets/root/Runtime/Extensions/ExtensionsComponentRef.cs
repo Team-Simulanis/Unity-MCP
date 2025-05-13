@@ -7,17 +7,17 @@ namespace com.IvanMurzak.Unity.MCP.Utils
     {
         public static bool Matches(this ComponentRef componentRef, UnityEngine.Component component, int? index = null)
         {
-            if (componentRef.instanceID != 0)
+            if (componentRef.InstanceID != 0)
             {
-                return componentRef.instanceID == component.GetInstanceID();
+                return componentRef.InstanceID == component.GetInstanceID();
             }
-            if (componentRef.index >= 0 && index != null)
+            if (componentRef.Index >= 0 && index != null)
             {
-                return componentRef.index == index.Value;
+                return componentRef.Index == index.Value;
             }
-            if (!string.IsNullOrEmpty(componentRef.type))
+            if (!string.IsNullOrEmpty(componentRef.TypeName))
             {
-                return component.GetType().FullName == componentRef.type;
+                return component.GetType().FullName == componentRef.TypeName;
             }
             return false;
         }

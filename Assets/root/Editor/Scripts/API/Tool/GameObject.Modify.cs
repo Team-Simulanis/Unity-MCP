@@ -1,10 +1,9 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
-using System.Linq;
 using System.Text;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Common.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 
@@ -26,7 +25,7 @@ Each field and property requires to have 'type' and 'name' fields to identify th
 Follow the object schema to specify what to change, ignore values that should not be modified. Keep the original data structure.
 Any unknown or wrong located fields and properties will be ignored.
 Check the result of this command to see what was changed. The ignored fields and properties will be listed.")]
-            SerializedMember[] gameObjectDiffs,
+            SerializedMemberList gameObjectDiffs,
             GameObjectRefList gameObjectRefs
         )
         => MainThread.Run(() =>
@@ -34,9 +33,9 @@ Check the result of this command to see what was changed. The ignored fields and
             if (gameObjectRefs.Count == 0)
                 return "[Error] No GameObject references provided. Please provide at least one GameObject reference.";
 
-            if (gameObjectDiffs.Length != gameObjectRefs.Count)
+            if (gameObjectDiffs.Count != gameObjectRefs.Count)
                 return $"[Error] The number of {nameof(gameObjectDiffs)} and {nameof(gameObjectRefs)} should be the same. " +
-                    $"{nameof(gameObjectDiffs)}: {gameObjectDiffs.Length}, {nameof(gameObjectRefs)}: {gameObjectRefs.Count}";
+                    $"{nameof(gameObjectDiffs)}: {gameObjectDiffs.Count}, {nameof(gameObjectRefs)}: {gameObjectRefs.Count}";
 
             var stringBuilder = new StringBuilder();
 
@@ -49,7 +48,7 @@ Check the result of this command to see what was changed. The ignored fields and
                     continue;
                 }
                 var objToModify = (object)go;
-                var type = TypeUtils.GetType(gameObjectDiffs[i].type);
+                var type = TypeUtils.GetType(gameObjectDiffs[i].typeName);
                 if (typeof(UnityEngine.Component).IsAssignableFrom(type))
                 {
                     var component = go.GetComponent(type);
@@ -60,7 +59,7 @@ Check the result of this command to see what was changed. The ignored fields and
                     }
                     objToModify = component;
                 }
-                Serializer.Populate(ref objToModify, gameObjectDiffs[i], stringBuilder);
+                Reflector.Instance.Populate(ref objToModify, gameObjectDiffs[i], stringBuilder);
             }
 
             return stringBuilder.ToString();

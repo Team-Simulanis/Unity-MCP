@@ -1,6 +1,9 @@
 using System;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Json.Converters;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
+using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
+using com.IvanMurzak.Unity.MCP.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Utils;
 using Microsoft.Extensions.Logging;
 using UnityEngine;
@@ -20,7 +23,7 @@ namespace com.IvanMurzak.Unity.MCP
                 .WithAppFeatures()
                 .WithConfig(config =>
                 {
-                    if (McpPluginUnity.LogLevel.IsActive(LogLevel.Log))
+                    if (McpPluginUnity.LogLevel.IsActive(LogLevel.Info))
                         Debug.Log($"{Consts.Log.Tag} MCP server address: {McpPluginUnity.Host}");
 
                     config.Endpoint = McpPluginUnity.Host;
@@ -32,7 +35,8 @@ namespace com.IvanMurzak.Unity.MCP
                     loggingBuilder.SetMinimumLevel(McpPluginUnity.LogLevel switch
                     {
                         LogLevel.Trace => LogLevelMicrosoft.Trace,
-                        LogLevel.Log => LogLevelMicrosoft.Information,
+                        LogLevel.Debug => LogLevelMicrosoft.Debug,
+                        LogLevel.Info => LogLevelMicrosoft.Information,
                         LogLevel.Warning => LogLevelMicrosoft.Warning,
                         LogLevel.Error => LogLevelMicrosoft.Error,
                         LogLevel.Exception => LogLevelMicrosoft.Critical,
@@ -42,17 +46,55 @@ namespace com.IvanMurzak.Unity.MCP
                 .WithToolsFromAssembly(AppDomain.CurrentDomain.GetAssemblies())
                 .WithPromptsFromAssembly(AppDomain.CurrentDomain.GetAssemblies())
                 .WithResourcesFromAssembly(AppDomain.CurrentDomain.GetAssemblies())
-                .Build();
+                .Build(CreateDefaultReflector());
 
             if (McpPluginUnity.KeepConnected)
             {
-                if (McpPluginUnity.LogLevel.IsActive(LogLevel.Log))
+                if (McpPluginUnity.LogLevel.IsActive(LogLevel.Info))
                 {
                     var message = "<b><color=yellow>Connecting</color></b>";
                     Debug.Log($"{Consts.Log.Tag} {message} <color=orange>ಠ‿ಠ</color>");
                 }
                 mcpPlugin.Connect();
             }
+        }
+
+        static Reflector CreateDefaultReflector()
+        {
+            var reflector = new Reflector();
+
+            // Remove converters that are not needed in Unity
+            reflector.Convertors.Remove<RS_Generic<object>>();
+            reflector.Convertors.Remove<RS_Array>();
+
+            // Add Unity-specific converters
+            reflector.Convertors.Add(new RS_GenericUnity<object>());
+            reflector.Convertors.Add(new RS_ArrayUnity());
+
+            // Unity types
+            reflector.Convertors.Add(new RS_UnityEngineColor32());
+            reflector.Convertors.Add(new RS_UnityEngineColor());
+            reflector.Convertors.Add(new RS_UnityEngineMatrix4x4());
+            reflector.Convertors.Add(new RS_UnityEngineQuaternion());
+            reflector.Convertors.Add(new RS_UnityEngineVector2());
+            reflector.Convertors.Add(new RS_UnityEngineVector2Int());
+            reflector.Convertors.Add(new RS_UnityEngineVector3());
+            reflector.Convertors.Add(new RS_UnityEngineVector3Int());
+            reflector.Convertors.Add(new RS_UnityEngineVector4());
+
+            // Components
+            reflector.Convertors.Add(new RS_UnityEngineObject());
+            reflector.Convertors.Add(new RS_UnityEngineGameObject());
+            reflector.Convertors.Add(new RS_UnityEngineComponent());
+            reflector.Convertors.Add(new RS_UnityEngineTransform());
+            reflector.Convertors.Add(new RS_UnityEngineRenderer());
+            reflector.Convertors.Add(new RS_UnityEngineMeshFilter());
+
+            // Assets
+            reflector.Convertors.Add(new RS_UnityEngineMaterial());
+            reflector.Convertors.Add(new RS_UnityEngineSprite());
+
+            return reflector;
         }
 
         public static void RegisterJsonConverters()

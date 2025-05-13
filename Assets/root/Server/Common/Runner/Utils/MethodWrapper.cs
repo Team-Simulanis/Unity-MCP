@@ -2,88 +2,84 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common.MCP
 {
-    public abstract class MethodWrapper
+    public class MethodWrapper
     {
+        protected readonly Reflector _reflector;
         protected readonly MethodInfo _methodInfo;
         protected readonly object? _targetInstance;
-        protected readonly Type? _targetType;
+        protected readonly Type? _classType;
 
         protected readonly string? _description;
-        protected readonly ILogger _logger;
+        protected readonly ILogger? _logger;
         protected readonly JsonNode? _inputSchema;
 
         public JsonNode? InputSchema => _inputSchema;
         public string? Description => _description;
 
-        protected MethodWrapper(ILogger logger, MethodInfo methodInfo)
+        public MethodWrapper(Reflector reflector, ILogger? logger, MethodInfo methodInfo)
         {
-            if (logger == null)
-                throw new ArgumentNullException(nameof(logger));
-            if (methodInfo == null)
-                throw new ArgumentNullException(nameof(methodInfo));
+            _reflector = reflector ?? throw new ArgumentNullException(nameof(reflector));
+            _logger = logger;
+            _methodInfo = methodInfo ?? throw new ArgumentNullException(nameof(methodInfo));
+
             if (!methodInfo.IsStatic)
                 throw new ArgumentException("The provided method must be static.");
 
-            _logger = logger;
-            _methodInfo = methodInfo;
             _description = methodInfo.GetCustomAttribute<DescriptionAttribute>()?.Description;
-            _inputSchema = JsonUtils.GetSchema(methodInfo);
+            _inputSchema = JsonUtils.GetArgumentsSchema(methodInfo);
         }
 
-        protected MethodWrapper(ILogger logger, object targetInstance, MethodInfo methodInfo)
+        public MethodWrapper(Reflector reflector, ILogger? logger, object targetInstance, MethodInfo methodInfo)
         {
-            if (logger == null)
-                throw new ArgumentNullException(nameof(logger));
-            if (targetInstance == null)
-                throw new ArgumentNullException(nameof(targetInstance));
-            if (methodInfo == null)
-                throw new ArgumentNullException(nameof(methodInfo));
+            _reflector = reflector ?? throw new ArgumentNullException(nameof(reflector));
+            _logger = logger;
+            _targetInstance = targetInstance ?? throw new ArgumentNullException(nameof(targetInstance));
+            _methodInfo = methodInfo ?? throw new ArgumentNullException(nameof(methodInfo));
+
             if (methodInfo.IsStatic)
                 throw new ArgumentException("The provided method must be an instance method. Use the other constructor for static methods.");
 
-            _logger = logger;
-            _targetInstance = targetInstance;
-            _methodInfo = methodInfo;
             _description = methodInfo.GetCustomAttribute<DescriptionAttribute>()?.Description;
-            _inputSchema = JsonUtils.GetSchema(methodInfo);
+            _inputSchema = JsonUtils.GetArgumentsSchema(methodInfo);
         }
 
-        protected MethodWrapper(ILogger logger, Type targetType, MethodInfo methodInfo)
+        public MethodWrapper(Reflector reflector, ILogger? logger, Type classType, MethodInfo methodInfo)
         {
-            if (logger == null)
-                throw new ArgumentNullException(nameof(logger));
-            if (targetType == null)
-                throw new ArgumentNullException(nameof(targetType));
-            if (methodInfo == null)
-                throw new ArgumentNullException(nameof(methodInfo));
+            _reflector = reflector ?? throw new ArgumentNullException(nameof(reflector));
+            _logger = logger;
+            _classType = classType ?? throw new ArgumentNullException(nameof(classType));
+            _methodInfo = methodInfo ?? throw new ArgumentNullException(nameof(methodInfo));
+
             if (methodInfo.IsStatic)
                 throw new ArgumentException("The provided method must be an instance method. Use the other constructor for static methods.");
 
-            _logger = logger;
-            _targetType = targetType;
-            _methodInfo = methodInfo;
             _description = methodInfo.GetCustomAttribute<DescriptionAttribute>()?.Description;
-            _inputSchema = JsonUtils.GetSchema(methodInfo);
+            _inputSchema = JsonUtils.GetArgumentsSchema(methodInfo);
         }
 
-        protected virtual async Task<object?> Invoke(params object?[] parameters)
+        public virtual async Task<object?> Invoke(params object?[] parameters)
         {
-            if (_methodInfo == null)
-                throw new InvalidOperationException("The method information is not initialized.");
-
             // If _targetInstance is null and _targetType is set, create an instance of the target type
-            var instance = _targetInstance ?? (_targetType != null ? Activator.CreateInstance(_targetType) : null);
+            var instance = _targetInstance ?? (_classType != null ? Activator.CreateInstance(_classType) : null);
 
             // Build the final parameters array, filling in default values where necessary
-            var finalParameters = BuildParameters(parameters);
+            var finalParameters = BuildParameters(_reflector, parameters);
+
+            // _if (_logger?.IsEnabled(LogLevel.Debug) ?? false)
+            //     ? $"Invoke method: {_methodInfo.ReturnType.Name} {_methodInfo.Name}({string.Join(", ", namedParameters!.Select(x => $"{x.Value?.GetType()?.Name ?? "null"} {x.Key}"))})"
+            //     : $"Invoke method: {_methodInfo.ReturnType.Name} {_methodInfo.Name}()");
+
             PrintParameters(finalParameters);
 
             // Invoke the method (static or instance)
@@ -92,7 +88,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             // Handle Task, Task<T>, or synchronous return types
             if (result is Task task)
             {
-                await task.ConfigureAwait(false);
+                await task.ConfigureAwait(continueOnCapturedContext: false);
 
                 // If it's a Task<T>, extract the result
                 var resultProperty = task.GetType().GetProperty("Result");
@@ -103,16 +99,19 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             return result;
         }
 
-        protected virtual async Task<object?> Invoke(IReadOnlyDictionary<string, JsonElement>? namedParameters)
+        public virtual async Task<object?> InvokeDict(IReadOnlyDictionary<string, object?>? namedParameters)
         {
-            if (_methodInfo == null)
-                throw new InvalidOperationException("The method information is not initialized.");
-
             // If _targetInstance is null and _targetType is set, create an instance of the target type
-            var instance = _targetInstance ?? (_targetType != null ? Activator.CreateInstance(_targetType) : null);
+            var instance = _targetInstance ?? (_classType != null ? Activator.CreateInstance(_classType) : null);
 
             // Build the final parameters array, filling in default values where necessary
-            var finalParameters = BuildParameters(namedParameters);
+            var finalParameters = BuildParameters(_reflector, namedParameters);
+
+            // if (_logger?.IsEnabled(LogLevel.Debug) ?? false)
+            //     _logger.LogTrace((namedParameters?.Count ?? 0) > 0
+            //         ? $"Invoke method: {_methodInfo.ReturnType.Name} {_methodInfo.Name}({string.Join(", ", namedParameters!.Select(x => $"{x.Value?.GetType()?.Name ?? "null"} {x.Key}"))})"
+            //         : $"Invoke method: {_methodInfo.ReturnType.Name} {_methodInfo.Name}()");
+
             PrintParameters(finalParameters);
 
             // Invoke the method (static or instance)
@@ -121,7 +120,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             // Handle Task, Task<T>, or synchronous return types
             if (result is Task task)
             {
-                await task.ConfigureAwait(false);
+                await task.ConfigureAwait(continueOnCapturedContext: false);
 
                 // If it's a Task<T>, extract the result
                 var resultProperty = task.GetType().GetProperty("Result");
@@ -132,7 +131,46 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             return result;
         }
 
-        protected object?[]? BuildParameters(object?[]? parameters)
+        public bool VerifyParameters(IReadOnlyDictionary<string, object?>? namedParameters, out string? error)
+        {
+            var methodParameters = _methodInfo.GetParameters();
+            if (methodParameters.Length == 0)
+            {
+                if ((namedParameters?.Count ?? 0) == 0)
+                {
+                    error = null;
+                    return true;
+                }
+                else
+                {
+                    error = $"Method '{_methodInfo.Name}' does not accept any parameters, but {namedParameters?.Count} were provided.";
+                    return false;
+                }
+            }
+
+            foreach (var parameter in namedParameters)
+            {
+                var methodParameter = methodParameters.FirstOrDefault(p => p.Name == parameter.Key);
+                if (methodParameter == null)
+                {
+                    error = $"Method '{_methodInfo.Name}' does not have a parameter named '{parameter.Key}'.";
+                    return false;
+                }
+
+                if (parameter.Value == null)
+                    continue;
+
+                if (!methodParameter.ParameterType.IsInstanceOfType(parameter.Value))
+                {
+                    error = $"Parameter '{parameter.Key}' type mismatch. Expected '{methodParameter.ParameterType}', but got '{parameter.Value.GetType()}'.";
+                    return false;
+                }
+            }
+            error = null;
+            return true;
+        }
+
+        protected object?[]? BuildParameters(Reflector reflector, object?[]? parameters)
         {
             if (parameters == null)
                 return null;
@@ -148,7 +186,20 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
                     // Handle JsonElement conversion
                     if (parameters[i] is JsonElement jsonElement)
                     {
-                        finalParameters[i] = JsonUtils.Deserialize(jsonElement, methodParameters[i].ParameterType);
+                        try
+                        {
+                            // Try #1: Parsing as the parameter type directly
+                            finalParameters[i] = JsonUtils.Deserialize(jsonElement, methodParameters[i].ParameterType);
+                        }
+                        catch
+                        {
+                            // Try #2: Parsing as SerializedMember
+                            var serializedParameter = JsonUtils.Deserialize<SerializedMember>(jsonElement);
+                            if (serializedParameter == null)
+                                throw new ArgumentException($"Failed to parse {nameof(SerializedMember)} for parameter '{methodParameters[i].Name}'");
+
+                            finalParameters[i] = reflector.Deserialize(serializedParameter, _logger);
+                        }
                     }
                     else
                     {
@@ -167,10 +218,21 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
                 }
             }
 
+            // Validate parameters
+            for (int i = 0; i < methodParameters.Length; i++)
+            {
+                var parameter = methodParameters[i];
+                if (finalParameters[i] == null)
+                    continue;
+
+                if (!parameter.ParameterType.IsInstanceOfType(finalParameters[i]))
+                    throw new ArgumentException($"Parameter '{parameter.Name}' type mismatch. Expected '{parameter.ParameterType}', but got '{finalParameters[i]?.GetType()}'.");
+            }
+
             return finalParameters;
         }
 
-        protected object?[]? BuildParameters(IReadOnlyDictionary<string, JsonElement>? namedParameters)
+        protected object?[]? BuildParameters(Reflector reflector, IReadOnlyDictionary<string, object?>? namedParameters)
         {
             if (namedParameters == null)
                 return null;
@@ -187,7 +249,20 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
                 {
                     if (value is JsonElement jsonElement)
                     {
-                        finalParameters[i] = JsonUtils.Deserialize(jsonElement, methodParameters[i].ParameterType);
+                        try
+                        {
+                            // Try #1: Parsing as the parameter type directly
+                            finalParameters[i] = JsonUtils.Deserialize(jsonElement, methodParameters[i].ParameterType);
+                        }
+                        catch
+                        {
+                            // Try #2: Parsing as SerializedMember
+                            var serializedParameter = JsonUtils.Deserialize<SerializedMember>(jsonElement);
+                            if (serializedParameter == null)
+                                throw new ArgumentException($"Failed to parse {nameof(SerializedMember)} for parameter '{methodParameters[i].Name}'");
+
+                            finalParameters[i] = reflector.Deserialize(serializedParameter, _logger);
+                        }
                     }
                     else
                     {
@@ -209,14 +284,29 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
                 }
             }
 
+            // Validate parameters
+            for (int i = 0; i < methodParameters.Length; i++)
+            {
+                var parameter = methodParameters[i];
+                if (finalParameters[i] == null)
+                    continue;
+
+                if (!parameter.ParameterType.IsInstanceOfType(finalParameters[i]))
+                    throw new ArgumentException($"Parameter '{parameter.Name}' type mismatch. Expected '{parameter.ParameterType}', but got '{finalParameters[i]?.GetType()}'.");
+            }
+
             return finalParameters;
         }
         void PrintParameters(object?[]? parameters)
         {
-            if (!_logger.IsEnabled(LogLevel.Debug))
+            if (!(_logger?.IsEnabled(LogLevel.Debug) ?? false))
                 return;
 
-            _logger.LogDebug("Invoke method: {0} {1}, Class: {2}", _methodInfo.ReturnType.Name, _methodInfo.Name, _targetType?.Name ?? "null");
+            _logger.LogDebug((parameters?.Length ?? 0) > 0
+                ? $"Invoke method: {_methodInfo.ReturnType.Name} {_methodInfo.Name}({string.Join(", ", parameters!.Select(x => $"{x?.GetType()?.Name ?? "null"}"))})"
+                : $"Invoke method: {_methodInfo.ReturnType.Name} {_methodInfo.Name}()");
+
+            // _logger?.LogDebug("Invoke method: {0} {1}, Class: {2}", _methodInfo.ReturnType.Name, _methodInfo.Name, _classType?.Name ?? "null");
 
             var methodParameters = _methodInfo.GetParameters();
             var maxLength = Math.Max(methodParameters.Length, parameters?.Length ?? 0);
@@ -232,7 +322,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             }
 
             var parameterLogs = string.Join(Environment.NewLine, result);
-            _logger.LogDebug("Invoke method: Parameters. Input: {0}, Provided: {1}\n{2}", methodParameters.Length, parameters?.Length, parameterLogs);
+            _logger?.LogDebug("Invoke method: Input: {0}, Provided: {1}\n{2}\n", methodParameters.Length, parameters?.Length, parameterLogs);
         }
     }
 }

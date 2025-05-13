@@ -2,13 +2,72 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using com.IvanMurzak.Unity.MCP.Common.Data.Utils;
+using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
-    public class SerializedMemberConverter : JsonConverter<SerializedMember>
+    public class SerializedMemberConverter : JsonConverter<SerializedMember>, IJsonSchemeConvertor
     {
+        public JsonNode GetScheme() => new JsonObject
+        {
+            ["type"] = "object",
+            ["properties"] = new JsonObject
+            {
+                ["typeName"] = new JsonObject
+                {
+                    ["type"] = "string",
+                    ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
+                },
+                ["name"] = new JsonObject { ["type"] = "string" },
+                ["value"] = new JsonObject { ["type"] = "object" },
+                ["fields"] = new JsonObject
+                {
+                    ["type"] = "array",
+                    ["items"] = new JsonObject
+                    {
+                        ["type"] = "object",
+                        ["properties"] = new JsonObject
+                        {
+                            ["typeName"] = new JsonObject
+                            {
+                                ["type"] = "string",
+                                ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
+                            },
+                            ["name"] = new JsonObject { ["type"] = "string" },
+                            ["value"] = new JsonObject { ["type"] = "object" },
+                            ["fields"] = new JsonObject { ["type"] = "array" },
+                            ["props"] = new JsonObject { ["type"] = "array" },
+                        },
+                        ["required"] = new JsonArray { "typeName", "name", "value" }
+                    }
+                },
+                ["props"] = new JsonObject
+                {
+                    ["type"] = "array",
+                    ["items"] = new JsonObject
+                    {
+                        ["type"] = "object",
+                        ["properties"] = new JsonObject
+                        {
+                            ["typeName"] = new JsonObject
+                            {
+                                ["type"] = "string",
+                                ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
+                            },
+                            ["name"] = new JsonObject { ["type"] = "string" },
+                            ["value"] = new JsonObject { ["type"] = "object" },
+                            ["fields"] = new JsonObject { ["type"] = "array" },
+                            ["props"] = new JsonObject { ["type"] = "array" },
+                        },
+                        ["required"] = new JsonArray { "typeName", "name", "value" }
+                    }
+                }
+            },
+            ["required"] = new JsonArray { "typeName", "value" }
+        };
+
         public override SerializedMember? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType == JsonTokenType.Null)
@@ -31,8 +90,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                         case "name":
                             member.name = reader.GetString() ?? "[FAILED TO READ]";
                             break;
-                        case "type":
-                            member.type = reader.GetString() ?? "[FAILED TO READ]";
+                        case "typeName":
+                            member.typeName = reader.GetString() ?? "[FAILED TO READ]";
                             break;
                         case "value":
                             member.valueJsonElement = JsonElement.ParseValue(ref reader);
@@ -40,7 +99,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                         case "fields":
                             member.fields = JsonUtils.Deserialize<List<SerializedMember>>(ref reader, options);
                             break;
-                        case "properties":
+                        case "props":
                             member.properties = JsonUtils.Deserialize<List<SerializedMember>>(ref reader, options);
                             break;
                         default:
@@ -49,7 +108,6 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                     }
                 }
             }
-
 
             return member;
         }
@@ -65,7 +123,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
             writer.WriteStartObject();
 
             writer.WriteString("name", value.name);
-            writer.WriteString("type", value.type);
+            writer.WriteString("typeName", value.typeName);
 
             if (value.valueJsonElement.HasValue)
             {
@@ -79,7 +137,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
             }
             if (value.properties != null && value.properties.Count > 0)
             {
-                writer.WritePropertyName("properties");
+                writer.WritePropertyName("props");
                 JsonSerializer.Serialize(writer, value.properties, options);
             }
 

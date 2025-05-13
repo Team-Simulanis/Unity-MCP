@@ -1,6 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
 
@@ -41,7 +42,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            var result = Serializer.Serialize(material, name: material.name);
+            var result = Reflector.Instance.Serialize(
+                material,
+                name: material.name,
+                logger: McpPlugin.Instance.Logger
+            );
             return $"[Success] Material instanceID '{material.GetInstanceID()}' created at '{assetPath}'.\n{result}";
         });
     }

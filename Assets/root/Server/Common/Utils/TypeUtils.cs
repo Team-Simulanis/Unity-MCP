@@ -13,6 +13,19 @@ namespace com.IvanMurzak.Unity.MCP.Common.Utils
                     .SelectMany(a => a.GetTypes())
                     .FirstOrDefault(t => t.FullName == typeFullName);
 
+        public static T? GetDefaultValue<T>()
+            => (T?)GetDefaultValue(typeof(T));
+        public static object? GetDefaultValue(Type type)
+        {
+            if (type.IsValueType)
+                return Activator.CreateInstance(type);
+
+            if (type.GetConstructor(Type.EmptyTypes) != null)
+                return Activator.CreateInstance(type);
+    
+            return null;
+        }
+
         public static object? CastTo(object obj, string typeFullName, out string? error)
         {
             var type = GetType(typeFullName) ??

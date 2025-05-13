@@ -26,7 +26,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
         private void SaveChanges(string message)
         {
-            if (McpPluginUnity.IsLogActive(LogLevel.Log))
+            if (McpPluginUnity.IsLogActive(LogLevel.Info))
                 Debug.Log(message);
 
             saveChangesMessage = message;

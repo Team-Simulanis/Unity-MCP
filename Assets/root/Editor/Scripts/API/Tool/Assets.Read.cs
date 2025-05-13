@@ -1,6 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
 
@@ -36,7 +37,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             if (asset == null)
                 return Error.NotFoundAsset(assetPath, assetGuid);
 
-            var serialized = Serializer.Serialize(asset, name: asset.name, recursive: true);
+            var serialized = Reflector.Instance.Serialize(
+                asset,
+                name: asset.name,
+                recursive: true,
+                logger: McpPlugin.Instance.Logger
+            );
             var json = JsonUtils.Serialize(serialized);
 
             return $"[Success] Loaded asset at path '{assetPath}'.\n{json}";
