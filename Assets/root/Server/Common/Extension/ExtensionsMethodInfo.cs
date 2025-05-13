@@ -9,9 +9,9 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public static class ExtensionsMethodInfo
     {
-        public static MethodInfo? FilterByParameters(this IEnumerable<MethodInfo> methods, SerializedMemberList? serializedParameters = null)
+        public static MethodInfo? FilterByParameters(this IEnumerable<MethodInfo> methods, SerializedMemberList? parameters = null)
         {
-            if (serializedParameters == null || serializedParameters.Count == 0)
+            if (parameters == null || parameters.Count == 0)
                 return methods.FirstOrDefault(m => m.GetParameters().Length == 0);
 
             return methods.FirstOrDefault(method =>
@@ -20,15 +20,15 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 for (int i = 0; i < methodParameters.Length; i++)
                 {
                     var methodParameter = methodParameters[i];
-                    if (i >= serializedParameters.Count)
+                    if (i >= parameters.Count)
                     {
                         if (methodParameter.IsOptional)
                             break;
                         return false;
                     }
-                    var serializedParam = serializedParameters[i];
+                    var parameter = parameters[i];
 
-                    if (methodParameter.Name != serializedParam.name || methodParameter.ParameterType != TypeUtils.GetType(serializedParam.typeName))
+                    if (methodParameter.Name != parameter.name || methodParameter.ParameterType != TypeUtils.GetType(parameter.typeName))
                         return false;
                 }
                 return true;

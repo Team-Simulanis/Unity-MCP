@@ -81,9 +81,9 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
             public string? Name { get; set; }
 
             public Parameter() { }
-            public Parameter(string type, string? name)
+            public Parameter(string typeName, string? name)
             {
-                this.TypeName = type;
+                this.TypeName = typeName;
                 this.Name = name;
             }
             public Parameter(ParameterInfo parameter)

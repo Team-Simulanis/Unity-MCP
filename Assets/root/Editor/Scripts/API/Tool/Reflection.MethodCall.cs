@@ -51,10 +51,10 @@ Receives input parameters and returns result.")]
             int methodNameMatchLevel = 1,
 
             [Description(@"Minimal match level for 'Parameters'.
-0 - ignore 'filter.Parameters' (default value),
+0 - ignore 'filter.Parameters',
 1 - parameters count is the same,
-2 - equals.")]
-            int parametersMatchLevel = 0,
+2 - equals (default value).")]
+            int parametersMatchLevel = 2,
 
             [Description(@"Specify target object to call method on. Should be null if the method is static or if the is no specific target instance.
 New instance of the specified class will be created if the method is instance method and the targetObject is null.
@@ -73,6 +73,10 @@ Required:
             bool executeInMainThread = true
         )
         {
+            // Enhance filter with input parameters if no input parameters specified in the filter.
+            if ((filter.InputParameters?.Count ?? 0) == 0 && (inputParameters?.Count ?? 0) > 0)
+                filter.EnhanceInputParameters(inputParameters);
+
             var methodEnumerable = FindMethods(
                 filter: filter,
                 knownNamespace: knownNamespace,
