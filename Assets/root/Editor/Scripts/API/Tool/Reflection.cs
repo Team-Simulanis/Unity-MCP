@@ -73,7 +73,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             int classNameMatchLevel = 1,
             int methodNameMatchLevel = 1,
             int parametersMatchLevel = 2,
-            BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+            BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
         {
             // Prepare Namespace
             filter.Namespace = filter.Namespace?.Trim()?.Replace("null", string.Empty);
@@ -83,7 +83,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             var typesEnumerable = AllTypes
                 .Where(type => type.IsVisible)
                 .Where(type => !type.IsInterface)
-                .Where(type => !type.IsAbstract)
+                .Where(type => !type.IsAbstract || type.IsSealed)
                 .Where(type => !type.IsGenericTypeDefinition)
                 .Where(type => !type.IsGenericType);
 
@@ -107,7 +107,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 .SelectMany(type => type.GetMethods(bindingFlags)
                     // Is declared in the class
                     .Where(method => method.DeclaringType == type))
-                .Where(method => method.DeclaringType != null && !method.DeclaringType.IsAbstract);
+                .Where(method => method.DeclaringType != null)
+                .Where(method => !method.DeclaringType.IsAbstract || method.DeclaringType.IsSealed) // ignore abstract non static classes
+                .Where(method => !method.IsGenericMethodDefinition)
+                .Where(method => !method.IsGenericMethod);
 
             if (methodNameMatchLevel > 0 && !string.IsNullOrEmpty(filter.MethodName))
                 methodEnumerable = methodEnumerable
