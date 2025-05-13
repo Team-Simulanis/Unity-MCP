@@ -1,17 +1,16 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 #if !UNITY_EDITOR
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using UnityEditor;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineSprite : RS_UnityEngineObject<UnityEngine.Sprite>
     {
-        public override StringBuilder Populate(ref object obj, SerializedMember data, int depth = 0, StringBuilder stringBuilder = null,
+        public override StringBuilder Populate(Reflector reflector, ref object obj, SerializedMember data, int depth = 0, StringBuilder stringBuilder = null,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {

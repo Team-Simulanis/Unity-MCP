@@ -3,8 +3,9 @@
 using System;
 using System.Reflection;
 using System.Text;
-using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
+using com.IvanMurzak.Unity.MCP.Common.Reflection;
+using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Common.Utils;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -13,14 +14,14 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {
     public partial class RS_UnityEngineMaterial : RS_GenericUnity<Material>
     {
-        protected override StringBuilder? ModifyProperty(ref object obj, SerializedMember property, StringBuilder? stringBuilder = null, int depth = 0,
+        protected override StringBuilder? ModifyProperty(Reflector reflector, ref object obj, SerializedMember property, StringBuilder? stringBuilder = null, int depth = 0,
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
             var material = obj as Material;
-            var propType = TypeUtils.GetType(property.type);
+            var propType = TypeUtils.GetType(property.typeName);
             if (propType == null)
-                return stringBuilder.AppendLine(new string(' ', depth) + $"[Error] Property type '{property.type}' not found.");
+                return stringBuilder.AppendLine(new string(' ', depth) + $"[Error] Property type '{property.typeName}' not found.");
 
             switch (propType)
             {
@@ -64,18 +65,18 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 //     }
                 //     return stringBuilder.AppendLine(new string(' ', depth) + $"[Error] Property '{property.name}' not found.");
                 default:
-                    return stringBuilder.AppendLine(new string(' ', depth) + $"[Error] Property type '{property.type}' is not supported.");
+                    return stringBuilder.AppendLine(new string(' ', depth) + $"[Error] Property type '{property.typeName}' is not supported.");
             }
         }
 
-        public override bool SetAsField(ref object obj, Type type, FieldInfo fieldInfo, SerializedMember? value, StringBuilder? stringBuilder = null,
+        public override bool SetAsField(Reflector reflector, ref object obj, Type type, FieldInfo fieldInfo, SerializedMember? value, StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
             return false;
         }
 
-        public override bool SetAsProperty(ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, StringBuilder? stringBuilder = null,
+        public override bool SetAsProperty(Reflector reflector, ref object obj, Type type, PropertyInfo propertyInfo, SerializedMember? value, StringBuilder? stringBuilder = null,
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
             ILogger? logger = null)
         {
