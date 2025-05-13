@@ -68,7 +68,6 @@ namespace com.IvanMurzak.Unity.MCP.Common
         public async Task<ResponseCallTool> Run(IReadOnlyDictionary<string, JsonElement>? namedParameters)
         {
             var result = await InvokeDict(namedParameters
-                ?.Select(kvp => kvp)
                 ?.ToDictionary(kvp => kvp.Key, kvp => (object?)kvp.Value));
             return result as ResponseCallTool ?? ResponseCallTool.Success(result?.ToString());
         }

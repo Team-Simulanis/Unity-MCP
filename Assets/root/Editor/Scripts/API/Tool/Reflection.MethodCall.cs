@@ -8,6 +8,7 @@ using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.MCP;
 using com.IvanMurzak.Unity.MCP.Common.Reflection;
+using com.IvanMurzak.Unity.MCP.Common.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
@@ -79,6 +80,20 @@ Required:
                 methodNameMatchLevel: methodNameMatchLevel,
                 parametersMatchLevel: parametersMatchLevel);
 
+            if (inputParameters != null)
+            {
+                for (int i = 0; i < inputParameters.Count; i++)
+                {
+                    var inputParameter = inputParameters[i];
+                    if (string.IsNullOrEmpty(inputParameter.className))
+                        return $"[Error] {nameof(inputParameters)}[{i}].{nameof(inputParameter.className)} is empty. Please specify the '{nameof(inputParameter.name)}' properly.";
+
+                    var parameterType = TypeUtils.GetType(inputParameter.className);
+                    if (parameterType == null)
+                        return $"[Error] {nameof(inputParameters)}[{i}].{nameof(inputParameter.className)} type '{inputParameter.className}' not found. Please specify the '{nameof(inputParameter.name)}' properly.";
+                }
+            }
+
             var methods = methodEnumerable.ToList();
             if (methods.Count == 0)
                 return $"[Error] Method not found.\n{filter}";
@@ -94,7 +109,6 @@ Found {methods.Count} method(s):
 
             Func<string> action = () =>
             {
-                var convertors = Reflector.Instance.Convertors.GetAllSerializers();
                 var dictInputParameters = inputParameters?.ToImmutableDictionary(
                     keySelector: p => p.name,
                     elementSelector: p => Reflector.Instance.Deserialize(p, McpPlugin.Instance.Logger)
@@ -116,6 +130,9 @@ Found {methods.Count} method(s):
 
                     methodWrapper = new MethodWrapper(Reflector.Instance, logger: McpPlugin.Instance.Logger, targetInstance: obj, method);
                 }
+
+                if (!methodWrapper.VerifyParameters(dictInputParameters, out var error))
+                    return $"[Error] {error}";
 
                 var task = dictInputParameters != null
                     ? methodWrapper.InvokeDict(dictInputParameters)

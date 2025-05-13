@@ -131,6 +131,45 @@ namespace com.IvanMurzak.Unity.MCP.Common.MCP
             return result;
         }
 
+        public bool VerifyParameters(IReadOnlyDictionary<string, object?>? namedParameters, out string? error)
+        {
+            var methodParameters = _methodInfo.GetParameters();
+            if (methodParameters.Length == 0)
+            {
+                if ((namedParameters?.Count ?? 0) == 0)
+                {
+                    error = null;
+                    return true;
+                }
+                else
+                {
+                    error = $"Method '{_methodInfo.Name}' does not accept any parameters, but {namedParameters?.Count} were provided.";
+                    return false;
+                }
+            }
+
+            foreach (var parameter in namedParameters)
+            {
+                var methodParameter = methodParameters.FirstOrDefault(p => p.Name == parameter.Key);
+                if (methodParameter == null)
+                {
+                    error = $"Method '{_methodInfo.Name}' does not have a parameter named '{parameter.Key}'.";
+                    return false;
+                }
+
+                if (parameter.Value == null)
+                    continue;
+
+                if (!methodParameter.ParameterType.IsInstanceOfType(parameter.Value))
+                {
+                    error = $"Parameter '{parameter.Key}' type mismatch. Expected '{methodParameter.ParameterType}', but got '{parameter.Value.GetType()}'.";
+                    return false;
+                }
+            }
+            error = null;
+            return true;
+        }
+
         protected object?[]? BuildParameters(Reflector reflector, object?[]? parameters)
         {
             if (parameters == null)
