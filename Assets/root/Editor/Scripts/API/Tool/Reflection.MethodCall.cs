@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.MCP;
@@ -78,34 +80,40 @@ Required:
                 knownNamespace: knownNamespace,
                 classNameMatchLevel: classNameMatchLevel,
                 methodNameMatchLevel: methodNameMatchLevel,
-                parametersMatchLevel: parametersMatchLevel);
-
-            if (inputParameters != null)
-            {
-                for (int i = 0; i < inputParameters.Count; i++)
-                {
-                    var inputParameter = inputParameters[i];
-                    if (string.IsNullOrEmpty(inputParameter.className))
-                        return $"[Error] {nameof(inputParameters)}[{i}].{nameof(inputParameter.className)} is empty. Please specify the '{nameof(inputParameter.name)}' properly.";
-
-                    var parameterType = TypeUtils.GetType(inputParameter.className);
-                    if (parameterType == null)
-                        return $"[Error] {nameof(inputParameters)}[{i}].{nameof(inputParameter.className)} type '{inputParameter.className}' not found. Please specify the '{nameof(inputParameter.name)}' properly.";
-                }
-            }
+                parametersMatchLevel: parametersMatchLevel
+            );
 
             var methods = methodEnumerable.ToList();
             if (methods.Count == 0)
                 return $"[Error] Method not found.\n{filter}";
 
-            if (methods.Count > 1)
-                return @$"[Error] Found more then one method. Only single method should be targeted. Please specify the method name more precisely.
-Found {methods.Count} method(s):
-```json
-{JsonUtils.Serialize(methods.Select(method => new MethodDataRef(method)))}
-```";
+            var method = default(MethodInfo);
 
-            var method = methods.First();
+            if (methods.Count > 1)
+            {
+                var isValidParameterClassName = inputParameters.IsValidClassNames(
+                    fieldName: nameof(inputParameters),
+                    out var error
+                );
+
+                // Lets try to filter methods by parameters
+                method = isValidParameterClassName
+                    ? methods.FilterByParameters(inputParameters)
+                    : null;
+
+                if (method == null)
+                    return Error.MoreThenOneMethodFound(methods);
+            }
+            else
+            {
+                method = methods.First();
+            }
+
+            inputParameters.EnhanceNames(method);
+            inputParameters.EnhanceTypes(method);
+
+            // if (!inputParameters.IsMatch(method, out var matchError))
+            //     return $"[Error] {matchError}";
 
             Func<string> action = () =>
             {

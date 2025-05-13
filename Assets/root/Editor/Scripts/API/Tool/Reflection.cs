@@ -133,7 +133,15 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
         public static class Error
         {
-
+            public static string MoreThenOneMethodFound(List<MethodInfo> methods)
+            {
+                var methodsString = JsonUtils.Serialize(methods.Select(method => new MethodDataRef(method)));
+                return @$"[Error] Found more then one method. Only single method should be targeted. Please specify the method name more precisely.
+Found {methods.Count} method(s):
+```json
+{methodsString}
+```";
+            }
         }
     }
 }
