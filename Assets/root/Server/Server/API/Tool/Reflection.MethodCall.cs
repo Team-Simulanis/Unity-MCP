@@ -1,5 +1,4 @@
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using ModelContextProtocol.Protocol.Types;
 using ModelContextProtocol.Server;
 using System.Collections.Generic;
@@ -15,7 +14,8 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Name = "Reflection_MethodCall",
             Title = "Call method using C# reflection"
         )]
-        [Description(@"Call C# method. It requires to receive proper method schema.
+        [Description(@"Call C# method. Any method could be called, even private methods.
+It requires to receive proper method schema.
 Use 'Reflection_MethodFind' to find available method before using it.
 Receives input parameters and returns result.")]
         public Task<CallToolResponse> MethodCall

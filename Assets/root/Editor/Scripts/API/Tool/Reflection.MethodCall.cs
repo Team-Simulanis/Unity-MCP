@@ -1,16 +1,13 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Common.MCP;
 using com.IvanMurzak.Unity.MCP.Common.Reflection;
-using com.IvanMurzak.Unity.MCP.Common.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
@@ -22,7 +19,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             "Reflection_MethodCall",
             Title = "Call method using C# reflection"
         )]
-        [Description(@"Call C# method. It requires to receive proper method schema.
+        [Description(@"Call C# method. Any method could be called, even private methods.
+It requires to receive proper method schema.
 Use 'Reflection_MethodFind' to find available method before using it.
 Receives input parameters and returns result.")]
         public string MethodCall
