@@ -16,19 +16,19 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
             ILogger? logger = null)
         {
-            if (string.IsNullOrEmpty(data.className))
+            if (string.IsNullOrEmpty(data.typeName))
                 return stringBuilder?.AppendLine("[Error] Type is null or empty.");
 
-            var type = TypeUtils.GetType(data.className);
+            var type = TypeUtils.GetType(data.typeName);
             if (type == null)
-                return stringBuilder?.AppendLine($"[Error] Type not found: {data.className}");
+                return stringBuilder?.AppendLine($"[Error] Type not found: {data.typeName}");
 
-            TypeUtils.CastTo(obj, data.className, out var error);
+            TypeUtils.CastTo(obj, data.typeName, out var error);
             if (error != null)
                 return stringBuilder?.AppendLine(error);
 
             if (!type.IsAssignableFrom(obj.GetType()))
-                return stringBuilder?.AppendLine($"[Error] Type mismatch: {data.className} vs {obj.GetType().FullName}");
+                return stringBuilder?.AppendLine($"[Error] Type mismatch: {data.typeName} vs {obj.GetType().FullName}");
 
             if (data.valueJsonElement != null)
             {
@@ -64,14 +64,14 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
             if (string.IsNullOrEmpty(fieldValue.name))
                 return stringBuilder?.AppendLine(new string(' ', depth) + Error.ComponentFieldNameIsEmpty());
 
-            if (string.IsNullOrEmpty(fieldValue.className))
+            if (string.IsNullOrEmpty(fieldValue.typeName))
                 return stringBuilder?.AppendLine(new string(' ', depth) + Error.ComponentFieldTypeIsEmpty());
 
             var fieldInfo = obj.GetType().GetField(fieldValue.name, flags);
             if (fieldInfo == null)
                 return stringBuilder?.AppendLine(new string(' ', depth) + $"[Error] Field '{fieldValue.name}'. Make sure the name is right, it is case sensitive. Make sure this is a field, maybe is it a property?.");
 
-            var targetType = TypeUtils.GetType(fieldValue.className);
+            var targetType = TypeUtils.GetType(fieldValue.typeName);
             if (targetType == null)
                 return stringBuilder?.AppendLine(new string(' ', depth) + Error.InvalidComponentFieldType(fieldValue, fieldInfo));
 
@@ -96,7 +96,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
             if (string.IsNullOrEmpty(propertyValue.name))
                 return stringBuilder?.AppendLine(new string(' ', depth) + Error.ComponentPropertyNameIsEmpty());
 
-            if (string.IsNullOrEmpty(propertyValue.className))
+            if (string.IsNullOrEmpty(propertyValue.typeName))
                 return stringBuilder?.AppendLine(new string(' ', depth) + Error.ComponentPropertyTypeIsEmpty());
 
             var propInfo = obj.GetType().GetProperty(propertyValue.name, flags);
@@ -111,7 +111,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
                 return stringBuilder?.AppendLine(new string(' ', depth) + warningMessage);
             }
 
-            var targetType = TypeUtils.GetType(propertyValue.className);
+            var targetType = TypeUtils.GetType(propertyValue.typeName);
             if (targetType == null)
                 return stringBuilder?.AppendLine(new string(' ', depth) + Error.InvalidComponentPropertyType(propertyValue, propInfo));
 

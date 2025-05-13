@@ -70,15 +70,15 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         static IEnumerable<MethodInfo> FindMethods(
             MethodPointerRef filter,
             bool knownNamespace = false,
-            int classNameMatchLevel = 1,
+            int typeNameMatchLevel = 1,
             int methodNameMatchLevel = 1,
             int parametersMatchLevel = 2,
             BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
         {
             // Prepare Namespace
             filter.Namespace = filter.Namespace?.Trim()?.Replace("null", string.Empty);
-            if (string.IsNullOrEmpty(filter.ClassName))
-                filter.ClassName = null;
+            if (string.IsNullOrEmpty(filter.TypeName))
+                filter.TypeName = null;
 
             var typesEnumerable = AllTypes
                 .Where(type => type.IsVisible)
@@ -89,14 +89,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             if (knownNamespace)
                 typesEnumerable = typesEnumerable.Where(type => type.Namespace == filter.Namespace);
 
-            if (classNameMatchLevel > 0 && !string.IsNullOrEmpty(filter.ClassName))
+            if (typeNameMatchLevel > 0 && !string.IsNullOrEmpty(filter.TypeName))
                 typesEnumerable = typesEnumerable
                     .Select(type => new
                     {
                         Type = type,
-                        MatchLevel = Compare(type.Name, filter.ClassName)
+                        MatchLevel = Compare(type.Name, filter.TypeName)
                     })
-                    .Where(entry => entry.MatchLevel >= classNameMatchLevel)
+                    .Where(entry => entry.MatchLevel >= typeNameMatchLevel)
                     .OrderByDescending(entry => entry.MatchLevel)
                     .Select(entry => entry.Type);
 

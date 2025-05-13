@@ -28,7 +28,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     }
                     var serializedParam = serializedParameters[i];
 
-                    if (methodParameter.Name != serializedParam.name || methodParameter.ParameterType != TypeUtils.GetType(serializedParam.className))
+                    if (methodParameter.Name != serializedParam.name || methodParameter.ParameterType != TypeUtils.GetType(serializedParam.typeName))
                         return false;
                 }
                 return true;

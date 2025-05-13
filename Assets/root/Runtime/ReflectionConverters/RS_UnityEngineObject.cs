@@ -24,7 +24,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     return new SerializedMember()
                     {
                         name = name,
-                        className = type.FullName,
+                        typeName = type.FullName,
                         fields = SerializeFields(reflector, obj, flags),
                         properties = SerializeProperties(reflector, obj, flags)
                     }.SetValue(new ObjectRef(unityObject.GetInstanceID()));

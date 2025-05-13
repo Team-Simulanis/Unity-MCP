@@ -44,9 +44,9 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection
             public static string InvalidInstanceID(Type holderType, string fieldName)
                 => $"[Error] Invalid instanceID '{fieldName}' for '{holderType.FullName}'. It should be a valid field name.";
             public static string InvalidComponentPropertyType(SerializedMember serializedProperty, PropertyInfo propertyInfo)
-                => $"[Error] Invalid component property type '{serializedProperty.className}' for '{propertyInfo.Name}'. Expected '{propertyInfo.PropertyType.FullName}'.";
+                => $"[Error] Invalid component property type '{serializedProperty.typeName}' for '{propertyInfo.Name}'. Expected '{propertyInfo.PropertyType.FullName}'.";
             public static string InvalidComponentFieldType(SerializedMember serializedProperty, FieldInfo propertyInfo)
-                => $"[Error] Invalid component property type '{serializedProperty.className}' for '{propertyInfo.Name}'. Expected '{propertyInfo.FieldType.FullName}'.";
+                => $"[Error] Invalid component property type '{serializedProperty.typeName}' for '{propertyInfo.Name}'. Expected '{propertyInfo.FieldType.FullName}'.";
 
             public static string NotSupportedInRuntime(Type type)
                 => $"[Error] Type '{type.FullName}' is not supported in runtime for now.";

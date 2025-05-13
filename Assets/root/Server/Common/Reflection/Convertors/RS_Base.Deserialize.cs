@@ -10,7 +10,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
     {
         public virtual object? Deserialize(Reflector reflector, SerializedMember data, ILogger? logger = null)
         {
-            var type = TypeUtils.GetType(data.className);
+            var type = TypeUtils.GetType(data.typeName);
             if (type == null)
                 return null;
 
@@ -25,7 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
                     if (string.IsNullOrEmpty(field.name))
                         continue;
 
-                    var fieldType = TypeUtils.GetType(field.className);
+                    var fieldType = TypeUtils.GetType(field.typeName);
                     if (fieldType == null)
                         continue;
 
@@ -45,7 +45,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
                     if (string.IsNullOrEmpty(property.name))
                         continue;
 
-                    var fieldType = TypeUtils.GetType(property.className);
+                    var fieldType = TypeUtils.GetType(property.typeName);
                     if (fieldType == null)
                         continue;
 

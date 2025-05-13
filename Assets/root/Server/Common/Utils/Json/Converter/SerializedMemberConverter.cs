@@ -15,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
             ["type"] = "object",
             ["properties"] = new JsonObject
             {
-                ["className"] = new JsonObject
+                ["typeName"] = new JsonObject
                 {
                     ["type"] = "string",
                     ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
@@ -30,7 +30,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                         ["type"] = "object",
                         ["properties"] = new JsonObject
                         {
-                            ["className"] = new JsonObject
+                            ["typeName"] = new JsonObject
                             {
                                 ["type"] = "string",
                                 ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
@@ -40,7 +40,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                             ["fields"] = new JsonObject { ["type"] = "array" },
                             ["props"] = new JsonObject { ["type"] = "array" },
                         },
-                        ["required"] = new JsonArray { "className", "name", "value" }
+                        ["required"] = new JsonArray { "typeName", "name", "value" }
                     }
                 },
                 ["props"] = new JsonObject
@@ -51,7 +51,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                         ["type"] = "object",
                         ["properties"] = new JsonObject
                         {
-                            ["className"] = new JsonObject
+                            ["typeName"] = new JsonObject
                             {
                                 ["type"] = "string",
                                 ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
@@ -61,11 +61,11 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                             ["fields"] = new JsonObject { ["type"] = "array" },
                             ["props"] = new JsonObject { ["type"] = "array" },
                         },
-                        ["required"] = new JsonArray { "className", "name", "value" }
+                        ["required"] = new JsonArray { "typeName", "name", "value" }
                     }
                 }
             },
-            ["required"] = new JsonArray { "className", "value" }
+            ["required"] = new JsonArray { "typeName", "value" }
         };
 
         public override SerializedMember? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -90,8 +90,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                         case "name":
                             member.name = reader.GetString() ?? "[FAILED TO READ]";
                             break;
-                        case "className":
-                            member.className = reader.GetString() ?? "[FAILED TO READ]";
+                        case "typeName":
+                            member.typeName = reader.GetString() ?? "[FAILED TO READ]";
                             break;
                         case "value":
                             member.valueJsonElement = JsonElement.ParseValue(ref reader);
@@ -123,7 +123,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
             writer.WriteStartObject();
 
             writer.WriteString("name", value.name);
-            writer.WriteString("className", value.className);
+            writer.WriteString("typeName", value.typeName);
 
             if (value.valueJsonElement.HasValue)
             {

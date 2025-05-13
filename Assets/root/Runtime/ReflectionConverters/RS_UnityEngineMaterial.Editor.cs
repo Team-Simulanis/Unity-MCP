@@ -21,9 +21,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             ILogger? logger = null)
         {
             var material = obj as Material;
-            var propType = TypeUtils.GetType(property.className);
+            var propType = TypeUtils.GetType(property.typeName);
             if (propType == null)
-                return stringBuilder.AppendLine(new string(' ', depth) + $"[Error] Property type '{property.className}' not found.");
+                return stringBuilder.AppendLine(new string(' ', depth) + $"[Error] Property type '{property.typeName}' not found.");
 
             switch (propType)
             {
@@ -65,7 +65,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     }
                     return stringBuilder.AppendLine(new string(' ', depth) + $"[Error] Property '{property.name}' not found.");
                 default:
-                    return stringBuilder.AppendLine(new string(' ', depth) + $"[Error] Property type '{property.className}' is not supported.");
+                    return stringBuilder.AppendLine(new string(' ', depth) + $"[Error] Property type '{property.typeName}' is not supported.");
             }
         }
 

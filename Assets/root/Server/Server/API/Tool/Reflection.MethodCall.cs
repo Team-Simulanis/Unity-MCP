@@ -25,15 +25,15 @@ Receives input parameters and returns result.")]
             [Description("Set to true if 'Namespace' is known and full namespace name is specified in the 'filter.Namespace' property. Otherwise, set to false.")]
             bool knownNamespace = false,
 
-            [Description(@"Minimal match level for 'ClassName'.
-0 - ignore 'filter.ClassName',
+            [Description(@"Minimal match level for 'typeName'.
+0 - ignore 'filter.typeName',
 1 - contains ignoring case (default value),
 2 - contains case sensitive,
 3 - starts with ignoring case,
 4 - starts with case sensitive,
 5 - equals ignoring case,
 6 - equals case sensitive.")]
-            int classNameMatchLevel = 1,
+            int typeNameMatchLevel = 1,
 
             [Description(@"Minimal match level for 'MethodName'.
 0 - ignore 'filter.MethodName',
@@ -46,10 +46,10 @@ Receives input parameters and returns result.")]
             int methodNameMatchLevel = 1,
 
             [Description(@"Minimal match level for 'Parameters'.
-0 - ignore 'filter.Parameters',
+0 - ignore 'filter.Parameters' (default value),
 1 - parameters count is the same,
-2 - equals (default value).")]
-            int parametersMatchLevel = 2,
+2 - equals.")]
+            int parametersMatchLevel = 0,
 
             [Description(@"Specify target object to call method on. Should be null if the method is static or if the is no specific target instance.
 New instance of the specified class will be created if the method is instance method and the targetObject is null.
@@ -72,7 +72,7 @@ Required:
             {
                 arguments[nameof(filter)] = filter;
                 arguments[nameof(knownNamespace)] = knownNamespace;
-                arguments[nameof(classNameMatchLevel)] = classNameMatchLevel;
+                arguments[nameof(typeNameMatchLevel)] = typeNameMatchLevel;
                 arguments[nameof(methodNameMatchLevel)] = methodNameMatchLevel;
                 arguments[nameof(parametersMatchLevel)] = parametersMatchLevel;
 

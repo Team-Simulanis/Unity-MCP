@@ -27,7 +27,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             var result = new Tool_Reflection().MethodFind(
                 filter: new MethodPointerRef(methodInfo),
                 knownNamespace: true,
-                classNameMatchLevel: 6,
+                typeNameMatchLevel: 6,
                 methodNameMatchLevel: 6,
                 parametersMatchLevel: 2);
 

@@ -35,9 +35,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             public static string TypeMismatch(string typeName, string expectedTypeName)
                 => $"[Error] Type mismatch. Expected '{expectedTypeName}', but got '{typeName}'.";
             public static string InvalidComponentPropertyType(SerializedMember serializedProperty, PropertyInfo propertyInfo)
-                => $"[Error] Invalid component property type '{serializedProperty.className}' for '{propertyInfo.Name}'. Expected '{propertyInfo.PropertyType.FullName}'.";
+                => $"[Error] Invalid component property type '{serializedProperty.typeName}' for '{propertyInfo.Name}'. Expected '{propertyInfo.PropertyType.FullName}'.";
             public static string InvalidComponentFieldType(SerializedMember serializedProperty, FieldInfo propertyInfo)
-                => $"[Error] Invalid component property type '{serializedProperty.className}' for '{propertyInfo.Name}'. Expected '{propertyInfo.FieldType.FullName}'.";
+                => $"[Error] Invalid component property type '{serializedProperty.typeName}' for '{propertyInfo.Name}'. Expected '{propertyInfo.FieldType.FullName}'.";
             public static string InvalidComponentType(string typeName)
                 => $"[Error] Invalid component type '{typeName}'. It should be a valid Component Type.";
             public static string NotFoundComponent(int componentInstanceID, IEnumerable<UnityEngine.Component> allComponents)

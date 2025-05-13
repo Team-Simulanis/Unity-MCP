@@ -64,7 +64,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
             return new SerializedMember()
             {
                 name = name,
-                className = type.FullName,
+                typeName = type.FullName,
                 fields = new List<SerializedMember>()
                 {
                     SerializedMember.FromValue(name: FieldName, value: material.name),

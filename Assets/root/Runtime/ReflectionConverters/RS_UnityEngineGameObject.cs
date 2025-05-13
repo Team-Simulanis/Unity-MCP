@@ -33,7 +33,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                 return new SerializedMember()
                 {
                     name = name,
-                    className = type.FullName,
+                    typeName = type.FullName,
                     fields = SerializeFields(reflector, obj, flags),
                     properties = SerializeProperties(reflector, obj, flags)
                 }.SetValue(new ObjectRef(unityObject.GetInstanceID()));
@@ -82,9 +82,9 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
         {
             var go = obj as UnityEngine.GameObject;
 
-            var type = TypeUtils.GetType(fieldValue.className);
+            var type = TypeUtils.GetType(fieldValue.typeName);
             if (type == null)
-                return stringBuilder?.AppendLine($"[Error] Type not found: {fieldValue.className}");
+                return stringBuilder?.AppendLine($"[Error] Type not found: {fieldValue.typeName}");
 
             // If not a component, use base method
             if (!typeof(UnityEngine.Component).IsAssignableFrom(type))

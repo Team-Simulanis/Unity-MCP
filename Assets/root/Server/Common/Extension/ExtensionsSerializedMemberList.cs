@@ -8,7 +8,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
 {
     public static class ExtensionsSerializedMemberList
     {
-        public static bool IsValidClassNames(this SerializedMemberList? parameters, string fieldName, out string? error)
+        public static bool IsValidTypeNames(this SerializedMemberList? parameters, string fieldName, out string? error)
         {
             if (parameters == null || parameters.Count == 0)
             {
@@ -22,17 +22,17 @@ namespace com.IvanMurzak.Unity.MCP.Common
             for (int i = 0; i < parameters.Count; i++)
             {
                 var parameter = parameters[i];
-                if (string.IsNullOrEmpty(parameter.className))
+                if (string.IsNullOrEmpty(parameter.typeName))
                 {
-                    stringBuilder.AppendLine($"[Error] {fieldName}[{i}].{nameof(parameter.className)} is empty. Please specify the '{nameof(parameter.name)}' properly.");
+                    stringBuilder.AppendLine($"[Error] {fieldName}[{i}].{nameof(parameter.typeName)} is empty. Please specify the '{nameof(parameter.name)}' properly.");
                     result = false;
                     continue;
                 }
 
-                var parameterType = TypeUtils.GetType(parameter.className);
+                var parameterType = TypeUtils.GetType(parameter.typeName);
                 if (parameterType == null)
                 {
-                    stringBuilder.AppendLine($"[Error] {fieldName}[{i}].{nameof(parameter.className)} type '{parameter.className}' not found. Please specify the '{nameof(parameter.name)}' properly.");
+                    stringBuilder.AppendLine($"[Error] {fieldName}[{i}].{nameof(parameter.typeName)} type '{parameter.typeName}' not found. Please specify the '{nameof(parameter.name)}' properly.");
                     result = false;
                     continue;
                 }
@@ -74,13 +74,13 @@ namespace com.IvanMurzak.Unity.MCP.Common
             for (int i = 0; i < parameters.Count && i < methodParameters.Length; i++)
             {
                 var parameter = parameters[i];
-                if (string.IsNullOrEmpty(parameter.className))
+                if (string.IsNullOrEmpty(parameter.typeName))
                 {
                     var methodParameter = methodParameters[i];
                     var typeName = methodParameter?.ParameterType?.FullName;
                     if (typeName == null)
                         continue;
-                    parameter.className = typeName;
+                    parameter.typeName = typeName;
                 }
             }
         }

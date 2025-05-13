@@ -23,15 +23,15 @@ Even private methods are available. Use 'Reflection_MethodCall' to call the meth
             [Description("Set to true if 'Namespace' is known and full namespace name is specified in the 'filter.Namespace' property. Otherwise, set to false.")]
             bool knownNamespace = false,
 
-            [Description(@"Minimal match level for 'ClassName'.
-0 - ignore 'filter.ClassName',
+            [Description(@"Minimal match level for 'typeName'.
+0 - ignore 'filter.typeName',
 1 - contains ignoring case (default value),
 2 - contains case sensitive,
 3 - starts with ignoring case,
 4 - starts with case sensitive,
 5 - equals ignoring case,
 6 - equals case sensitive.")]
-            int classNameMatchLevel = 1,
+            int typeNameMatchLevel = 1,
 
             [Description(@"Minimal match level for 'MethodName'.
 0 - ignore 'filter.MethodName',
@@ -54,7 +54,7 @@ Even private methods are available. Use 'Reflection_MethodCall' to call the meth
             {
                 arguments[nameof(filter)] = filter;
                 arguments[nameof(knownNamespace)] = knownNamespace;
-                arguments[nameof(classNameMatchLevel)] = classNameMatchLevel;
+                arguments[nameof(typeNameMatchLevel)] = typeNameMatchLevel;
                 arguments[nameof(methodNameMatchLevel)] = methodNameMatchLevel;
                 arguments[nameof(parametersMatchLevel)] = parametersMatchLevel;
             });

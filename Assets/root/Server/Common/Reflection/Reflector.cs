@@ -47,12 +47,12 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection
         }
         public object? Deserialize(SerializedMember data, ILogger? logger = null)
         {
-            if (string.IsNullOrEmpty(data?.className))
+            if (string.IsNullOrEmpty(data?.typeName))
                 throw new ArgumentException(Error.DataTypeIsEmpty());
 
-            var type = TypeUtils.GetType(data.className);
+            var type = TypeUtils.GetType(data.typeName);
             if (type == null)
-                throw new ArgumentException(Error.NotFoundType(data.className));
+                throw new ArgumentException(Error.NotFoundType(data.typeName));
 
             var deserializer = Convertors.BuildDeserializersChain(type);
             if (deserializer == null)
@@ -80,22 +80,22 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection
         {
             stringBuilder ??= new StringBuilder();
 
-            if (string.IsNullOrEmpty(data?.className))
+            if (string.IsNullOrEmpty(data?.typeName))
                 return stringBuilder.AppendLine(new string(' ', depth) + Error.DataTypeIsEmpty());
 
-            var type = TypeUtils.GetType(data.className);
+            var type = TypeUtils.GetType(data.typeName);
             if (type == null)
-                return stringBuilder.AppendLine(new string(' ', depth) + Error.NotFoundType(data.className));
+                return stringBuilder.AppendLine(new string(' ', depth) + Error.NotFoundType(data.typeName));
 
             if (obj == null)
                 return stringBuilder.AppendLine(new string(' ', depth) + Error.TargetObjectIsNull());
 
-            TypeUtils.CastTo(obj, data.className, out var error);
+            TypeUtils.CastTo(obj, data.typeName, out var error);
             if (error != null)
                 return stringBuilder.AppendLine(new string(' ', depth) + error);
 
             if (!type.IsAssignableFrom(obj.GetType()))
-                return stringBuilder.AppendLine(new string(' ', depth) + Error.TypeMismatch(data.className, obj.GetType().FullName ?? string.Empty));
+                return stringBuilder.AppendLine(new string(' ', depth) + Error.TypeMismatch(data.typeName, obj.GetType().FullName ?? string.Empty));
 
             foreach (var convertor in Convertors.BuildPopulatorsChain(type))
                 convertor.Populate(this, ref obj, data, stringBuilder: stringBuilder, flags: flags, logger: logger);
@@ -109,22 +109,22 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection
         {
             stringBuilder ??= new StringBuilder();
 
-            if (string.IsNullOrEmpty(data?.className))
+            if (string.IsNullOrEmpty(data?.typeName))
                 return stringBuilder.AppendLine(new string(' ', depth) + Error.DataTypeIsEmpty());
 
-            var type = TypeUtils.GetType(data.className);
+            var type = TypeUtils.GetType(data.typeName);
             if (type == null)
-                return stringBuilder.AppendLine(new string(' ', depth) + Error.NotFoundType(data.className));
+                return stringBuilder.AppendLine(new string(' ', depth) + Error.NotFoundType(data.typeName));
 
             if (obj == null)
                 return stringBuilder.AppendLine(new string(' ', depth) + Error.TargetObjectIsNull());
 
-            TypeUtils.CastTo(obj, data.className, out var error);
+            TypeUtils.CastTo(obj, data.typeName, out var error);
             if (error != null)
                 return stringBuilder.AppendLine(new string(' ', depth) + error);
 
             if (!type.IsAssignableFrom(obj.GetType()))
-                return stringBuilder.AppendLine(new string(' ', depth) + Error.TypeMismatch(data.className, obj.GetType().FullName ?? string.Empty));
+                return stringBuilder.AppendLine(new string(' ', depth) + Error.TypeMismatch(data.typeName, obj.GetType().FullName ?? string.Empty));
 
             foreach (var convertor in Convertors.BuildPopulatorsChain(type))
                 convertor.Populate(this, ref obj, data, stringBuilder: stringBuilder, flags: flags, logger: logger);

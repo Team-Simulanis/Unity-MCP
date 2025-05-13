@@ -58,7 +58,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
             var enumerable = parsedList
                 .Select(element =>
                 {
-                    var elementType = TypeUtils.GetType(element.className);
+                    var elementType = TypeUtils.GetType(element.typeName);
                     var elementValue = JsonUtils.Deserialize(element.valueJsonElement.Value, elementType);
                     return elementValue;
                 });
@@ -79,7 +79,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
             var enumerable = parsedList
                 .Select(element =>
                 {
-                    var elementType = TypeUtils.GetType(element.className);
+                    var elementType = TypeUtils.GetType(element.typeName);
                     var elementValue = element.valueJsonElement == null
                         ? TypeUtils.GetDefaultValue(type)
                         : JsonUtils.Deserialize(element.valueJsonElement.Value, elementType);
@@ -102,7 +102,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
             var enumerable = parsedList
                 .Select(element =>
                 {
-                    var elementType = TypeUtils.GetType(element.className);
+                    var elementType = TypeUtils.GetType(element.typeName);
                     var elementValue = JsonUtils.Deserialize(element.valueJsonElement.Value, elementType);
                     return elementValue;
                 });
