@@ -14,8 +14,9 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
             ["type"] = "object",
             ["properties"] = new JsonObject
             {
-                ["instanceID"] = new JsonObject { ["type"] = "integer" },
-                ["assetPath"] = new JsonObject { ["type"] = "string" }
+                [nameof(ObjectRef.instanceID)] = new JsonObject { ["type"] = "integer" },
+                [nameof(ObjectRef.assetPath)] = new JsonObject { ["type"] = "string" },
+                [nameof(ObjectRef.assetGuid)] = new JsonObject { ["type"] = "string" }
             },
             ["required"] = new JsonArray { "instanceID" }
         };
@@ -39,16 +40,18 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
 
                     switch (propertyName)
                     {
-                        case "instanceID":
+                        case nameof(ObjectRef.instanceID):
                             instanceID.instanceID = reader.GetInt32();
                             break;
-                        case "assetPath":
+                        case nameof(ObjectRef.assetPath):
                             instanceID.assetPath = reader.GetString();
                             break;
-                        default:
-                            // Skip unknown properties
-                            reader.Skip();
+                        case nameof(ObjectRef.assetGuid):
+                            instanceID.assetGuid = reader.GetString();
                             break;
+                        default:
+                            throw new JsonException($"Unexpected property name: {propertyName}. "
+                                + $"Expected '{nameof(ObjectRef.instanceID)}', '{nameof(ObjectRef.assetPath)}', or '{nameof(ObjectRef.assetGuid)}'.");
                     }
                 }
             }
@@ -67,14 +70,21 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
             writer.WriteStartObject();
 
             // Write the "instanceID" property
-            writer.WritePropertyName("instanceID");
+            writer.WritePropertyName(nameof(ObjectRef.instanceID));
             writer.WriteNumberValue(value.instanceID);
 
             // Write the "assetPath" property
             if (!string.IsNullOrEmpty(value.assetPath))
             {
-                writer.WritePropertyName("assetPath");
+                writer.WritePropertyName(nameof(ObjectRef.assetPath));
                 writer.WriteStringValue(value.assetPath);
+            }
+
+            // Write the "assetGuid" property
+            if (!string.IsNullOrEmpty(value.assetGuid))
+            {
+                writer.WritePropertyName(nameof(ObjectRef.assetGuid));
+                writer.WriteStringValue(value.assetGuid);
             }
 
             writer.WriteEndObject();

@@ -1,5 +1,6 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
@@ -16,15 +17,37 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
         [JsonPropertyName("assetPath")]
         public string? assetPath;
 
+        [JsonInclude]
+        [JsonPropertyName("assetGuid")]
+        public string? assetGuid;
+
         public ObjectRef() { }
         public ObjectRef(int id) => instanceID = id;
         public ObjectRef(string assetPath) => this.assetPath = assetPath;
 
         public override string ToString()
-            => string.IsNullOrEmpty(assetPath)
-                ? $"instanceID={instanceID}"
-                : instanceID == 0
-                    ? $"assetPath={assetPath}"
-                    : $"instanceID={instanceID}, assetPath={assetPath}";
+        {
+            var stringBuilder = new StringBuilder();
+            if (instanceID != 0)
+                stringBuilder.Append($"instanceID={instanceID}");
+
+            if (!string.IsNullOrEmpty(assetPath))
+            {
+                if (stringBuilder.Length > 0)
+                    stringBuilder.Append(", ");
+                stringBuilder.Append($"assetPath={assetPath}");
+            }
+
+            if (!string.IsNullOrEmpty(assetGuid))
+            {
+                if (stringBuilder.Length > 0)
+                    stringBuilder.Append(", ");
+                stringBuilder.Append($"assetGuid={assetGuid}");
+            }
+            if (stringBuilder.Length == 0)
+                return $"instanceID={instanceID}";
+
+            return stringBuilder.ToString();
+        }
     }
 }
