@@ -48,6 +48,9 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
                         case "z":
                             z = reader.GetInt32();
                             break;
+                        default:
+                            throw new JsonException($"Unexpected property name: {propertyName}. "
+                                + "Expected 'x', 'y', or 'z'.");
                     }
                 }
             }

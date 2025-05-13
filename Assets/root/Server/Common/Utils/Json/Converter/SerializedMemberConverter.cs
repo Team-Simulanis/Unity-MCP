@@ -133,9 +133,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                             member.props = JsonUtils.Deserialize<List<SerializedMember>>(ref reader, options);
                             break;
                         default:
-                            throw new JsonException($"Unexpected property name: {propertyName}. Did you want to use '{SerializedMember.ValueName}', '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}'?");
-                            // reader.Skip();
-                            // break;
+                            throw new JsonException($"Unexpected property name: {propertyName}. "
+                                + $"Did you want to use '{SerializedMember.ValueName}', '{nameof(SerializedMember.fields)}' or '{nameof(SerializedMember.props)}'?");
                     }
                 }
             }
