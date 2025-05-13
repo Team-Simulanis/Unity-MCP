@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
-    public class Vector3IntConverter : JsonConverter<Vector3Int>, IJsonSchemeConvertor
+    public class Vector3IntConverter : JsonConverter<Vector3Int>, IJsonSchemaConverter
     {
         public JsonNode GetScheme() => new JsonObject
         {
@@ -48,6 +48,9 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
                         case "z":
                             z = reader.GetInt32();
                             break;
+                        default:
+                            throw new JsonException($"Unexpected property name: {propertyName}. "
+                                + "Expected 'x', 'y', or 'z'.");
                     }
                 }
             }

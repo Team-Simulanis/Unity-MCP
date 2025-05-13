@@ -16,6 +16,13 @@ namespace com.IvanMurzak.Unity.MCP.Utils
 
             if (!string.IsNullOrEmpty(objectRef.assetPath))
                 return UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(objectRef.assetPath);
+
+            if (!string.IsNullOrEmpty(objectRef.assetGuid))
+            {
+                var path = UnityEditor.AssetDatabase.GUIDToAssetPath(objectRef.assetGuid);
+                if (!string.IsNullOrEmpty(path))
+                    return UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
+            }
 #endif
 
             return null;

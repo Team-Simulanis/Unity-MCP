@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
-    public class ColorConverter : JsonConverter<Color>, IJsonSchemeConvertor
+    public class ColorConverter : JsonConverter<Color>, IJsonSchemaConverter
     {
         public JsonNode GetScheme() => new JsonObject
         {
@@ -72,6 +72,9 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
                         case "a":
                             a = reader.GetSingle();
                             break;
+                        default:
+                            throw new JsonException($"Unexpected property name: {propertyName}. "
+                                + $"Expected 'r', 'g', 'b', or 'a'.");
                     }
                 }
             }

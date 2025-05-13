@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
-    public class QuaternionConverter : JsonConverter<Quaternion>, IJsonSchemeConvertor
+    public class QuaternionConverter : JsonConverter<Quaternion>, IJsonSchemaConverter
     {
         public JsonNode GetScheme() => new JsonObject
         {
@@ -52,6 +52,9 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
                         case "w":
                             w = reader.GetSingle();
                             break;
+                        default:
+                            throw new JsonException($"Unexpected property name: {propertyName}. "
+                                + "Expected 'x', 'y', 'z', or 'w'.");
                     }
                 }
             }

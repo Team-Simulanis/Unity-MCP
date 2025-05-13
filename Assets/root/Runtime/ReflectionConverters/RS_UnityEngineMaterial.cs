@@ -70,7 +70,7 @@ namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
                     SerializedMember.FromValue(name: FieldName, value: material.name),
                     SerializedMember.FromValue(name: FieldShader, value: shader.name)
                 },
-                properties = properties,
+                props = properties,
             }.SetValue(new ObjectRef(material.GetInstanceID()));
         }
 

@@ -3,7 +3,7 @@ using System.Text.Json.Nodes;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
-    public interface IJsonSchemeConvertor
+    public interface IJsonSchemaConverter
     {
         JsonNode GetScheme();
     }

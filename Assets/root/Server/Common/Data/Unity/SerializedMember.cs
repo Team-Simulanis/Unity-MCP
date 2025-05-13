@@ -10,13 +10,14 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
     [Serializable]
     public class SerializedMember
     {
+        public const string ValueName = "value";
+
         [JsonInclude] public string? name = string.Empty; // needed for Unity's JsonUtility serialization
         [JsonInclude] public string typeName = string.Empty; // needed for Unity's JsonUtility serialization
         [JsonInclude] public List<SerializedMember>? fields; // needed for Unity's JsonUtility serialization
-        [JsonPropertyName("props")]
-        [JsonInclude] public List<SerializedMember>? properties; // needed for Unity's JsonUtility serialization
+        [JsonInclude] public List<SerializedMember>? props; // needed for Unity's JsonUtility serialization
 
-        [JsonInclude, JsonPropertyName("value")]
+        [JsonInclude, JsonPropertyName(ValueName)]
         public JsonElement? valueJsonElement = null; // System.Text.Json serialization
 
         public SerializedMember() { }
@@ -58,7 +59,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
         }
 
         public SerializedMember? GetProperty(string name)
-            => properties?.FirstOrDefault(x => x.name == name);
+            => props?.FirstOrDefault(x => x.name == name);
 
         public SerializedMember SetPropertyValue<T>(string name, T value)
         {
@@ -66,8 +67,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
             if (property == null)
             {
                 property = SerializedMember.FromValue(typeof(T), value, name: name);
-                properties ??= new List<SerializedMember>();
-                properties.Add(property);
+                props ??= new List<SerializedMember>();
+                props.Add(property);
                 return this;
             }
             property.SetValue(value);
@@ -76,8 +77,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
 
         public SerializedMember AddProperty(SerializedMember property)
         {
-            properties ??= new List<SerializedMember>();
-            properties.Add(property);
+            props ??= new List<SerializedMember>();
+            props.Add(property);
             return this;
         }
 
