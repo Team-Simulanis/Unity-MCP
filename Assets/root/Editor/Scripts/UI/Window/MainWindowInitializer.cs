@@ -19,14 +19,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             if (isInitialized)
                 return;
 
-            EditorApplication.update += OnEditorUpdate;
+            EditorApplication.delayCall += PerformInitialization;
         }
 
-        static void OnEditorUpdate()
+        static void PerformInitialization()
         {
-            // Remove the callback to prevent repeated execution
-            EditorApplication.update -= OnEditorUpdate;
-
             if (isInitialized)
                 return;
 
