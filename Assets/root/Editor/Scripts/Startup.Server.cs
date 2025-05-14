@@ -74,12 +74,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
         public static async Task BuildServer(bool force = true)
         {
-            if (EnvironmentUtils.IsGitHubActions)
-            {
-                Debug.Log($"{Consts.Log.Tag} <color=red>GitHub Actions detected</color>. Skipping build.");
-                return;
-            }
-            var message = $"<b><color=yellow>Server Build</color></b> (GITHUB_ACTIONS={EnvironmentUtils.GITHUB_ACTIONS})";
+            var message = $"<b><color=yellow>Server Build</color></b>";
             Debug.Log($"{Consts.Log.Tag} {message} <color=orange>⊂(◉‿◉)つ</color>");
             Debug.Log($"{Consts.Log.Tag} Current Server version: <color=#8CFFD1>{ServerExecutableVersion}</color>. New Server version: <color=#8CFFD1>{ServerSourceVersion}</color>");
 
@@ -91,7 +86,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             (string output, string error) = await ProcessUtils.Run(new ProcessStartInfo
             {
                 FileName = "dotnet",
-                Arguments = "build -c Release",
+                Arguments = $"build -c Release {ServerProjectName}.csproj",
                 WorkingDirectory = ServerExecutableRootPath,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
