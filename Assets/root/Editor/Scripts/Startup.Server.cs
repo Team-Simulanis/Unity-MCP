@@ -79,7 +79,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 Debug.Log($"{Consts.Log.Tag} <color=red>GitHub Actions detected</color>. Skipping build.");
                 return;
             }
-            var message = "<b><color=yellow>Server Build</color></b>";
+            var message = $"<b><color=yellow>Server Build</color></b> (GITHUB_ACTIONS={EnvironmentUtils.GITHUB_ACTIONS})";
             Debug.Log($"{Consts.Log.Tag} {message} <color=orange>⊂(◉‿◉)つ</color>");
             Debug.Log($"{Consts.Log.Tag} Current Server version: <color=#8CFFD1>{ServerExecutableVersion}</color>. New Server version: <color=#8CFFD1>{ServerSourceVersion}</color>");
 
