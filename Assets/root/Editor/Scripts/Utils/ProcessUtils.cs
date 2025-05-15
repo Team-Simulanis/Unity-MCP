@@ -75,8 +75,21 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
                         : $"{envPath}:{dotnetPath}";
                 }
             }
-
-            Environment.SetEnvironmentVariable("PATH", envVariables["PATH"]);
+            foreach (var dotnetPath in dotnetPaths)
+            {
+                var envPath = Environment.GetEnvironmentVariable("PATH");
+                if (envPath == null)
+                {
+                    envVariables["PATH"] = dotnetPath;
+                    continue;
+                }
+                if (envPath.Contains(dotnetPath) == false)
+                {
+                    envVariables["PATH"] = string.IsNullOrEmpty(envPath)
+                        ? dotnetPath
+                        : $"{envPath}:{dotnetPath}";
+                }
+            }
         }
     }
 }
