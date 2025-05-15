@@ -25,11 +25,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
 
 #if !UNITY_EDITOR_WIN
             FixEnvironmentPath(processStartInfo.EnvironmentVariables);
-            foreach (var key in processStartInfo.EnvironmentVariables)
-            {
-                var value = processStartInfo.EnvironmentVariables[key.ToString()];
-                Environment.SetEnvironmentVariable(key.ToString(), value);
-            }
 #endif
 
             await Task.Run(() =>
@@ -82,6 +77,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
             }
             
             Debug.Log($"Fixed Process PATH: {envVariables["PATH"]}");
+
+            foreach (var key in envVariables)
+            {
+                var value = envVariables[key.ToString()];
+                Environment.SetEnvironmentVariable(key.ToString(), value);
+            }
         }
     }
 }
