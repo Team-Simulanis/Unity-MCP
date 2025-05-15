@@ -106,9 +106,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             if (isError)
             {
-                Debug.LogError($"{Consts.Log.Tag} <color=red>Build failed</color>. Check the output for details:\n{output}");
                 if (force)
                 {
+                    Debug.LogWarning($"{Consts.Log.Tag} <color=red>Build failed</color>. Check the output for details:\n{output}");
                     if (ErrorUtils.ExtractProcessId(output, out var processId))
                     {
                         Debug.Log($"{Consts.Log.Tag} Detected another process which locks the file. Killing the process with ID: {processId}");
@@ -130,6 +130,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                     {
                         await BuildServer(force: false);
                     }
+                }
+                else
+                {
+                    Debug.LogError($"{Consts.Log.Tag} <color=red>Build failed</color>. Check the output for details:\n{output}");
                 }
             }
             else

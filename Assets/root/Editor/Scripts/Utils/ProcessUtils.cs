@@ -57,8 +57,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
         {
             var dotnetPaths = new string[]
             {
-                "/usr/local/share/dotnet",
-                "~/.dotnet/tools"
+                "/usr/local/share/dotnet", // macos
+                "~/.dotnet/tools",
+                "/usr/share/dotnet" // ubuntu
             };
             foreach (var dotnetPath in dotnetPaths)
             {
