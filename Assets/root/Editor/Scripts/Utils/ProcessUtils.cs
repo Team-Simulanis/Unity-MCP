@@ -1,5 +1,6 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
@@ -23,7 +24,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
             processStartInfo.CreateNoWindow = true;
 
 #if !UNITY_EDITOR_WIN
-            FixEnvironmentPath(processStartInfo);
+            FixEnvironmentPath(processStartInfo.EnvironmentVariables);
+            foreach (var key in processStartInfo.EnvironmentVariables)
+            {
+                var value = processStartInfo.EnvironmentVariables[key.ToString()];
+                Environment.SetEnvironmentVariable(key.ToString(), value);
+            }
 #endif
 
             await Task.Run(() =>
@@ -52,21 +58,30 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
             });
             return (output, error);
         }
-        static void FixEnvironmentPath(ProcessStartInfo processStartInfo)
+        static void FixEnvironmentPath(StringDictionary envVariables)
         {
-            // Explicitly set the PATH environment variable
-            if (!processStartInfo.EnvironmentVariables.ContainsKey("PATH"))
+            var dotnetPaths = new string[]
             {
-                var systemPath = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
-
-                // Add the path to the dotnet executable if needed
-                var dotnetPath = "/usr/local/share/dotnet:/usr/bin:/bin:/usr/sbin:/sbin";
-                processStartInfo.EnvironmentVariables["PATH"] = $"{systemPath}:{dotnetPath}";
+                "/usr/local/share/dotnet",
+                "~/.dotnet/tools"
+            };
+            foreach (var dotnetPath in dotnetPaths)
+            {
+                if (envVariables.ContainsKey("PATH") == false)
+                {
+                    envVariables["PATH"] = dotnetPath;
+                    continue;
+                }
+                var envPath = envVariables["PATH"];
+                if (envPath.Contains(dotnetPath) == false)
+                {
+                    envVariables["PATH"] = string.IsNullOrEmpty(envPath)
+                        ? dotnetPath
+                        : $"{envPath}:{dotnetPath}";
+                }
             }
-
-            // Ensure the full path to the dotnet executable is used
-            if (processStartInfo.FileName == "dotnet")
-                processStartInfo.FileName = "/usr/local/share/dotnet/dotnet"; // Adjust this path if dotnet is installed elsewhere
+            
+            Debug.Log($"Fixed Process PATH: {envVariables["PATH"]}");
         }
     }
 }
