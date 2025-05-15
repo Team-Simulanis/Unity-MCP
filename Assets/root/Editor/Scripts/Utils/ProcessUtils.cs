@@ -75,14 +75,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
                         : $"{envPath}:{dotnetPath}";
                 }
             }
-            
-            Debug.Log($"Fixed Process PATH: {envVariables["PATH"]}");
 
-            foreach (var key in envVariables)
-            {
-                var value = envVariables[key.ToString()];
-                Environment.SetEnvironmentVariable(key.ToString(), value);
-            }
+            Environment.SetEnvironmentVariable("PATH", envVariables["PATH"]);
         }
     }
 }
