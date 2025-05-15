@@ -23,9 +23,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
             processStartInfo.UseShellExecute = false;
             processStartInfo.CreateNoWindow = true;
 
-#if !UNITY_EDITOR_WIN
             FixEnvironmentPath(processStartInfo.EnvironmentVariables);
-#endif
 
             await Task.Run(() =>
             {
@@ -55,40 +53,51 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
         }
         static void FixEnvironmentPath(StringDictionary envVariables)
         {
+            const string PATH = "PATH";
+            var pathSeparator = Environment.OSVersion.Platform == PlatformID.Win32NT
+                ? ";"
+                : ":";
+
             var dotnetPaths = new string[]
             {
-                "/usr/local/share/dotnet", // macos
-                "~/.dotnet/tools",
-                "/usr/share/dotnet" // ubuntu
+                // Device
+                "C:/Program Files/dotnet", // windows (device)
+                "/usr/local/share/dotnet", // macos (device)
+                "~/.dotnet/tools", // macos (device)
+
+                // GitHub actions
+                "C:/Program Files/dotnet", // windows (GitHub actions)
+                "/Users/runner/.dotnet", // macos (GitHub actions)
+                "/usr/share/dotnet" // ubuntu (GitHub actions)
             };
             foreach (var dotnetPath in dotnetPaths)
             {
-                if (envVariables.ContainsKey("PATH") == false)
+                if (envVariables.ContainsKey(PATH) == false)
                 {
-                    envVariables["PATH"] = dotnetPath;
+                    envVariables[PATH] = dotnetPath;
                     continue;
                 }
-                var envPath = envVariables["PATH"];
+                var envPath = envVariables[PATH];
                 if (envPath.Contains(dotnetPath) == false)
                 {
-                    envVariables["PATH"] = string.IsNullOrEmpty(envPath)
+                    envVariables[PATH] = string.IsNullOrEmpty(envPath)
                         ? dotnetPath
-                        : $"{envPath}:{dotnetPath}";
+                        : $"{envPath}{pathSeparator}{dotnetPath}";
                 }
             }
             foreach (var dotnetPath in dotnetPaths)
             {
-                var envPath = Environment.GetEnvironmentVariable("PATH");
+                var envPath = Environment.GetEnvironmentVariable(PATH);
                 if (envPath == null)
                 {
-                    envVariables["PATH"] = dotnetPath;
+                    envVariables[PATH] = dotnetPath;
                     continue;
                 }
                 if (envPath.Contains(dotnetPath) == false)
                 {
-                    envVariables["PATH"] = string.IsNullOrEmpty(envPath)
+                    envVariables[PATH] = string.IsNullOrEmpty(envPath)
                         ? dotnetPath
-                        : $"{envPath}:{dotnetPath}";
+                        : $"{envPath}{pathSeparator}{dotnetPath}";
                 }
             }
         }
