@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows, linux]
+        os: [windows-latest, linux]
     name: ${{ inputs.unityVersion }} ${{ inputs.testMode }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
