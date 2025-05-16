@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [GitHub-Runner-macos, GitHub-Runner-windows, GitHub-Runner-linux]
+        os: [windows, linux]
     name: ${{ inputs.unityVersion }} ${{ inputs.testMode }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -40,7 +40,7 @@ jobs:
           path: |
             ${{ inputs.projectPath }}/Library
             ~/.cache/unity3d
-          key: Library-${{ inputs.unityVersion }}-${{ inputs.testMode }}
+          key: Library-${{ inputs.unityVersion }}-${{ inputs.testMode }}-${{ matrix.os }}
       - uses: game-ci/unity-test-runner@v4
         id: tests
         env:
