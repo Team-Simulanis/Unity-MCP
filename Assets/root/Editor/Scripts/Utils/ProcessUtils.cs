@@ -51,13 +51,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
             });
             return (output, error);
         }
+        /// <summary>
+        /// Fixes the environment path for the process to include dotnet paths.
+        /// This is necessary for macOS and other platforms where the dotnet CLI might not be in the default PATH.
+        /// Or may not be visible from the Unity environment. It includes paths for local device and for GitHub actions environment.
+        /// </summary>
         static void FixEnvironmentPath(StringDictionary envVariables)
         {
             const string PATH = "PATH";
-            var pathSeparator = Environment.OSVersion.Platform == PlatformID.Win32NT
-                ? ";"
-                : ":";
-
             var dotnetPaths = new string[]
             {
                 // Device
@@ -82,7 +83,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
                 {
                     envVariables[PATH] = string.IsNullOrEmpty(envPath)
                         ? dotnetPath
-                        : $"{envPath}{pathSeparator}{dotnetPath}";
+                        : $"{envPath}{System.IO.Path.PathSeparator}{dotnetPath}";
                 }
             }
             foreach (var dotnetPath in dotnetPaths)
@@ -90,14 +91,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
                 var envPath = Environment.GetEnvironmentVariable(PATH);
                 if (envPath == null)
                 {
-                    envVariables[PATH] = dotnetPath;
+                    Environment.SetEnvironmentVariable(PATH, dotnetPath);
                     continue;
                 }
                 if (envPath.Contains(dotnetPath) == false)
                 {
-                    envVariables[PATH] = string.IsNullOrEmpty(envPath)
+                    Environment.SetEnvironmentVariable(PATH, string.IsNullOrEmpty(envPath)
                         ? dotnetPath
-                        : $"{envPath}{pathSeparator}{dotnetPath}";
+                        : $"{envPath}{System.IO.Path.PathSeparator}{dotnetPath}");
                 }
             }
         }
