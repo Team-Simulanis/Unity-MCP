@@ -35,7 +35,7 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
-          dotnet-quality: 'release'
+          dotnet-quality: 'ga'
 
       - name: Echo Environment variable PATH
         run: echo "Environment variable PATH is $PATH"
