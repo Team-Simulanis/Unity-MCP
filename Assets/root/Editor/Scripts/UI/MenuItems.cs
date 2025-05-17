@@ -9,6 +9,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 {
     public static class MenuItems
     {
+        [MenuItem("Tools/AI Connector (Unity-MCP)/Get DotNet version", priority = 1007)]
+        public static async void GetDotNetVersion() => await Startup.IsDotNetInstalled();
+
         [MenuItem("Tools/AI Connector (Unity-MCP)/Install DotNet", priority = 1008)]
         public static async void InstallDotNet() => await Startup.InstallDotNetIfNeeded(force: true);
 

@@ -8,6 +8,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 {
     static partial class Startup
     {
+        const string AcceptableDotNetVersionSubstring = "9.";
         const string DefaultDotNetVersion = "9.0.300";
         public static async Task InstallDotNetIfNeeded(string version = DefaultDotNetVersion, bool force = false)
         {
@@ -19,7 +20,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             else
             {
                 var isDotnetInstalled = await IsDotNetInstalled();
-                if (isDotnetInstalled == false)
+                if (isDotnetInstalled)
                     return;
                 UnityEngine.Debug.Log($"{Consts.Log.Tag} .NET SDK is not installed. Installing...");
             }
@@ -30,7 +31,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 #elif UNITY_EDITOR_OSX
             await InstallDotnet_MacOS(version);
 #elif UNITY_EDITOR_LINUX
-            await InstallDotnet_Linux(version);
+            await InstallDotnet_MacOS(version);
+            // await InstallDotnet_Linux(version);
 #else
             Debug.LogError($"{Consts.Log.Tag} Unsupported platform for .NET SDK installation.");
             return;
@@ -47,18 +49,20 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             if (!string.IsNullOrEmpty(error))
             {
+                UnityEngine.Debug.Log($"{Consts.Log.Tag} .NET SDK is not installed.");
                 // UnityEngine.Debug.LogError($"{Consts.Log.Tag} Error checking .NET SDK version: {error}");
                 return false;
             }
 
             if (string.IsNullOrEmpty(output))
             {
+                UnityEngine.Debug.Log($"{Consts.Log.Tag} .NET SDK is not installed.");
                 // UnityEngine.Debug.LogError($"{Consts.Log.Tag} .NET SDK is not installed.");
                 return false;
             }
 
             UnityEngine.Debug.Log($"{Consts.Log.Tag} .NET SDK version: {output}");
-            return true;
+            return output.StartsWith(AcceptableDotNetVersionSubstring);
         }
 
         static async Task InstallDotnet_Windows(string version)
