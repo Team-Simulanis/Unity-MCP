@@ -59,12 +59,21 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
         static void FixEnvironmentPath(StringDictionary envVariables)
         {
             const string PATH = "PATH";
+
+            Debug.Log($"{Consts.Log.Tag} Fixing environment path for dotnet CLI");
+            Debug.Log($"{Consts.Log.Tag} Environment variables: {envVariables}");
+            Debug.Log($"{Consts.Log.Tag} Global Environment PATH: {Environment.GetEnvironmentVariable(PATH)}");
+
             var dotnetPaths = new string[]
             {
                 // Device
                 "C:/Program Files/dotnet", // windows (device)
                 "/usr/local/share/dotnet", // macos (device)
                 "~/.dotnet/tools", // macos (device)
+
+                #if UNITY_EDITOR_LINUX
+                "$HOME/.dotnet", // linux (GitHub actions)
+                #endif
 
                 // GitHub actions
                 "C:/Program Files/dotnet", // windows (GitHub actions)
