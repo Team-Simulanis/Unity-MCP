@@ -1,4 +1,5 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
@@ -8,8 +9,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 {
     static partial class Startup
     {
-        const string AcceptableDotNetVersionSubstring = "9.";
-        const string DefaultDotNetVersion = "9.0.300";
+        const string DefaultDotNetVersion = "9.0";
         public static async Task InstallDotNetIfNeeded(string version = DefaultDotNetVersion, bool force = false)
         {
             // Check if .NET SDK is installed
@@ -62,7 +62,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             }
 
             UnityEngine.Debug.Log($"{Consts.Log.Tag} .NET SDK version: {output}");
-            return output.StartsWith(AcceptableDotNetVersionSubstring);
+            return output.StartsWith(DefaultDotNetVersion);
         }
 
         static async Task InstallDotnet_Windows(string version)
@@ -82,28 +82,61 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 return;
             }
 
-            UnityEngine.Debug.Log($"{Consts.Log.Tag} Installing .NET SDK version {version}...");
+            // 1. Install .NET SDK with a specific install directory we control
+            var dotnetInstallDir = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Microsoft",
+                "dotnet"
+            );
+
+            UnityEngine.Debug.Log($"{Consts.Log.Tag} Installing .NET SDK version {version} to {dotnetInstallDir}...");
             var (output, error) = await ProcessUtils.Run(new ProcessStartInfo
             {
                 FileName = "powershell",
-                Arguments = $"-ExecutionPolicy Bypass -File \"{tempScript}\" -Version {version}"
+                Arguments = $"-ExecutionPolicy Bypass -File \"{tempScript}\" -Channel {version} -InstallDir \"{dotnetInstallDir}\""
             });
 
+            if (!string.IsNullOrEmpty(output))
+                UnityEngine.Debug.Log($"{Consts.Log.Tag} {output}");
+
             if (!string.IsNullOrEmpty(error))
-                UnityEngine.Debug.LogError($"{Consts.Log.Tag} Installation error: {error}");
-            else
-                UnityEngine.Debug.Log($"{Consts.Log.Tag} .NET SDK {version} installed successfully");
+                UnityEngine.Debug.LogError(error);
+
+            // 2. Update PATH in current process
+            var currentPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) ?? "";
+            if (!currentPath.Contains(dotnetInstallDir))
+            {
+                string newPath = dotnetInstallDir + ";" + currentPath;
+                Environment.SetEnvironmentVariable("PATH", newPath, EnvironmentVariableTarget.Process);
+                UnityEngine.Debug.Log($"{Consts.Log.Tag} Updated current process PATH with .NET SDK location");
+            }
+
+            // 3. Also try to update user PATH so it persists
+            try
+            {
+                string userPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User) ?? "";
+                if (!userPath.Contains(dotnetInstallDir))
+                {
+                    string newUserPath = dotnetInstallDir + ";" + userPath;
+                    Environment.SetEnvironmentVariable("PATH", newUserPath, EnvironmentVariableTarget.User);
+                    UnityEngine.Debug.Log($"{Consts.Log.Tag} Updated user PATH environment variable with .NET SDK location");
+                }
+            }
+            catch (System.Security.SecurityException)
+            {
+                UnityEngine.Debug.LogWarning($"{Consts.Log.Tag} Couldn't update user PATH environment variable (insufficient permissions)");
+            }
         }
         static async Task InstallDotnet_MacOS(string version)
         {
             var (output, error) = await ProcessUtils.Run(new ProcessStartInfo
             {
                 FileName = "bash",
-                Arguments = $"-c \"curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --version {version} --install-dir $HOME/.dotnet\""
+                Arguments = $"-c \"curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel {version} --install-dir $HOME/.dotnet\""
             });
 
             if (!string.IsNullOrEmpty(output))
-                UnityEngine.Debug.Log(output);
+                UnityEngine.Debug.Log($"{Consts.Log.Tag} {output}");
 
             if (!string.IsNullOrEmpty(error))
                 UnityEngine.Debug.LogError(error);
@@ -113,11 +146,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             var (output, error) = await ProcessUtils.Run(new ProcessStartInfo
             {
                 FileName = "bash",
-                Arguments = $"-c \"wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh && chmod +x dotnet-install.sh && ./dotnet-install.sh --version {version}\""
+                Arguments = $"-c \"wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh && chmod +x dotnet-install.sh && ./dotnet-install.sh --channel {version}\""
             });
 
             if (!string.IsNullOrEmpty(output))
-                UnityEngine.Debug.Log(output);
+                UnityEngine.Debug.Log($"{Consts.Log.Tag} {output}");
 
             if (!string.IsNullOrEmpty(error))
                 UnityEngine.Debug.LogError(error);
