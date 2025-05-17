@@ -70,20 +70,20 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
             {
                 Startup.ExpectedDotnetInstallDir,
 
-                #if UNITY_EDITOR_WIN
-                "C:/Program Files/dotnet", // windows (device)
-                #endif
+                // #if UNITY_EDITOR_WIN
+                // "C:/Program Files/dotnet", // windows (device)
+                // #endif
 
-                #if UNITY_EDITOR_OSX
-                "~/.dotnet/tools", // macos (device)
-                "/usr/local/share/dotnet", // macos (device)
-                "/Users/runner/.dotnet", // macos (GitHub actions)
-                #endif
+                // #if UNITY_EDITOR_OSX
+                // "~/.dotnet/tools", // macos (device)
+                // "/usr/local/share/dotnet", // macos (device)
+                // "/Users/runner/.dotnet", // macos (GitHub actions)
+                // #endif
 
-                #if UNITY_EDITOR_LINUX
-                "$HOME/.dotnet", // linux (GitHub actions)
-                "/usr/share/dotnet", // ubuntu (GitHub actions)
-                #endif
+                // #if UNITY_EDITOR_LINUX
+                // "$HOME/.dotnet", // linux (GitHub actions)
+                // "/usr/share/dotnet", // ubuntu (GitHub actions)
+                // #endif
             };
             foreach (var dotnetPath in dotnetPaths)
             {

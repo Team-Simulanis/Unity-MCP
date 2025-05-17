@@ -43,11 +43,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             // Install .NET SDK if not installed
 #if UNITY_EDITOR_WIN
             await InstallDotnet_Windows(version);
-#elif UNITY_EDITOR_OSX
-            await InstallDotnet_MacOS(version);
-#elif UNITY_EDITOR_LINUX
-            await InstallDotnet_MacOS(version);
-            // await InstallDotnet_Linux(version);
+#elif UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
+            await InstallDotnet_Linux(version);
 #else
             Debug.LogError($"{Consts.Log.Tag} Unsupported platform for .NET SDK installation.");
             return;
@@ -82,9 +79,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
         static async Task InstallDotnet_Windows(string version)
         {
-            var tempScript = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "dotnet-install.ps1");
-
             Debug.Log($"{Consts.Log.Tag} Downloading .NET SDK installer script...");
+
+            var tempScript = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "dotnet-install.ps1");
             var (downloadOutput, downloadError) = await ProcessUtils.Run(new ProcessStartInfo
             {
                 FileName = "powershell",
@@ -138,28 +135,16 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 Debug.LogWarning($"{Consts.Log.Tag} Couldn't update user PATH environment variable (insufficient permissions)");
             }
         }
-        static async Task InstallDotnet_MacOS(string version)
+        static async Task InstallDotnet_Linux(string version)
         {
             var dotnetInstallDir = ExpectedDotnetInstallDir;
+            Debug.Log($"{Consts.Log.Tag} Downloading .NET SDK installer script...");
+            Debug.Log($"{Consts.Log.Tag} Installing .NET SDK version {version} to {dotnetInstallDir}...");
+
             var (output, error) = await ProcessUtils.Run(new ProcessStartInfo
             {
                 FileName = "bash",
                 Arguments = $"-c \"curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel {version} --install-dir '{dotnetInstallDir}'\""
-            });
-
-            if (!string.IsNullOrEmpty(output))
-                Debug.Log($"{Consts.Log.Tag} {output}");
-
-            if (!string.IsNullOrEmpty(error))
-                Debug.LogError(error);
-        }
-        static async Task InstallDotnet_Linux(string version)
-        {
-            var dotnetInstallDir = ExpectedDotnetInstallDir;
-            var (output, error) = await ProcessUtils.Run(new ProcessStartInfo
-            {
-                FileName = "bash",
-                Arguments = $"-c \"wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh && chmod +x dotnet-install.sh && ./dotnet-install.sh --channel {version} --install-dir '{dotnetInstallDir}'\""
             });
 
             if (!string.IsNullOrEmpty(output))
