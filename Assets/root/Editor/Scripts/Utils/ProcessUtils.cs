@@ -10,7 +10,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
 {
     public static class ProcessUtils
     {
-        public static async Task<(string output, string error)> Run(ProcessStartInfo processStartInfo)
+        public static async Task<(string output, string error)> Run(ProcessStartInfo processStartInfo, bool suppressError = false)
         {
             Debug.Log($"{Consts.Log.Tag} Command: <color=#8CFFD1>{processStartInfo.FileName} {processStartInfo.Arguments}</color>");
 
@@ -42,8 +42,15 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"{Consts.Log.Tag} Failed to execute command: {processStartInfo.FileName} {processStartInfo.Arguments}");
-                    Debug.LogException(ex);
+                    if (suppressError)
+                    {
+                        Debug.Log($"{Consts.Log.Tag} Failed to execute command: {processStartInfo.FileName} {processStartInfo.Arguments}");
+                    }
+                    else
+                    {
+                        Debug.LogError($"{Consts.Log.Tag} Failed to execute command: {processStartInfo.FileName} {processStartInfo.Arguments}");
+                        Debug.LogException(ex);
+                    }
 
                     error = ex.Message;
                     // error = "Failed to execute 'dotnet' command. Ensure 'dotnet' CLI is installed and accessible in the environment"

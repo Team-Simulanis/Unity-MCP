@@ -43,7 +43,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             {
                 FileName = "dotnet",
                 Arguments = "--version"
-            });
+            }, suppressError: true);
 
             if (!string.IsNullOrEmpty(error))
             {
