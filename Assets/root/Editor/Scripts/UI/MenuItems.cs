@@ -9,7 +9,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 {
     public static class MenuItems
     {
-        [MenuItem("Tools/AI Connector (Unity-MCP)/Build & Start", priority = 1000)]
+        [MenuItem("Tools/AI Connector (Unity-MCP)/Install DotNet", priority = 1008)]
+        public static async void InstallDotNet() => await Startup.InstallDotNetIfNeeded(force: true);
+
+        [MenuItem("Tools/AI Connector (Unity-MCP)/Build & Start", priority = 1009)]
         public static void BuildAndStart() => McpPluginUnity.BuildAndStart();
 
         [MenuItem("Tools/AI Connector (Unity-MCP)/Build MCP Server", priority = 1010)]

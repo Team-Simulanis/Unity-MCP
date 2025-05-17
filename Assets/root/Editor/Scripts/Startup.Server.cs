@@ -78,6 +78,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             Debug.Log($"{Consts.Log.Tag} {message} <color=orange>⊂(◉‿◉)つ</color>");
             Debug.Log($"{Consts.Log.Tag} Current Server version: <color=#8CFFD1>{ServerExecutableVersion}</color>. New Server version: <color=#8CFFD1>{ServerSourceVersion}</color>");
 
+            await InstallDotNetIfNeeded();
             CopyServerSources();
             DeleteSlnFiles();
 
@@ -108,7 +109,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             {
                 if (force)
                 {
-                    Debug.LogWarning($"{Consts.Log.Tag} <color=red>Build failed</color>. Check the output for details:\n{output}");
+                    Debug.LogWarning($"{Consts.Log.Tag} <color=red>Build failed</color>. Check the output for details:\n{output}\n{error}\n");
                     if (ErrorUtils.ExtractProcessId(output, out var processId))
                     {
                         Debug.Log($"{Consts.Log.Tag} Detected another process which locks the file. Killing the process with ID: {processId}");
@@ -133,7 +134,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 }
                 else
                 {
-                    Debug.LogError($"{Consts.Log.Tag} <color=red>Build failed</color>. Check the output for details:\n{output}");
+                    Debug.LogError($"{Consts.Log.Tag} <color=red>Build failed</color>. Check the output for details:\n{output}\n{error}\n");
                 }
             }
             else
