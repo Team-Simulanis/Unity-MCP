@@ -1,0 +1,18 @@
+name: 2022.3.61f1-editmode
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  editor-tests:
+    uses: ./.github/workflows/main.yml
+    with:
+      projectPath: './'
+      unityVersion: '2022.3.61f1'
+      testMode: 'editmode'
+    secrets: inherit
