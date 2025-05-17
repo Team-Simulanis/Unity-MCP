@@ -8,7 +8,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 {
     static partial class Startup
     {
-        public static async Task InstallDotNetIfNeeded(string version = "8.0", bool force = false)
+        const string DefaultDotNetVersion = "9.0.300";
+        public static async Task InstallDotNetIfNeeded(string version = DefaultDotNetVersion, bool force = false)
         {
             // Check if .NET SDK is installed
             if (force)
@@ -97,11 +98,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 Arguments = $"-c \"curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --version {version} --install-dir $HOME/.dotnet\""
             });
 
-            if (!string.IsNullOrEmpty(error))
-                UnityEngine.Debug.Log(error);
-
             if (!string.IsNullOrEmpty(output))
-                UnityEngine.Debug.LogError(output);
+                UnityEngine.Debug.Log(output);
+
+            if (!string.IsNullOrEmpty(error))
+                UnityEngine.Debug.LogError(error);
         }
         static async Task InstallDotnet_Linux(string version)
         {
@@ -111,11 +112,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 Arguments = $"-c \"wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh && chmod +x dotnet-install.sh && ./dotnet-install.sh --version {version}\""
             });
 
-            if (!string.IsNullOrEmpty(error))
-                UnityEngine.Debug.Log(error);
-
             if (!string.IsNullOrEmpty(output))
-                UnityEngine.Debug.LogError(output);
+                UnityEngine.Debug.Log(output);
+
+            if (!string.IsNullOrEmpty(error))
+                UnityEngine.Debug.LogError(error);
         }
     }
 }
