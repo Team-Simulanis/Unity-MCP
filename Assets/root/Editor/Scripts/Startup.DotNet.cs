@@ -11,7 +11,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
     static partial class Startup
     {
         const string DefaultDotNetVersion = "9.0";
-        static string ExpectedDotnetInstallDir
+        public static string ExpectedDotnetInstallDir
 #if UNITY_EDITOR_WIN
             => System.IO.Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),

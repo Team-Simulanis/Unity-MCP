@@ -68,6 +68,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
             const string PATH = "PATH";
             var dotnetPaths = new string[]
             {
+                Startup.ExpectedDotnetInstallDir,
+
                 #if UNITY_EDITOR_WIN
                 "C:/Program Files/dotnet", // windows (device)
                 #endif
