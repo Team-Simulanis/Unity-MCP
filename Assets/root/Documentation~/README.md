@@ -149,7 +149,7 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 
 # Installation
 
-1. [Install .NET 8.0](https://dotnet.microsoft.com/en-us/download)
+1. [Install .NET 9.0](https://dotnet.microsoft.com/en-us/download)
 2. [Install OpenUPM-CLI](https://github.com/openupm/openupm-cli#installation)
 
 - Open command line in Unity project folder
