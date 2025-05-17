@@ -114,7 +114,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             var currentPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) ?? "";
             if (!currentPath.Contains(dotnetInstallDir))
             {
-                string newPath = dotnetInstallDir + ";" + currentPath;
+                var newPath = dotnetInstallDir + System.IO.Path.PathSeparator + currentPath;
                 Environment.SetEnvironmentVariable("PATH", newPath, EnvironmentVariableTarget.Process);
                 Debug.Log($"{Consts.Log.Tag} Updated current process PATH with .NET SDK location");
             }
@@ -122,10 +122,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             // 3. Also try to update user PATH so it persists
             try
             {
-                string userPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User) ?? "";
+                var userPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User) ?? "";
                 if (!userPath.Contains(dotnetInstallDir))
                 {
-                    string newUserPath = dotnetInstallDir + ";" + userPath;
+                    var newUserPath = dotnetInstallDir + System.IO.Path.PathSeparator + userPath;
                     Environment.SetEnvironmentVariable("PATH", newUserPath, EnvironmentVariableTarget.User);
                     Debug.Log($"{Consts.Log.Tag} Updated user PATH environment variable with .NET SDK location");
                 }

@@ -48,7 +48,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
                     }
                     else
                     {
-                        Debug.LogError($"{Consts.Log.Tag} Failed to execute command: {processStartInfo.FileName} {processStartInfo.Arguments}");
+                        Debug.LogError($"{Consts.Log.Tag} Failed to execute command: {processStartInfo.FileName} {processStartInfo.Arguments}\n{ex.Message}\n{ex}");
                         Debug.LogException(ex);
                     }
 
