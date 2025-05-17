@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace com.IvanMurzak.Unity.MCP.Editor
 {
-    static partial class Startup
+    public static partial class Startup
     {
         public const string PackageName = "com.IvanMurzak.Unity.MCP";
         public const string ServerProjectName = "com.IvanMurzak.Unity.MCP.Server";

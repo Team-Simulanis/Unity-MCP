@@ -8,7 +8,7 @@ using Debug = UnityEngine.Debug;
 
 namespace com.IvanMurzak.Unity.MCP.Editor
 {
-    static partial class Startup
+    public static partial class Startup
     {
         const string DefaultDotNetVersion = "9.0";
         public static string ExpectedDotnetInstallDir
