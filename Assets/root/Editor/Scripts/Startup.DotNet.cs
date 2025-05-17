@@ -4,25 +4,40 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Editor.Utils;
+using Debug = UnityEngine.Debug;
 
 namespace com.IvanMurzak.Unity.MCP.Editor
 {
     static partial class Startup
     {
         const string DefaultDotNetVersion = "9.0";
+        static string ExpectedDotnetInstallDir
+#if UNITY_EDITOR_WIN
+            => System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Microsoft",
+                "dotnet"
+            );
+#elif UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
+            => System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                ".dotnet"
+            );
+#endif
+
         public static async Task InstallDotNetIfNeeded(string version = DefaultDotNetVersion, bool force = false)
         {
             // Check if .NET SDK is installed
             if (force)
             {
-                UnityEngine.Debug.Log($"{Consts.Log.Tag} Force installing .NET SDK...");
+                Debug.Log($"{Consts.Log.Tag} Force installing .NET SDK...");
             }
             else
             {
                 var isDotnetInstalled = await IsDotNetInstalled();
                 if (isDotnetInstalled)
                     return;
-                UnityEngine.Debug.Log($"{Consts.Log.Tag} .NET SDK is not installed. Installing...");
+                Debug.Log($"{Consts.Log.Tag} .NET SDK is not installed. Installing...");
             }
 
             // Install .NET SDK if not installed
@@ -49,19 +64,19 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             if (!string.IsNullOrEmpty(error))
             {
-                UnityEngine.Debug.Log($"{Consts.Log.Tag} .NET SDK is not installed.");
+                Debug.Log($"{Consts.Log.Tag} .NET SDK is not installed.");
                 // UnityEngine.Debug.LogError($"{Consts.Log.Tag} Error checking .NET SDK version: {error}");
                 return false;
             }
 
             if (string.IsNullOrEmpty(output))
             {
-                UnityEngine.Debug.Log($"{Consts.Log.Tag} .NET SDK is not installed.");
+                Debug.Log($"{Consts.Log.Tag} .NET SDK is not installed.");
                 // UnityEngine.Debug.LogError($"{Consts.Log.Tag} .NET SDK is not installed.");
                 return false;
             }
 
-            UnityEngine.Debug.Log($"{Consts.Log.Tag} .NET SDK version: {output}");
+            Debug.Log($"{Consts.Log.Tag} .NET SDK version: {output}");
             return output.StartsWith(DefaultDotNetVersion);
         }
 
@@ -69,7 +84,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
         {
             var tempScript = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "dotnet-install.ps1");
 
-            UnityEngine.Debug.Log($"{Consts.Log.Tag} Downloading .NET SDK installer script...");
+            Debug.Log($"{Consts.Log.Tag} Downloading .NET SDK installer script...");
             var (downloadOutput, downloadError) = await ProcessUtils.Run(new ProcessStartInfo
             {
                 FileName = "powershell",
@@ -78,18 +93,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
             if (!string.IsNullOrEmpty(downloadError))
             {
-                UnityEngine.Debug.LogError($"{Consts.Log.Tag} Error downloading installer: {downloadError}");
+                Debug.LogError($"{Consts.Log.Tag} Error downloading installer: {downloadError}");
                 return;
             }
 
             // 1. Install .NET SDK with a specific install directory we control
-            var dotnetInstallDir = System.IO.Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "Microsoft",
-                "dotnet"
-            );
+            var dotnetInstallDir = ExpectedDotnetInstallDir;
 
-            UnityEngine.Debug.Log($"{Consts.Log.Tag} Installing .NET SDK version {version} to {dotnetInstallDir}...");
+            Debug.Log($"{Consts.Log.Tag} Installing .NET SDK version {version} to {dotnetInstallDir}...");
             var (output, error) = await ProcessUtils.Run(new ProcessStartInfo
             {
                 FileName = "powershell",
@@ -97,10 +108,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             });
 
             if (!string.IsNullOrEmpty(output))
-                UnityEngine.Debug.Log($"{Consts.Log.Tag} {output}");
+                Debug.Log($"{Consts.Log.Tag} {output}");
 
             if (!string.IsNullOrEmpty(error))
-                UnityEngine.Debug.LogError(error);
+                Debug.LogError(error);
 
             // 2. Update PATH in current process
             var currentPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process) ?? "";
@@ -108,7 +119,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             {
                 string newPath = dotnetInstallDir + ";" + currentPath;
                 Environment.SetEnvironmentVariable("PATH", newPath, EnvironmentVariableTarget.Process);
-                UnityEngine.Debug.Log($"{Consts.Log.Tag} Updated current process PATH with .NET SDK location");
+                Debug.Log($"{Consts.Log.Tag} Updated current process PATH with .NET SDK location");
             }
 
             // 3. Also try to update user PATH so it persists
@@ -119,41 +130,43 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 {
                     string newUserPath = dotnetInstallDir + ";" + userPath;
                     Environment.SetEnvironmentVariable("PATH", newUserPath, EnvironmentVariableTarget.User);
-                    UnityEngine.Debug.Log($"{Consts.Log.Tag} Updated user PATH environment variable with .NET SDK location");
+                    Debug.Log($"{Consts.Log.Tag} Updated user PATH environment variable with .NET SDK location");
                 }
             }
             catch (System.Security.SecurityException)
             {
-                UnityEngine.Debug.LogWarning($"{Consts.Log.Tag} Couldn't update user PATH environment variable (insufficient permissions)");
+                Debug.LogWarning($"{Consts.Log.Tag} Couldn't update user PATH environment variable (insufficient permissions)");
             }
         }
         static async Task InstallDotnet_MacOS(string version)
         {
+            var dotnetInstallDir = ExpectedDotnetInstallDir;
             var (output, error) = await ProcessUtils.Run(new ProcessStartInfo
             {
                 FileName = "bash",
-                Arguments = $"-c \"curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel {version} --install-dir $HOME/.dotnet\""
+                Arguments = $"-c \"curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel {version} --install-dir '{dotnetInstallDir}'\""
             });
 
             if (!string.IsNullOrEmpty(output))
-                UnityEngine.Debug.Log($"{Consts.Log.Tag} {output}");
+                Debug.Log($"{Consts.Log.Tag} {output}");
 
             if (!string.IsNullOrEmpty(error))
-                UnityEngine.Debug.LogError(error);
+                Debug.LogError(error);
         }
         static async Task InstallDotnet_Linux(string version)
         {
+            var dotnetInstallDir = ExpectedDotnetInstallDir;
             var (output, error) = await ProcessUtils.Run(new ProcessStartInfo
             {
                 FileName = "bash",
-                Arguments = $"-c \"wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh && chmod +x dotnet-install.sh && ./dotnet-install.sh --channel {version}\""
+                Arguments = $"-c \"wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh && chmod +x dotnet-install.sh && ./dotnet-install.sh --channel {version} --install-dir '{dotnetInstallDir}'\""
             });
 
             if (!string.IsNullOrEmpty(output))
-                UnityEngine.Debug.Log($"{Consts.Log.Tag} {output}");
+                Debug.Log($"{Consts.Log.Tag} {output}");
 
             if (!string.IsNullOrEmpty(error))
-                UnityEngine.Debug.LogError(error);
+                Debug.LogError(error);
         }
     }
 }
