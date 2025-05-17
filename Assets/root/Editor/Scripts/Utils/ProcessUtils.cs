@@ -59,14 +59,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
         static void FixEnvironmentPath(StringDictionary envVariables)
         {
             const string PATH = "PATH";
-            const string DOTNET_ROOT = "DOTNET_ROOT";
-
-            Debug.Log($"{Consts.Log.Tag} Fixing environment path for dotnet CLI");
-            Debug.Log($"{Consts.Log.Tag} Environment PATH: {(envVariables.ContainsKey(PATH) ? envVariables[PATH] : "null")}");
-            Debug.Log($"{Consts.Log.Tag} Environment DOTNET_ROOT: {(envVariables.ContainsKey(PATH) ? envVariables[DOTNET_ROOT] : "null")}");
-            Debug.Log($"{Consts.Log.Tag} Global Environment PATH: {Environment.GetEnvironmentVariable(PATH)}");
-            Debug.Log($"{Consts.Log.Tag} Global Environment DOTNET_ROOT: {Environment.GetEnvironmentVariable(DOTNET_ROOT)}");
-
             var dotnetPaths = new string[]
             {
                 #if UNITY_EDITOR_WIN
@@ -74,8 +66,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
                 #endif
 
                 #if UNITY_EDITOR_OSX
-                "/usr/local/share/dotnet", // macos (device)
                 "~/.dotnet/tools", // macos (device)
+                "/usr/local/share/dotnet", // macos (device)
                 "/Users/runner/.dotnet", // macos (GitHub actions)
                 #endif
 
@@ -114,12 +106,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Utils
                         : $"{envPath}{System.IO.Path.PathSeparator}{dotnetPath}");
                 }
             }
-
-            Debug.Log($"{Consts.Log.Tag} Updated environment path for dotnet CLI");
-            Debug.Log($"{Consts.Log.Tag} Fixed. Environment PATH: {(envVariables.ContainsKey(PATH) ? envVariables[PATH] : "null")}");
-            Debug.Log($"{Consts.Log.Tag} Fixed. Environment DOTNET_ROOT: {(envVariables.ContainsKey(PATH) ? envVariables[DOTNET_ROOT] : "null")}");
-            Debug.Log($"{Consts.Log.Tag} Fixed. Global Environment PATH: {Environment.GetEnvironmentVariable(PATH)}");
-            Debug.Log($"{Consts.Log.Tag} Fixed. Global Environment DOTNET_ROOT: {Environment.GetEnvironmentVariable(DOTNET_ROOT)}");
         }
     }
 }

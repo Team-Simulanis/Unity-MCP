@@ -34,15 +34,8 @@ jobs:
           lfs: false
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '8.0.x'
           dotnet-quality: 'ga'
-
-      - name: Echo Environment variable PATH
-        run: echo "Environment variable PATH is $PATH"
-
-      - name: dotnet --version
-        run: "dotnet --version"
-
       - uses: actions/cache@v4
         with:
           path: |
