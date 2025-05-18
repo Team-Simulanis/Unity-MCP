@@ -4,7 +4,7 @@ using UnityEditor;
 namespace com.IvanMurzak.Unity.MCP.Editor
 {
     [InitializeOnLoad]
-    static partial class Startup
+    public static partial class Startup
     {
         static Startup()
         {
