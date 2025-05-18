@@ -49,16 +49,16 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 - ✅ State (Playmode)
   - ✅ Get
   - ✅ Set
-- 🔲 Get Windows
-- 🔲 Layer
-  - 🔲 Get All
-  - 🔲 Add
-  - 🔲 Remove
-- 🔲 Tag
-  - 🔲 Get All
-  - 🔲 Add
-  - 🔲 Remove
-- 🔲 Execute `MenuItem`
+- ✅ Get Windows
+- ✅ Layer
+  - ✅ Get All
+  - ✅ Add
+  - ✅ Remove
+- ✅ Tag
+  - ✅ Get All
+  - ✅ Add
+  - ✅ Remove
+- ✅ Execute `MenuItem`
 - 🔲 Run Tests
 
 #### Editor.Selection
