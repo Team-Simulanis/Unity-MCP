@@ -28,7 +28,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public override Task OnConnectedAsync()
         {
             ClientUtils.AddClient(GetType(), Context.ConnectionId, _logger);
-            // DisconnectOtherClients(clients, currentConnectionId: Context.ConnectionId);
             return base.OnConnectedAsync();
         }
 

@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Create Material asset"
         )]
         [Description(@"Create new material asset with default parameters. Right 'shaderName' should be set. To find the shader, use 'Shader.Find' method.")]
-        public Task<CallToolResponse> Create
+        public ValueTask<CallToolResponse> Create
         (
             [Description("Asset path. Starts with 'Assets/'. Ends with '.mat'.")]
             string assetPath,

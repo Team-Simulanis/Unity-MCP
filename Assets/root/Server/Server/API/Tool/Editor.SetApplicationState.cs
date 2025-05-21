@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Set Unity Editor application state"
         )]
         [Description("Control the Unity Editor application state. You can start, stop, or pause the 'playmode'.")]
-        public Task<CallToolResponse> SetApplicationState
+        public ValueTask<CallToolResponse> SetApplicationState
         (
             [Description("If true, the 'playmode' will be started. If false, the 'playmode' will be stopped.")]
             bool isPlaying = false,

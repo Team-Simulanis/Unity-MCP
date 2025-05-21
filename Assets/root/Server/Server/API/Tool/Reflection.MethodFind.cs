@@ -1,6 +1,6 @@
 #if !UNITY_5_3_OR_NEWER
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -17,7 +17,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
         [Description(@"Find method in the project using C# Reflection.
 It looks for all assemblies in the project and finds method by its name, class name and parameters.
 Even private methods are available. Use 'Reflection_MethodCall' to call the method after finding it.")]
-        public Task<CallToolResponse> MethodFind
+        public ValueTask<CallToolResponse> MethodFind
         (
             MethodPointerRef filter,
 

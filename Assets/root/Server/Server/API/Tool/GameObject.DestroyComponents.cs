@@ -1,6 +1,6 @@
 #if !UNITY_5_3_OR_NEWER
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -15,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Destroy Components from a GameObject in opened Prefab or in a Scene"
         )]
         [Description("Destroy one or many components from target GameObject.")]
-        public Task<CallToolResponse> DestroyComponents
+        public ValueTask<CallToolResponse> DestroyComponents
         (
             GameObjectRef gameObjectRef,
             ComponentRefList destroyComponentRefs

@@ -1,7 +1,7 @@
 #if !UNITY_5_3_OR_NEWER
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
 using com.IvanMurzak.Unity.MCP.Server.API.Data;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -17,7 +17,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
         )]
         [Description(@"Create a new GameObject at specific path.
 if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount of operations.")]
-        public Task<CallToolResponse> Create
+        public ValueTask<CallToolResponse> Create
         (
             [Description("Name of the new GameObject.")]
             string name,

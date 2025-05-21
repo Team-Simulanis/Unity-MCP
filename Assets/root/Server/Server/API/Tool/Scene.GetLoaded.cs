@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Get list of currently loaded scenes"
         )]
         [Description("Returns the list of currently loaded scenes.")]
-        public Task<CallToolResponse> GetLoaded()
+        public ValueTask<CallToolResponse> GetLoaded()
         {
             return ToolRouter.Call("Scene_GetLoaded");
         }

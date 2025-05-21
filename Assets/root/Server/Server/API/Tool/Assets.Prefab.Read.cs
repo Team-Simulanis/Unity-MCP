@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -17,7 +17,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
                     "1. Read prefab from asset using 'prefabAssetPath'.\n" +
                     "2. Read prefab from GameObject in loaded scene using 'instanceID' of the GameObject.\n" +
                     "   The GameObject should be connected to a prefab.")]
-        public Task<CallToolResponse> Read
+        public ValueTask<CallToolResponse> Read
         (
             [Description("'instanceID' of GameObject in a scene.")]
             int instanceID = 0,

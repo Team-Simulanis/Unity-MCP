@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -34,7 +34,7 @@ t:Texture
 t:VideoClip
 t:VisualEffectAsset
 t:VisualEffectSubgraph")]
-        public Task<CallToolResponse> Search
+        public ValueTask<CallToolResponse> Search
         (
             [Description("The folders where the search will start. If null, the search will be performed in all folders.")]
             string[]? searchInFolders = null,

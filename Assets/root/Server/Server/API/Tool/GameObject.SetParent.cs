@@ -1,6 +1,6 @@
 #if !UNITY_5_3_OR_NEWER
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -15,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Set parent GameObject in opened Prefab or in a Scene"
         )]
         [Description(@"Set GameObjects in opened Prefab or in a Scene by 'instanceID' (int) array.")]
-        public Task<CallToolResponse> SetParent
+        public ValueTask<CallToolResponse> SetParent
         (
             GameObjectRefList gameObjectRefs,
             GameObjectRef parentGameObjectRef,

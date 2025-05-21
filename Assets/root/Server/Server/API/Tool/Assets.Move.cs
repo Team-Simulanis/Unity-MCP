@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Assets Move"
         )]
         [Description(@"Move the assets at paths in the project. Should be used for asset rename. Does AssetDatabase.Refresh() at the end.")]
-        public Task<CallToolResponse> Move
+        public ValueTask<CallToolResponse> Move
         (
             [Description("The paths of the assets to move.")]
             string[] sourcePaths,

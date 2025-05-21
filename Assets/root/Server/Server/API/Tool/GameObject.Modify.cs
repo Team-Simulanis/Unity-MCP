@@ -1,6 +1,6 @@
 #if !UNITY_5_3_OR_NEWER
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -16,7 +16,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
         )]
         [Description(@"Modify GameObjects and/or attached component's field and properties.
 You can modify multiple GameObjects at once. Just provide the same number of GameObject references and SerializedMember objects.")]
-        public Task<CallToolResponse> Modify
+        public ValueTask<CallToolResponse> Modify
         (
             [Description(@"Json Object with required readonly 'instanceID' and 'type' fields.
 Each field and property requires to have 'type' and 'name' fields to identify the exact modification target.

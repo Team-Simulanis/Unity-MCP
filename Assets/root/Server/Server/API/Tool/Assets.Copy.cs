@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Assets Copy"
         )]
         [Description(@"Copy the asset at path and stores it at newPath. Does AssetDatabase.Refresh() at the end.")]
-        public Task<CallToolResponse> Copy
+        public ValueTask<CallToolResponse> Copy
         (
             [Description("The paths of the asset to copy.")]
             string[] sourcePaths,

@@ -6,7 +6,7 @@ using com.IvanMurzak.Unity.MCP.Common;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
-using ModelContextProtocol.Protocol.Messages;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using R3;
 

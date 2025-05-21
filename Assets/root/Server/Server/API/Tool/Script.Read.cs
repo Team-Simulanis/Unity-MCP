@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Read Script content"
         )]
         [Description("Reads the content of a script file and returns it as a string.")]
-        public Task<CallToolResponse> Read
+        public ValueTask<CallToolResponse> Read
         (
             [Description("The path to the file. Sample: \"Assets/Scripts/MyScript.cs\".")]
             string filePath

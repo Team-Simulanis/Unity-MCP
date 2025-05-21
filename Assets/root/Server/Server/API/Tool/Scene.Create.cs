@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Create new scene"
         )]
         [Description("Create new scene in the project assets.")]
-        public Task<CallToolResponse> Create
+        public ValueTask<CallToolResponse> Create
         (
             [Description("Path to the scene file.")]
             string path

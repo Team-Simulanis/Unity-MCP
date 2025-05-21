@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Get list of all Components"
         )]
         [Description("Returns the list of all available components in the project.")]
-        public Task<CallToolResponse> GetAll
+        public ValueTask<CallToolResponse> GetAll
         (
             [Description("Substring for searching components. Could be empty.")]
             string search
