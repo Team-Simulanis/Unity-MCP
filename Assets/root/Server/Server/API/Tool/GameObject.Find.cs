@@ -1,6 +1,6 @@
 #if !UNITY_5_3_OR_NEWER
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -19,7 +19,7 @@ First it looks for the opened Prefab, if any Prefab is opened it looks only ther
 If no opened Prefab it looks into current active scene.
 Returns GameObject information and its children.
 Also, it returns Components preview just for the target GameObject.")]
-        public Task<CallToolResponse> Find
+        public ValueTask<CallToolResponse> Find
         (
             GameObjectRef gameObjectRef,
             [Description("Determines the depth of the hierarchy to include. 0 - means only the target GameObject. 1 - means to include one layer below.")]

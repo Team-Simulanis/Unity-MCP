@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -17,7 +17,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
 Use it to select Assets or GameObjects in a scene. Set empty array to clear selection.
 Selection.instanceIDs - The actual unfiltered selection from the Scene returned as instance ids.
 Selection.activeInstanceID -  The 'instanceID' of the actual object selection. Includes Prefabs, non-modifiable objects.")]
-        public Task<CallToolResponse> Set
+        public ValueTask<CallToolResponse> Set
         (
             [Description("The 'instanceID' array of the target GameObjects.")]
             int[]? instanceIDs = null,

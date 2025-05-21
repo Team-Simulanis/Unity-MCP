@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -23,7 +23,7 @@ Selection.activeGameObject - Returns the active game object. (The one shown in t
 Selection.activeInstanceID - Returns the instanceID of the actual object selection. Includes Prefabs, non-modifiable objects.
 Selection.activeObject - Returns the actual object selection. Includes Prefabs, non-modifiable objects.
 Selection.activeTransform - Returns the active transform. (The one shown in the inspector).")]
-        public Task<CallToolResponse> Get()
+        public ValueTask<CallToolResponse> Get()
         {
             return ToolRouter.Call("Editor_Selection_Get");
         }

@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -23,7 +23,7 @@ EditorApplication.isUpdating - True if the Editor is currently refreshing the As
 EditorApplication.applicationContentsPath - Path to the Unity editor contents folder. (Read Only)
 EditorApplication.applicationPath - Gets the path to the Unity Editor application. (Read Only)
 EditorApplication.timeSinceStartup - The time since the editor was started. (Read Only)")]
-        public Task<CallToolResponse> GetApplicationInformation()
+        public ValueTask<CallToolResponse> GetApplicationInformation()
         {
             return ToolRouter.Call("Editor_GetApplicationInformation");
         }

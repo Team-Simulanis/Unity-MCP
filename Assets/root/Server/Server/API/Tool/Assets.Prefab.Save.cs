@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Save prefab"
         )]
         [Description("Save a prefab. Use it when you are in prefab editing mode in Unity Editor.")]
-        public Task<CallToolResponse> Save()
+        public ValueTask<CallToolResponse> Save()
         {
             return ToolRouter.Call("Assets_Prefab_Save");
         }

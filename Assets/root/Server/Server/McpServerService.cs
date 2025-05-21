@@ -6,7 +6,7 @@ using com.IvanMurzak.Unity.MCP.Common;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol;
-using ModelContextProtocol.Protocol.Messages;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using R3;
 
@@ -49,9 +49,9 @@ namespace com.IvanMurzak.Unity.MCP.Server
         {
             _logger.LogTrace("{0} StartAsync.", GetType().Name);
 
-            _eventAppToolsChange
-                .Subscribe(data => OnListToolUpdated(data, cancellationToken))
-                .AddTo(_disposables);
+            // _eventAppToolsChange
+            //     .Subscribe(data => OnListToolUpdated(data, cancellationToken))
+            //     .AddTo(_disposables);
 
             return Task.CompletedTask;
         }

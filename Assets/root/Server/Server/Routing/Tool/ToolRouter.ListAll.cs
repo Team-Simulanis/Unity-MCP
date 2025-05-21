@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Common.Data;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using NLog;
 
@@ -12,7 +12,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 {
     public static partial class ToolRouter
     {
-        public static async Task<ListToolsResult> ListAll(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
+        public static async ValueTask<ListToolsResult> ListAll(RequestContext<ListToolsRequestParams> request, CancellationToken cancellationToken)
         {
             var logger = LogManager.GetCurrentClassLogger();
             logger.Trace("{0}.ListAll", nameof(ToolRouter));

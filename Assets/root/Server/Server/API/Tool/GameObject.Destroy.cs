@@ -1,6 +1,6 @@
 #if !UNITY_5_3_OR_NEWER
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -16,7 +16,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
         )]
         [Description(@"Destroy a GameObject and all nested GameObjects recursively.
 Use 'instanceID' whenever possible, because it finds the exact GameObject, when 'path' may find a wrong one.")]
-        public Task<CallToolResponse> Destroy
+        public ValueTask<CallToolResponse> Destroy
         (
             GameObjectRef gameObjectRef
         )

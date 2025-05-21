@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -18,7 +18,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
                     "2. Open prefab from GameObject in loaded scene using 'instanceID' of the GameObject.\n" +
                     "   The GameObject should be connected to a prefab.\n\n" +
                     "Note: Please 'Close' the prefab after editing.")]
-        public Task<CallToolResponse> Open
+        public ValueTask<CallToolResponse> Open
         (
             [Description("'instanceID' of GameObject in a scene.")]
             int instanceID = 0,

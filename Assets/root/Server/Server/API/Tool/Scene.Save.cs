@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Save scene"
         )]
         [Description("Save scene to asset file with specified path.")]
-        public Task<CallToolResponse> Save
+        public ValueTask<CallToolResponse> Save
         (
             [Description("Path to the scene file.")]
             string path,

@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Unload scene"
         )]
         [Description("Destroys all GameObjects associated with the given Scene and removes the Scene from the SceneManager.")]
-        public Task<CallToolResponse> Save
+        public ValueTask<CallToolResponse> Save
         (
             [Description("Name of the loaded scene.")]
             string name

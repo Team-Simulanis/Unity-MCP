@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Get Scene Hierarchy"
         )]
         [Description("This tool retrieves the list of root GameObjects in the specified scene.")]
-        public Task<CallToolResponse> GetHierarchy
+        public ValueTask<CallToolResponse> GetHierarchy
         (
             [Description("Determines the depth of the hierarchy to include.")]
             int includeChildrenDepth = 3,

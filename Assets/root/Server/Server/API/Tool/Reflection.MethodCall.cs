@@ -1,6 +1,6 @@
 #if !UNITY_5_3_OR_NEWER
 using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using ModelContextProtocol.Protocol.Types;
+using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,7 +19,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
 It requires to receive proper method schema.
 Use 'Reflection_MethodFind' to find available method before using it.
 Receives input parameters and returns result.")]
-        public Task<CallToolResponse> MethodCall
+        public ValueTask<CallToolResponse> MethodCall
         (
             MethodPointerRef filter,
 
