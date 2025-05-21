@@ -49,9 +49,9 @@ namespace com.IvanMurzak.Unity.MCP.Server
         {
             _logger.LogTrace("{0} StartAsync.", GetType().Name);
 
-            // _eventAppToolsChange
-            //     .Subscribe(data => OnListToolUpdated(data, cancellationToken))
-            //     .AddTo(_disposables);
+            _eventAppToolsChange
+                .Subscribe(data => OnListToolUpdated(data, cancellationToken))
+                .AddTo(_disposables);
 
             return Task.CompletedTask;
         }
