@@ -25,16 +25,16 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
         public List<JsonNode>? InputParametersSchema { get; set; }
 
         public MethodDataRef() : base() { }
-        public MethodDataRef(MethodInfo methodInfo) : base(methodInfo)
+        public MethodDataRef(MethodInfo methodInfo, bool justRef = false) : base(methodInfo)
         {
             IsStatic = methodInfo.IsStatic;
             IsPublic = methodInfo.IsPublic;
             ReturnType = methodInfo.ReturnType.FullName;
             ReturnSchema = methodInfo.ReturnType == typeof(void)
                 ? null
-                : JsonUtils.GetSchema(methodInfo.ReturnType);
+                : JsonUtils.GetSchema(methodInfo.ReturnType, justRef: justRef);
             InputParametersSchema = methodInfo.GetParameters()
-                ?.Select(parameter => JsonUtils.GetSchema(parameter.ParameterType)!)
+                ?.Select(parameter => JsonUtils.GetSchema(parameter.ParameterType, justRef: justRef)!)
                 ?.ToList();
         }
     }

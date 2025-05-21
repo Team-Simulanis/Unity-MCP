@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
     public static partial class JsonUtils
     {
         public static JsonNode? GetSchema<T>() => GetSchema(typeof(T));
-        public static JsonNode? GetSchema(Type type)
+        public static JsonNode? GetSchema(Type type, bool justRef = false)
         {
             // Handle nullable types
             var underlyingNullableType = Nullable.GetUnderlyingType(type);
@@ -28,7 +28,9 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 var jsonConverter = jsonSerializerOptions.GetConverter(type);
                 if (jsonConverter is IJsonSchemaConverter schemeConvertor)
                 {
-                    schema = schemeConvertor.GetScheme();
+                    schema = justRef
+                        ? schemeConvertor.GetSchemeRef()
+                        : schemeConvertor.GetScheme();
                 }
                 else
                 {
@@ -70,7 +72,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             }
             return schema;
         }
-        public static JsonNode? GetArgumentsSchema(MethodInfo method)
+        public static JsonNode? GetArgumentsSchema(MethodInfo method, bool justRef = false)
         {
             if (method == null)
                 throw new ArgumentNullException(nameof(method));
@@ -92,7 +94,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             foreach (var parameter in parameters)
             {
                 // Use JsonSchemaExporter to get the schema for each parameter type
-                var parameterSchema = GetSchema(parameter.ParameterType);
+                var parameterSchema = GetSchema(parameter.ParameterType, justRef: justRef);
                 if (parameterSchema == null)
                     continue;
 

@@ -41,9 +41,12 @@ namespace com.IvanMurzak.Unity.MCP.Server
         public static Tool ToTool(this IResponseListTool response) => new Tool()
         {
             Name = response.Name,
-            // Title = response.Title,
             Description = response.Description,
-            InputSchema = response.InputSchema
+            InputSchema = response.InputSchema,
+            Annotations = new()
+            {
+                Title = response.Title
+            },
         };
 
         public static CallToolResponse ToCallToolResponse(this IResponseCallTool response) => new CallToolResponse()
