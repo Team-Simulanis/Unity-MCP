@@ -8,8 +8,10 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
     public class Color32Converter : JsonConverter<Color32>, IJsonSchemaConverter
     {
+        public string Id => typeof(Color32).FullName;
         public JsonNode GetScheme() => new JsonObject
         {
+            ["id"] = Id,
             ["type"] = "object",
             ["properties"] = new JsonObject
             {
@@ -39,6 +41,10 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
                 }
             },
             ["required"] = new JsonArray { "r", "g", "b", "a" }
+        };
+        public JsonNode GetSchemeRef() => new JsonObject
+        {
+            ["$ref"] = Id
         };
 
         public override Color32 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
