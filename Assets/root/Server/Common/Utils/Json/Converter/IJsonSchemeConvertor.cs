@@ -5,6 +5,8 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
     public interface IJsonSchemaConverter
     {
+        string Id { get; }
         JsonNode GetScheme();
+        JsonNode GetSchemeRef();
     }
 }

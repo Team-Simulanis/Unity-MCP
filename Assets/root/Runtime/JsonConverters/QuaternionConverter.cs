@@ -8,8 +8,10 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
     public class QuaternionConverter : JsonConverter<Quaternion>, IJsonSchemaConverter
     {
+        public string Id => typeof(Quaternion).FullName;
         public JsonNode GetScheme() => new JsonObject
         {
+            ["id"] = Id,
             ["type"] = "object",
             ["properties"] = new JsonObject
             {
@@ -19,6 +21,10 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
                 ["w"] = new JsonObject { ["type"] = "number" }
             },
             ["required"] = new JsonArray { "x", "y", "z", "w" }
+        };
+        public JsonNode GetSchemeRef() => new JsonObject
+        {
+            ["$ref"] = Id
         };
 
         public override Quaternion Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

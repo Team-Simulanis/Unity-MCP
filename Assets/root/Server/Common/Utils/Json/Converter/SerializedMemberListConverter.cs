@@ -9,13 +9,22 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
     public class SerializedMemberListConverter : JsonConverter<SerializedMemberList>, IJsonSchemaConverter
     {
+        public static string StaticId => typeof(SerializedMemberList).FullName;
         public static JsonNode Schema => new JsonObject
         {
+            ["id"] = StaticId,
             ["type"] = "array",
-            ["items"] = SerializedMemberConverter.Schema
+            ["items"] = new JsonObject
+            {
+                ["$ref"] = SerializedMemberConverter.StaticId
+            }
         };
-
+        public string Id => StaticId;
         public JsonNode GetScheme() => Schema;
+        public JsonNode GetSchemeRef() => new JsonObject
+        {
+            ["$ref"] = Id
+        };
 
         public override SerializedMemberList? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

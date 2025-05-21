@@ -9,8 +9,10 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
     public class ObjectRefConverter : JsonConverter<ObjectRef>, IJsonSchemaConverter
     {
+        public string Id => typeof(ObjectRef).FullName;
         public JsonNode GetScheme() => new JsonObject
         {
+            ["id"] = Id,
             ["type"] = "object",
             ["properties"] = new JsonObject
             {
@@ -19,6 +21,10 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                 [nameof(ObjectRef.assetGuid)] = new JsonObject { ["type"] = "string" }
             },
             ["required"] = new JsonArray { "instanceID" }
+        };
+        public JsonNode GetSchemeRef() => new JsonObject
+        {
+            ["$ref"] = Id
         };
 
         public override ObjectRef? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

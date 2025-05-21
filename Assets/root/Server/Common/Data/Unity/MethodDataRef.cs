@@ -34,7 +34,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
                 ? null
                 : JsonUtils.GetSchema(methodInfo.ReturnType);
             InputParametersSchema = methodInfo.GetParameters()
-                ?.Select(parameter => JsonUtils.GetSchema(parameter.ParameterType))
+                ?.Select(parameter => JsonUtils.GetSchema(parameter.ParameterType)!)
                 ?.ToList();
         }
     }
