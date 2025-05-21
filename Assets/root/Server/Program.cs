@@ -67,7 +67,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         .AddLogging(logging =>
                         {
                             logging.AddNLog();
-                            logging.SetMinimumLevel(LogLevel.Trace);
+                            logging.SetMinimumLevel(LogLevel.Information);
                         });
                 }).Build(new Reflector());
 
