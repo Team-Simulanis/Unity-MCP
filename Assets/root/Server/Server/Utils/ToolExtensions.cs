@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Data;
+using com.IvanMurzak.ReflectorNet.Model;
 using ModelContextProtocol.Protocol;
 
 namespace com.IvanMurzak.Unity.MCP.Server

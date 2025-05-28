@@ -1,12 +1,18 @@
 #if UNITY_EDITOR
 using System;
 using System.Threading.Tasks;
+using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Utils
 {
-    public static class MainThread
+    public static class MainThreadInstaller
     {
+        public static void Init()
+        {
+            MainThread.IsMainThread = () => MainThreadDispatcher.IsMainThread;
+            MainThread.PushToMainThread = RunAsync;
+        }
         public static void Run<T>(Task task) => RunAsync(task).Wait();
         public static Task RunAsync(Task task)
         {

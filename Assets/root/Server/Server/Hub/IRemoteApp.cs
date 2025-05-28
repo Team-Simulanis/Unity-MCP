@@ -1,7 +1,7 @@
 #if !UNITY_5_3_OR_NEWER
 using System;
 using System.Threading.Tasks;
-using com.IvanMurzak.Unity.MCP.Common.Data;
+using com.IvanMurzak.ReflectorNet.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {

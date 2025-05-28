@@ -1,5 +1,5 @@
 using System.Collections;
-using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.ReflectorNet.Utils;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 

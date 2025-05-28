@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
+namespace com.IvanMurzak.ReflectorNet.Model.Unity
 {
     [System.Serializable]
     [Description("Reference to UnityEngine.Object instance. It could be GameObject, Component, Asset, etc.")]

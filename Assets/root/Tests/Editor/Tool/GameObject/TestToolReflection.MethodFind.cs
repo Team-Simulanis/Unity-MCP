@@ -1,5 +1,6 @@
 using System.Collections;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
+using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Editor.API;
 using NUnit.Framework;
 using UnityEngine.TestTools;

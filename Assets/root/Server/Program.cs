@@ -9,11 +9,14 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
-using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Server
 {
+    using Consts = Common.Consts;
+
     public class Program
     {
         public static async Task Main(string[] args)
@@ -67,7 +70,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         .AddLogging(logging =>
                         {
                             logging.AddNLog();
-                            logging.SetMinimumLevel(LogLevel.Information);
+                            logging.SetMinimumLevel(LogLevel.Debug);
                         });
                 }).Build(new Reflector());
 

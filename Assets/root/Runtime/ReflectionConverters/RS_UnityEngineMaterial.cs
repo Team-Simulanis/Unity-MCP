@@ -5,11 +5,13 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Reflection;
+using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
+using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Reflection.Convertor
 {

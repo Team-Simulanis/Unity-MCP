@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Globalization;
-using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Reflection;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 using NUnit.Framework;
 using UnityEngine.TestTools;

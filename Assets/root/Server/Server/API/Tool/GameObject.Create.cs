@@ -1,5 +1,5 @@
 #if !UNITY_5_3_OR_NEWER
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Server.API.Data;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
+namespace com.IvanMurzak.ReflectorNet.Model.Unity
 {
     [Description(@"GameObject references. Used to specify GameObjects in opened Prefab or in a Scene.
 Use one of the following properties:
@@ -25,10 +25,10 @@ Use one of the following properties:
             var stringBuilder = new System.Text.StringBuilder();
 
             stringBuilder.AppendLine($"GameObjects total amount: {Count}");
-            
+
             for (int i = 0; i < Count; i++)
                 stringBuilder.AppendLine($"GameObject[{i}] {this[i]}");
-                
+
             return stringBuilder.ToString();
         }
     }

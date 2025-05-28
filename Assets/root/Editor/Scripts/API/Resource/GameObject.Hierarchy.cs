@@ -1,14 +1,16 @@
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Data;
-using com.IvanMurzak.Unity.MCP.Common.Reflection;
-using com.IvanMurzak.Unity.MCP.Editor.Utils;
+using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
+    using Consts = Common.Consts;
+
     [McpPluginResourceType]
     public partial class Resource_GameObject
     {

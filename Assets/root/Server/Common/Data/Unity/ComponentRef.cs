@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 
-namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
+namespace com.IvanMurzak.ReflectorNet.Model.Unity
 {
     [Description(@"Component reference. Used to find Component at GameObject.
 Use one of the following properties:

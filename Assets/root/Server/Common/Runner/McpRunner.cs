@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using com.IvanMurzak.Unity.MCP.Common.Data;
+using com.IvanMurzak.ReflectorNet.Model;
 using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common
@@ -93,7 +93,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                         Name = kvp.Key,
                         Title = kvp.Value.Title,
                         Description = kvp.Value.Description,
-                        InputSchema = kvp.Value.InputSchema.ToJsonElement() ?? EmptyInputSchema,
+                        InputSchema = kvp.Value.InputSchema?.ToJsonElement() ?? EmptyInputSchema,
                     })
                     .ToArray();
 

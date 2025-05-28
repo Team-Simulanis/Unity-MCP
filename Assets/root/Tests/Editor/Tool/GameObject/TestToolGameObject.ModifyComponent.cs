@@ -1,11 +1,11 @@
 using System.Collections;
-using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Editor.API;
 using com.IvanMurzak.Unity.MCP.Utils;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using com.IvanMurzak.ReflectorNet.Model;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
@@ -31,9 +31,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 
             var result = new Tool_GameObject().Modify(
                 gameObjectDiffs: new SerializedMemberList(data),
-                gameObjectRefs: new Common.Data.Unity.GameObjectRefList
+                gameObjectRefs: new GameObjectRefList
                 {
-                    new Common.Data.Unity.GameObjectRef()
+                    new GameObjectRef()
                     {
                         instanceID = child.GetInstanceID()
                     }
@@ -68,9 +68,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 
             var result = new Tool_GameObject().Modify(
                 gameObjectDiffs: new SerializedMemberList(data),
-                gameObjectRefs: new Common.Data.Unity.GameObjectRefList
+                gameObjectRefs: new GameObjectRefList
                 {
-                    new Common.Data.Unity.GameObjectRef()
+                    new GameObjectRef()
                     {
                         instanceID = go.GetInstanceID()
                     }
