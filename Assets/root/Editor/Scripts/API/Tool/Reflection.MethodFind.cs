@@ -62,7 +62,7 @@ Even private methods are available. Use 'Reflection_MethodCall' to call the meth
                 return $"[Success] Method not found. With request:\n{filter}";
 
             var methodRefs = methods
-                .Select(method => new MethodDataRef(method))
+                .Select(method => new MethodDataRef(method, justRef: false))
                 .ToList();
 
             return $@"[Success] Found {methods.Count} method(s):

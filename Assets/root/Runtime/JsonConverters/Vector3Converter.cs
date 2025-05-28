@@ -8,8 +8,10 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
 {
     public class Vector3Converter : JsonConverter<Vector3>, IJsonSchemaConverter
     {
+        public string Id => typeof(Vector3).FullName;
         public JsonNode GetScheme() => new JsonObject
         {
+            ["id"] = Id,
             ["type"] = "object",
             ["properties"] = new JsonObject
             {
@@ -18,6 +20,10 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json.Converters
                 ["z"] = new JsonObject { ["type"] = "number" }
             },
             ["required"] = new JsonArray { "x", "y", "z" }
+        };
+        public JsonNode GetSchemeRef() => new JsonObject
+        {
+            ["$ref"] = Id
         };
 
         public override Vector3 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

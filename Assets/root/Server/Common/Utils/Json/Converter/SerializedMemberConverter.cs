@@ -10,8 +10,10 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
 {
     public class SerializedMemberConverter : JsonConverter<SerializedMember>, IJsonSchemaConverter
     {
+        public static string StaticId => typeof(SerializedMember).FullName;
         public static JsonNode Schema => new JsonObject
         {
+            ["id"] = StaticId,
             ["type"] = "object",
             ["properties"] = new JsonObject
             {
@@ -27,34 +29,7 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                     ["type"] = "array",
                     ["items"] = new JsonObject
                     {
-                        ["type"] = "object",
-                        ["properties"] = new JsonObject
-                        {
-                            [nameof(SerializedMember.typeName)] = new JsonObject
-                            {
-                                ["type"] = "string",
-                                ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
-                            },
-                            [nameof(SerializedMember.name)] = new JsonObject { ["type"] = "string" },
-                            [SerializedMember.ValueName] = new JsonObject { ["type"] = "object" },
-                            [nameof(SerializedMember.fields)] = new JsonObject
-                            {
-                                ["type"] = "array",
-                                ["items"] = new JsonObject
-                                {
-                                    ["type"] = "object"
-                                }
-                            },
-                            [nameof(SerializedMember.props)] = new JsonObject
-                            {
-                                ["type"] = "array",
-                                ["items"] = new JsonObject
-                                {
-                                    ["type"] = "object"
-                                }
-                            },
-                        },
-                        ["required"] = new JsonArray { nameof(SerializedMember.typeName), nameof(SerializedMember.name), SerializedMember.ValueName }
+                        ["$ref"] = StaticId
                     }
                 },
                 [nameof(SerializedMember.props)] = new JsonObject
@@ -62,40 +37,19 @@ namespace com.IvanMurzak.Unity.MCP.Common.Json
                     ["type"] = "array",
                     ["items"] = new JsonObject
                     {
-                        ["type"] = "object",
-                        ["properties"] = new JsonObject
-                        {
-                            [nameof(SerializedMember.typeName)] = new JsonObject
-                            {
-                                ["type"] = "string",
-                                ["description"] = "Full type name. Eg: 'System.String', 'System.Int32', 'UnityEngine.Vector3', etc."
-                            },
-                            [nameof(SerializedMember.name)] = new JsonObject { ["type"] = "string" },
-                            [SerializedMember.ValueName] = new JsonObject { ["type"] = "object" },
-                            [nameof(SerializedMember.fields)] = new JsonObject
-                            {
-                                ["type"] = "array",
-                                ["items"] = new JsonObject
-                                {
-                                    ["type"] = "object"
-                                }
-                            },
-                            [nameof(SerializedMember.props)] = new JsonObject
-                            {
-                                ["type"] = "array",
-                                ["items"] = new JsonObject
-                                {
-                                    ["type"] = "object"
-                                }
-                            },
-                        },
-                        ["required"] = new JsonArray { nameof(SerializedMember.typeName), nameof(SerializedMember.name), SerializedMember.ValueName }
+                        ["$ref"] = StaticId
                     }
                 }
             },
             ["required"] = new JsonArray { nameof(SerializedMember.typeName), SerializedMember.ValueName }
         };
+        public static JsonNode SchemaRef => new JsonObject
+        {
+            ["$ref"] = StaticId
+        };
 
+        public string Id => StaticId;
+        public JsonNode GetSchemeRef() => SchemaRef;
         public JsonNode GetScheme() => Schema;
 
         public override SerializedMember? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
