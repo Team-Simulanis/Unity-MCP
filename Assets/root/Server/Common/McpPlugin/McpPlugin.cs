@@ -36,6 +36,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 .Where(state => state == HubConnectionState.Connected)
                 .Subscribe(state =>
                 {
+                    _logger.LogDebug("{0}.{1}, connection state: {2}", nameof(McpPlugin), nameof(IRpcRouter.NotifyAboutUpdatedTools), state);
                     _rpcRouter.NotifyAboutUpdatedTools(_disposables.ToCancellationToken());
                 }).AddTo(_disposables);
 
