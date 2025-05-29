@@ -22,6 +22,7 @@ namespace com.IvanMurzak.Unity.MCP
         public static void BuildAndStart()
         {
             McpPlugin.StaticDisposeAsync();
+            MainThreadInstaller.Init();
 
             var mcpPlugin = new McpPluginBuilder()
                 .WithAppFeatures()
