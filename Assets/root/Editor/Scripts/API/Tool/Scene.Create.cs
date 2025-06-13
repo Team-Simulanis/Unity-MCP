@@ -18,7 +18,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("Path to the scene file.")]
             string path
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (string.IsNullOrEmpty(path))
                 return Error.ScenePathIsEmpty();

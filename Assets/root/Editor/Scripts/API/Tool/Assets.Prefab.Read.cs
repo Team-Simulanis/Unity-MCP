@@ -29,7 +29,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("Determines the depth of the hierarchy to include. 0 - means only the target GameObject. 1 - means to include one layer below.")]
             int includeChildrenDepth = 3
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (string.IsNullOrEmpty(prefabAssetPath) && instanceID != 0)
             {

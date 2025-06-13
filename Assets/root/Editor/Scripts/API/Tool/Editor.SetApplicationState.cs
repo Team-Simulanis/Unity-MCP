@@ -22,7 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             bool isPaused = false
         )
         {
-            return MainThread.Run(() =>
+            return MainThread.Instance.Run(() =>
             {
                 EditorApplication.isPlaying = isPlaying;
                 EditorApplication.isPaused = isPaused;

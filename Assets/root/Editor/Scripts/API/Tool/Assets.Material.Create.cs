@@ -22,7 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("Name of the shader that need to be used to create the material.")]
             string shaderName
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (string.IsNullOrEmpty(assetPath))
                 return Error.EmptyAssetPath();

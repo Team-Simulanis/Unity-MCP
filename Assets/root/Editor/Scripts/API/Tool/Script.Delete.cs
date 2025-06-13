@@ -34,7 +34,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             if (File.Exists(filePath + ".meta"))
                 File.Delete(filePath + ".meta");
 
-            return MainThread.Run(() =>
+            return MainThread.Instance.Run(() =>
             {
                 AssetDatabase.Refresh();
                 return $"[Success] Script deleted: {filePath}";

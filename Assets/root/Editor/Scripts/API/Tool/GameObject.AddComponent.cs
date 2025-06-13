@@ -22,7 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             string[] componentNames,
             GameObjectRef gameObjectRef
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             var go = GameObjectUtils.FindBy(gameObjectRef, out var error);
             if (error != null)

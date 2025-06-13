@@ -23,7 +23,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             GameObjectRef gameObjectRef,
             ComponentRefList destroyComponentRefs
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             var go = GameObjectUtils.FindBy(gameObjectRef, out var error);
             if (error != null)

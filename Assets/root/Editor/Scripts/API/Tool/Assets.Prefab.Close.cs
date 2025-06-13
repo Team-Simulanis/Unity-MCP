@@ -20,7 +20,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("True to save prefab. False to discard changes.")]
             bool save = true
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
             if (prefabStage == null)

@@ -29,7 +29,7 @@ Check the result of this command to see what was changed. The ignored fields and
             SerializedMemberList gameObjectDiffs,
             GameObjectRefList gameObjectRefs
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (gameObjectRefs.Count == 0)
                 return "[Error] No GameObject references provided. Please provide at least one GameObject reference.";

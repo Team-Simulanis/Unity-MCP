@@ -25,7 +25,7 @@ Selection.activeInstanceID -  The 'instanceID' of the actual object selection. I
             int activeInstanceID = 0
         )
         {
-            return MainThread.Run(() =>
+            return MainThread.Instance.Run(() =>
             {
                 Selection.instanceIDs = instanceIDs ?? new int[0];
                 Selection.activeInstanceID = activeInstanceID;

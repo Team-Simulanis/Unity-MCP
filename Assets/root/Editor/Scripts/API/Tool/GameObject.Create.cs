@@ -34,7 +34,7 @@ if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount o
             [Description("-1 - No primitive type; 0 - Cube; 1 - Sphere; 2 - Capsule; 3 - Cylinder; 4 - Plane; 5 - Quad.")]
             int primitiveType = -1
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (string.IsNullOrEmpty(name))
                 return Error.GameObjectNameIsEmpty();

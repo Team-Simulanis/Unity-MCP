@@ -34,7 +34,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             // {
             // }
 
-            return MainThread.Run(() =>
+            return MainThread.Instance.Run(() =>
             {
                 var go = GameObject.Find(path);
                 if (go == null)
@@ -53,7 +53,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             });
         }
 
-        public ResponseListResource[] CurrentSceneAll() => MainThread.Run(()
+        public ResponseListResource[] CurrentSceneAll() => MainThread.Instance.Run(()
             => EditorSceneManager.GetActiveScene().GetRootGameObjects()
                 .SelectMany(root => GameObjectUtils.GetAllRecursively(root))
                 .Select(kvp => new ResponseListResource($"gameObject://currentScene/{kvp.Key}", kvp.Value.name, Consts.MimeType.TextJson))

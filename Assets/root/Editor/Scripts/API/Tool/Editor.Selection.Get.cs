@@ -24,7 +24,7 @@ Selection.activeObject - Returns the actual object selection. Includes Prefabs, 
 Selection.activeTransform - Returns the active transform. (The one shown in the inspector).")]
         public string Get()
         {
-            return MainThread.Run(() => "[Success] " + SelectionPrint);
+            return MainThread.Instance.Run(() => "[Success] " + SelectionPrint);
         }
     }
 }

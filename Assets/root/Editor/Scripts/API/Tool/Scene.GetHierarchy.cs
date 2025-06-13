@@ -21,7 +21,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("Name of the loaded scene. If empty string, the active scene will be used.")]
             string? loadedSceneName = null
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             var scene = string.IsNullOrEmpty(loadedSceneName)
                 ? UnityEngine.SceneManagement.SceneManager.GetActiveScene()

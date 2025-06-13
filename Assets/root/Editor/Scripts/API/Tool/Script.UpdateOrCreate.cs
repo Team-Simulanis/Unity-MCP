@@ -39,7 +39,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             File.WriteAllText(filePath, content);
 
-            return MainThread.Run(() =>
+            return MainThread.Instance.Run(() =>
             {
                 AssetDatabase.Refresh();
                 return $"[Success] Script created or updated at: {filePath}";

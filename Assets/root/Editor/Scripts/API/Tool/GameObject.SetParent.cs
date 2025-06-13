@@ -25,7 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             bool worldPositionStays = true
         )
         {
-            return MainThread.Run(() =>
+            return MainThread.Instance.Run(() =>
             {
                 var stringBuilder = new StringBuilder();
                 int changedCount = 0;

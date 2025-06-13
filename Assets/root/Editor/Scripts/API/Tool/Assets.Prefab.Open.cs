@@ -26,7 +26,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("Prefab asset path. Should be in the format 'Assets/Path/To/Prefab.prefab'.")]
             string? prefabAssetPath = null
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
             // if (prefabStage != null)

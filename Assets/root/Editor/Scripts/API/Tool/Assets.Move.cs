@@ -22,7 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("The paths of moved assets.")]
             string[] destinationPaths
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (sourcePaths.Length == 0)
                 return Error.SourcePathsArrayIsEmpty();

@@ -29,7 +29,7 @@ Also, it returns Components preview just for the target GameObject.")]
             bool briefData = false
         )
         {
-            return MainThread.Run(() =>
+            return MainThread.Instance.Run(() =>
             {
                 var go = GameObjectUtils.FindBy(gameObjectRef, out var error);
                 if (error != null)

@@ -20,7 +20,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("Load scene mode. 0 - Single, 1 - Additive.")]
             int loadSceneMode = 0
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (string.IsNullOrEmpty(path))
                 return Error.ScenePathIsEmpty();

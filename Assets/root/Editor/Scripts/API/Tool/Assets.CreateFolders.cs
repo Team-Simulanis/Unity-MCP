@@ -23,7 +23,7 @@ Use it to organize scripts and assets in the project. Does AssetDatabase.Refresh
             [Description("The paths for the folders to create.")]
             string[] paths
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (paths.Length == 0)
                 return Error.SourcePathsArrayIsEmpty();

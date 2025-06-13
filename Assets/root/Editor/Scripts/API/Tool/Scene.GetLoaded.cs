@@ -13,7 +13,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             Title = "Get list of currently loaded scenes"
         )]
         [Description("Returns the list of currently loaded scenes.")]
-        public string GetLoaded() => MainThread.Run(() =>
+        public string GetLoaded() => MainThread.Instance.Run(() =>
         {
             return $"[Success] " + LoadedScenes;
         });

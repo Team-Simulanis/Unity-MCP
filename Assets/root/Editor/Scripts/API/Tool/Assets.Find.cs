@@ -53,7 +53,7 @@ Searching is case insensitive.")]
             [Description("The folders where the search will start. If null, the search will be performed in all folders.")]
             string[]? searchInFolders = null
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             var assetGuids = (searchInFolders?.Length ?? 0) == 0
                 ? AssetDatabase.FindAssets(filter ?? string.Empty)

@@ -25,7 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             GameObjectRefList gameObjectRefs
         )
         {
-            return MainThread.Run(() =>
+            return MainThread.Instance.Run(() =>
             {
                 var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
 

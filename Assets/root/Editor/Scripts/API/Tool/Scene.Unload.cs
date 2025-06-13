@@ -21,7 +21,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("Name of the loaded scene.")]
             string name
         )
-        => MainThread.Run(async () =>
+        => MainThread.Instance.Run(async () =>
         {
             if (string.IsNullOrEmpty(name))
                 return Error.SceneNameIsEmpty();

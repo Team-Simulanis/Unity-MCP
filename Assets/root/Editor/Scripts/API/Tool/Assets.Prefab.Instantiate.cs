@@ -32,7 +32,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("World or Local space of transform.")]
             bool isLocalSpace = false
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabAssetPath);
             if (prefab == null)

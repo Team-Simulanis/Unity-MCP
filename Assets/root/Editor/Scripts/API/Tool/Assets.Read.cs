@@ -24,7 +24,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("GUID of the asset. Priority: 2.")]
             string? assetGuid = null
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (string.IsNullOrEmpty(assetPath) && string.IsNullOrEmpty(assetGuid))
                 return Error.NeitherProvided_AssetPath_AssetGuid();

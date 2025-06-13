@@ -21,7 +21,7 @@ Use 'instanceID' whenever possible, because it finds the exact GameObject, when 
         (
             GameObjectRef gameObjectRef
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             var go = GameObjectUtils.FindBy(gameObjectRef, out var error);
             if (error != null)

@@ -24,7 +24,7 @@ EditorApplication.applicationPath - Gets the path to the Unity Editor applicatio
 EditorApplication.timeSinceStartup - The time since the editor was started. (Read Only)")]
         public string GetApplicationInformation()
         {
-            return MainThread.Run(() => "[Success] " + EditorStats);
+            return MainThread.Instance.Run(() => "[Success] " + EditorStats);
         }
     }
 }

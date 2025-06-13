@@ -25,7 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("If true, the prefab will replace the GameObject in the scene.")]
             bool replaceGameObjectWithPrefab = true
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (string.IsNullOrEmpty(prefabAssetPath))
                 return Error.PrefabPathIsEmpty();

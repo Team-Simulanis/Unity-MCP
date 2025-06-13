@@ -15,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             Title = "Save prefab"
         )]
         [Description("Save a prefab. Use it when you are in prefab editing mode in Unity Editor.")]
-        public string Save() => MainThread.Run(() =>
+        public string Save() => MainThread.Instance.Run(() =>
         {
             var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
             if (prefabStage == null)

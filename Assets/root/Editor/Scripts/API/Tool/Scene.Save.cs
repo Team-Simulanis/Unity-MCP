@@ -22,7 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("Name of the opened scene. Could be empty if need to save current active scene. It is helpful when multiple scenes are opened.")]
             string? targetSceneName = null
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (string.IsNullOrEmpty(path))
                 return Error.ScenePathIsEmpty();
