@@ -9,9 +9,11 @@ using Debug = UnityEngine.Debug;
 using com.IvanMurzak.Unity.MCP.Editor.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 using System.Linq;
+using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor
 {
+    using Consts = Common.Consts;
     public static partial class Startup
     {
         public const string PackageName = "com.IvanMurzak.Unity.MCP";
@@ -95,7 +97,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 CreateNoWindow = true
             });
 
-            await MainThread.RunAsync(() => HandleBuildResult(output, error, force));
+            await MainThread.Instance.RunAsync(() => HandleBuildResult(output, error, force));
         }
 
         private static async Task HandleBuildResult(string output, string error, bool force)

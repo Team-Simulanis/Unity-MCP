@@ -3,12 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Convertor;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor
 {
-    public partial class RS_GenericUnity<T> : RS_Generic<T>
+    public partial class RS_GenericUnity<T> : GenericReflectionConvertor<T>
     {
         public override IEnumerable<FieldInfo>? GetSerializableFields(Reflector reflector, Type objType, BindingFlags flags, ILogger? logger = null)
             => objType.GetFields(flags)

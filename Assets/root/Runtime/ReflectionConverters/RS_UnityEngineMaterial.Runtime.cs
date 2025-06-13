@@ -3,10 +3,10 @@
 using System;
 using System.Reflection;
 using System.Text;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Reflection;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
-using com.IvanMurzak.Unity.MCP.Common.Utils;
 using UnityEngine;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 

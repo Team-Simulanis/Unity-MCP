@@ -106,7 +106,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 if (task.IsCompletedSuccessfully)
                     return task.Result;
 
-                _logger.LogError("{0} Failed to invoke method {1}: {21}", _guid, methodName, task.Exception?.Message);
+                _logger.LogError("{0} Failed to invoke method {1}: {2}", _guid, methodName, task.Exception?.Message);
                 return default!;
             });
         }
@@ -320,7 +320,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
                 try
                 {
                     var tempHubConnection = _hubConnection.Value;
-                    
+
                     _hubConnection.Value = null;
                     _hubConnection.Dispose();
 
@@ -342,8 +342,8 @@ namespace com.IvanMurzak.Unity.MCP.Common
                     _logger.LogError("Error during async disposal: {0}\n{1}", ex.Message, ex.StackTrace);
                 }
             }
-            
-            _hubConnection.Dispose();            
+
+            _hubConnection.Dispose();
         }
 
         ~ConnectionManager() => Dispose();

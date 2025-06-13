@@ -199,7 +199,7 @@ To add a custom `tool` you need:
 3. [optional] Add `Description` attribute to each method argument to let LLM to understand it.
 4. [optional] Use `string? optional = null` properties with `?` and default value to mark them as `optional` for LLM.
 
-> Take a look that the line `MainThread.Run(() =>` it allows to run the code in Main thread which is needed to interact with Unity API. If you don't need it and running the tool in background thread is fine for the tool, don't use Main thread for efficiency purpose.
+> Take a look that the line `MainThread.Instance.Run(() =>` it allows to run the code in Main thread which is needed to interact with Unity API. If you don't need it and running the tool in background thread is fine for the tool, don't use Main thread for efficiency purpose.
 
 ```csharp
 [McpPluginToolType]
@@ -219,7 +219,7 @@ public class Tool_GameObject
     {
         // do anything in background thread
 
-        return MainThread.Run(() =>
+        return MainThread.Instance.Run(() =>
         {
             // do something in main thread if needed
 

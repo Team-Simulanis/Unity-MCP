@@ -5,9 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
-using com.IvanMurzak.Unity.MCP.Common.Data;
-using com.IvanMurzak.Unity.MCP.Common.MCP;
-using com.IvanMurzak.Unity.MCP.Common.Reflection;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Model;
 using Microsoft.Extensions.Logging;
 
 namespace com.IvanMurzak.Unity.MCP.Common

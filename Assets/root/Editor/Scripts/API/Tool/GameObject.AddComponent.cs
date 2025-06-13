@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Text;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
+using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
@@ -22,7 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             string[] componentNames,
             GameObjectRef gameObjectRef
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             var go = GameObjectUtils.FindBy(gameObjectRef, out var error);
             if (error != null)
@@ -32,7 +32,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 return $"[Error] No component names provided.";
 
             var stringBuilder = new StringBuilder();
-            
+
             foreach (var componentName in componentNames)
             {
                 var type = TypeUtils.GetType(componentName);

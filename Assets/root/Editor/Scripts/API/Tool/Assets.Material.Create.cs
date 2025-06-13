@@ -1,8 +1,8 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Reflection;
-using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
@@ -22,7 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("Name of the shader that need to be used to create the material.")]
             string shaderName
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (string.IsNullOrEmpty(assetPath))
                 return Error.EmptyAssetPath();

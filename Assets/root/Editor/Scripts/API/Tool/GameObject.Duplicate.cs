@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
@@ -24,7 +25,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             GameObjectRefList gameObjectRefs
         )
         {
-            return MainThread.Run(() =>
+            return MainThread.Instance.Run(() =>
             {
                 var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
 

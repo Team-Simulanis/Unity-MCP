@@ -1,7 +1,10 @@
 using System;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Convertor;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Common.Json;
 using com.IvanMurzak.Unity.MCP.Common.Json.Converters;
-using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Utils;
@@ -12,12 +15,14 @@ namespace com.IvanMurzak.Unity.MCP
 {
     using LogLevelMicrosoft = Microsoft.Extensions.Logging.LogLevel;
     using LogLevel = Utils.LogLevel;
+    using Consts = Common.Consts;
 
     public partial class McpPluginUnity
     {
         public static void BuildAndStart()
         {
             McpPlugin.StaticDisposeAsync();
+            MainThreadInstaller.Init();
 
             var mcpPlugin = new McpPluginBuilder()
                 .WithAppFeatures()
@@ -64,8 +69,8 @@ namespace com.IvanMurzak.Unity.MCP
             var reflector = new Reflector();
 
             // Remove converters that are not needed in Unity
-            reflector.Convertors.Remove<RS_Generic<object>>();
-            reflector.Convertors.Remove<RS_Array>();
+            reflector.Convertors.Remove<GenericReflectionConvertor<object>>();
+            reflector.Convertors.Remove<ArrayReflectionConvertor>();
 
             // Add Unity-specific converters
             reflector.Convertors.Add(new RS_GenericUnity<object>());
@@ -108,6 +113,8 @@ namespace com.IvanMurzak.Unity.MCP
             JsonUtils.AddConverter(new Vector3Converter());
             JsonUtils.AddConverter(new Vector3IntConverter());
             JsonUtils.AddConverter(new Vector4Converter());
+
+            JsonUtils.AddConverter(new ObjectRefConverter());
         }
     }
 }

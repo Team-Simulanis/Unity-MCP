@@ -1,6 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
 using System.Linq;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Utils;
 
@@ -21,7 +22,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("Name of the opened scene. Could be empty if need to save current active scene. It is helpful when multiple scenes are opened.")]
             string? targetSceneName = null
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (string.IsNullOrEmpty(path))
                 return Error.ScenePathIsEmpty();

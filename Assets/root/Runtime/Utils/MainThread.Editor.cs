@@ -1,14 +1,22 @@
 #if UNITY_EDITOR
 using System;
 using System.Threading.Tasks;
+using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Utils
 {
-    public static class MainThread
+    public static class MainThreadInstaller
     {
-        public static void Run<T>(Task task) => RunAsync(task).Wait();
-        public static Task RunAsync(Task task)
+        public static void Init()
+        {
+            MainThread.Instance = new UnityMainThread();
+        }
+    }
+    public class UnityMainThread : MainThread
+    {
+        public override bool IsMainThread => MainThreadDispatcher.IsMainThread;
+        public override Task RunAsync(Task task)
         {
             if (MainThreadDispatcher.IsMainThread)
             {
@@ -38,8 +46,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             return tcs.Task;
         }
 
-        public static T Run<T>(Task<T> task) => RunAsync(task).Result;
-        public static Task<T> RunAsync<T>(Task<T> task)
+        public override Task<T> RunAsync<T>(Task<T> task)
         {
             if (MainThreadDispatcher.IsMainThread)
             {
@@ -69,8 +76,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             return tcs.Task;
         }
 
-        public static T Run<T>(Func<T> func) => RunAsync(func).Result;
-        public static Task<T> RunAsync<T>(Func<T> func)
+        public override Task<T> RunAsync<T>(Func<T> func)
         {
             if (MainThreadDispatcher.IsMainThread)
             {
@@ -100,8 +106,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             return tcs.Task;
         }
 
-        public static void Run(Action action) => RunAsync(action).Wait();
-        public static Task RunAsync(Action action)
+        public override Task RunAsync(Action action)
         {
             if (MainThreadDispatcher.IsMainThread)
             {

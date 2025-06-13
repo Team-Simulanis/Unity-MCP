@@ -5,10 +5,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.MCP;
-using com.IvanMurzak.Unity.MCP.Common.Reflection;
 using com.IvanMurzak.Unity.MCP.Utils;
+using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
@@ -153,7 +153,7 @@ Required:
             };
 
             if (executeInMainThread)
-                return MainThread.Run(action);
+                return MainThread.Instance.Run(action);
 
             return action();
         }

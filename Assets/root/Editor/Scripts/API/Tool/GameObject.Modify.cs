@@ -2,10 +2,11 @@
 using System.ComponentModel;
 using System.Text;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Reflection;
-using com.IvanMurzak.Unity.MCP.Common.Utils;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Utils;
+using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
@@ -28,7 +29,7 @@ Check the result of this command to see what was changed. The ignored fields and
             SerializedMemberList gameObjectDiffs,
             GameObjectRefList gameObjectRefs
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (gameObjectRefs.Count == 0)
                 return "[Error] No GameObject references provided. Please provide at least one GameObject reference.";

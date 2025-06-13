@@ -3,7 +3,8 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
+using com.IvanMurzak.ReflectorNet.Json;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
 
 namespace com.IvanMurzak.Unity.MCP.Common.Json
 {

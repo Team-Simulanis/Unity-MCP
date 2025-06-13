@@ -3,8 +3,8 @@
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Reflection;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
 using ILogger = Microsoft.Extensions.Logging.ILogger;

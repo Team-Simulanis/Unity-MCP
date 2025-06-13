@@ -1,13 +1,13 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
-using System.Linq;
 using System.Text;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
+    using Consts = Common.Consts;
     public partial class Tool_Assets
     {
         [McpPluginTool
@@ -53,7 +53,7 @@ Searching is case insensitive.")]
             [Description("The folders where the search will start. If null, the search will be performed in all folders.")]
             string[]? searchInFolders = null
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             var assetGuids = (searchInFolders?.Length ?? 0) == 0
                 ? AssetDatabase.FindAssets(filter ?? string.Empty)

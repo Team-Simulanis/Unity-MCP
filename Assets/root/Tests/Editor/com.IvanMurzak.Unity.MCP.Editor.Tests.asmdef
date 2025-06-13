@@ -17,7 +17,8 @@
     "precompiledReferences": [
         "nunit.framework.dll",
         "System.Text.Json.dll",
-        "Microsoft.Extensions.Logging.Abstractions.dll"
+        "Microsoft.Extensions.Logging.Abstractions.dll",
+        "ReflectorNet.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

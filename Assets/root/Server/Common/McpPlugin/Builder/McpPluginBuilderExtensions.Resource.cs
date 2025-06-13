@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using com.IvanMurzak.Unity.MCP.Common.Data;
+using com.IvanMurzak.ReflectorNet.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

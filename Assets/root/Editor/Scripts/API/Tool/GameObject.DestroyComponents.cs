@@ -4,8 +4,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Utils;
+using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
@@ -22,7 +23,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             GameObjectRef gameObjectRef,
             ComponentRefList destroyComponentRefs
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             var go = GameObjectUtils.FindBy(gameObjectRef, out var error);
             if (error != null)

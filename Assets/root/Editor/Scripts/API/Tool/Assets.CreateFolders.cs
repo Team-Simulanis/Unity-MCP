@@ -3,8 +3,8 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
@@ -23,7 +23,7 @@ Use it to organize scripts and assets in the project. Does AssetDatabase.Refresh
             [Description("The paths for the folders to create.")]
             string[] paths
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             if (paths.Length == 0)
                 return Error.SourcePathsArrayIsEmpty();

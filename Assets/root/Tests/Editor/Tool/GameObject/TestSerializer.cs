@@ -5,13 +5,15 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Reflection;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using com.IvanMurzak.Unity.MCP.Reflection.Convertor;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Convertor;
+using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.Tests
 {
@@ -71,12 +73,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
         [UnityTest]
         public IEnumerator RS_SerializersOrder()
         {
-            TestSerializerChain<int, RS_Primitive>(1);
-            TestSerializerChain<float, RS_Primitive>(1);
-            TestSerializerChain<bool, RS_Primitive>(1);
-            TestSerializerChain<string, RS_Primitive>(1);
-            TestSerializerChain<DateTime, RS_Primitive>(1);
-            TestSerializerChain<CultureTypes, RS_Primitive>(1); // enum
+            TestSerializerChain<int, PrimitiveReflectionConvertor>(1);
+            TestSerializerChain<float, PrimitiveReflectionConvertor>(1);
+            TestSerializerChain<bool, PrimitiveReflectionConvertor>(1);
+            TestSerializerChain<string, PrimitiveReflectionConvertor>(1);
+            TestSerializerChain<DateTime, PrimitiveReflectionConvertor>(1);
+            TestSerializerChain<CultureTypes, PrimitiveReflectionConvertor>(1); // enum
             TestSerializerChain<object, RS_GenericUnity<object>>(1);
             TestSerializerChain<ObjectRef, RS_GenericUnity<object>>(1);
 

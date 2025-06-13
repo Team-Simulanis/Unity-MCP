@@ -1,13 +1,22 @@
 #if !UNITY_EDITOR
 using System;
 using System.Threading.Tasks;
+using com.IvanMurzak.ReflectorNet.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Utils
 {
-    public static class MainThread
+    public static class MainThreadInstaller
     {
-        public static T Run<T>(Func<T> func) => RunAsync(func).Result;
-        public static Task<T> RunAsync<T>(Func<T> func)
+        public static void Init()
+        {
+            MainThread.Instance = new UnityMainThread();
+        }
+    }
+    public class UnityMainThread : MainThread
+    {
+        public override bool IsMainThread => MainThreadDispatcher.IsMainThread;
+
+        public override Task<T> RunAsync<T>(Func<T> func)
         {
             var tcs = new TaskCompletionSource<T>();
 
@@ -27,8 +36,7 @@ namespace com.IvanMurzak.Unity.MCP.Utils
             return tcs.Task;
         }
 
-        public static void Run(Action action) => RunAsync(action).Wait();
-        public static Task RunAsync(Action action)
+        public override Task RunAsync(Action action)
         {
             var tcs = new TaskCompletionSource<bool>();
 

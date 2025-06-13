@@ -18,7 +18,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.Tests
             meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
 
             var result = new Tool_GameObject().Find(
-                gameObjectRef: new Common.Data.Unity.GameObjectRef
+                gameObjectRef: new ReflectorNet.Model.Unity.GameObjectRef
                 {
                     instanceID = child.GetInstanceID()
                 },

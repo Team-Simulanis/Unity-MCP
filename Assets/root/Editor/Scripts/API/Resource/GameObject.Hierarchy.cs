@@ -1,14 +1,16 @@
 using System.Linq;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Common.Data;
-using com.IvanMurzak.Unity.MCP.Common.Reflection;
-using com.IvanMurzak.Unity.MCP.Editor.Utils;
+using com.IvanMurzak.ReflectorNet.Model;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using com.IvanMurzak.ReflectorNet.Utils;
+using com.IvanMurzak.ReflectorNet;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
+    using Consts = Common.Consts;
+
     [McpPluginResourceType]
     public partial class Resource_GameObject
     {
@@ -32,7 +34,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             // {
             // }
 
-            return MainThread.Run(() =>
+            return MainThread.Instance.Run(() =>
             {
                 var go = GameObject.Find(path);
                 if (go == null)
@@ -51,7 +53,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             });
         }
 
-        public ResponseListResource[] CurrentSceneAll() => MainThread.Run(()
+        public ResponseListResource[] CurrentSceneAll() => MainThread.Instance.Run(()
             => EditorSceneManager.GetActiveScene().GetRootGameObjects()
                 .SelectMany(root => GameObjectUtils.GetAllRecursively(root))
                 .Select(kvp => new ResponseListResource($"gameObject://currentScene/{kvp.Key}", kvp.Value.name, Consts.MimeType.TextJson))

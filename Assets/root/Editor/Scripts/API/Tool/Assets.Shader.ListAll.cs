@@ -1,6 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
 using System.Linq;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
@@ -15,7 +16,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             Title = "List all shader names"
         )]
         [Description(@"Scans the project assets to find all shaders and to get the name from each of them. Returns the list of shader names.")]
-        public string ListAll() => MainThread.Run(() =>
+        public string ListAll() => MainThread.Instance.Run(() =>
         {
             var shaderNames = ShaderUtils.GetAllShaders()
                 .Where(shader => shader != null)

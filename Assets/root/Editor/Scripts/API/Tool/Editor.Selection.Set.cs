@@ -1,7 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
@@ -25,7 +25,7 @@ Selection.activeInstanceID -  The 'instanceID' of the actual object selection. I
             int activeInstanceID = 0
         )
         {
-            return MainThread.Run(() =>
+            return MainThread.Instance.Run(() =>
             {
                 Selection.instanceIDs = instanceIDs ?? new int[0];
                 Selection.activeInstanceID = activeInstanceID;

@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.Unity.MCP.Utils;
 
@@ -20,7 +21,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("Name of the loaded scene.")]
             string name
         )
-        => MainThread.Run(async () =>
+        => MainThread.Instance.Run(async () =>
         {
             if (string.IsNullOrEmpty(name))
                 return Error.SceneNameIsEmpty();

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
+namespace com.IvanMurzak.ReflectorNet.Model.Unity
 {
     [Description(@"Component reference. Used to find Component at GameObject.
 Use one of the following properties:
@@ -25,10 +25,10 @@ Use one of the following properties:
             var stringBuilder = new System.Text.StringBuilder();
 
             stringBuilder.AppendLine($"Components total amount: {Count}");
-            
+
             for (int i = 0; i < Count; i++)
                 stringBuilder.AppendLine($"Component[{i}] {this[i]}");
-                
+
             return stringBuilder.ToString();
         }
     }

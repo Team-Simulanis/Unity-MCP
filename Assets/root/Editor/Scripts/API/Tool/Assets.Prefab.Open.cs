@@ -1,8 +1,7 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using System.ComponentModel;
-using System.Linq;
+using com.IvanMurzak.ReflectorNet.Utils;
 using com.IvanMurzak.Unity.MCP.Common;
-using com.IvanMurzak.Unity.MCP.Editor.Utils;
 using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor;
 
@@ -27,7 +26,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             [Description("Prefab asset path. Should be in the format 'Assets/Path/To/Prefab.prefab'.")]
             string? prefabAssetPath = null
         )
-        => MainThread.Run(() =>
+        => MainThread.Instance.Run(() =>
         {
             var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
             // if (prefabStage != null)

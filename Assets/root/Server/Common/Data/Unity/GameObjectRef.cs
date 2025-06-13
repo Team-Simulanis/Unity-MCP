@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 
-namespace com.IvanMurzak.Unity.MCP.Common.Data.Unity
+namespace com.IvanMurzak.ReflectorNet.Model.Unity
 {
     [Description(@"GameObject reference. Used to find GameObject in opened Prefab or in a Scene.
 Use one of the following properties:

@@ -2,8 +2,9 @@
 using System;
 using System.Reflection;
 using System.Text.Json;
-using com.IvanMurzak.Unity.MCP.Common.Data.Unity;
-using com.IvanMurzak.Unity.MCP.Common.Reflection;
+using com.IvanMurzak.ReflectorNet;
+using com.IvanMurzak.ReflectorNet.Model;
+using com.IvanMurzak.ReflectorNet.Model.Unity;
 using com.IvanMurzak.Unity.MCP.Common.Reflection.Convertor;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
