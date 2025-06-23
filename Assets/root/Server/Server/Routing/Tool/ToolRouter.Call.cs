@@ -15,23 +15,23 @@ namespace com.IvanMurzak.Unity.MCP.Server
 {
     public static partial class ToolRouter
     {
-        public static async ValueTask<CallToolResponse> Call(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
+        public static async ValueTask<CallToolResult> Call(RequestContext<CallToolRequestParams> request, CancellationToken cancellationToken)
         {
             var logger = LogManager.GetCurrentClassLogger();
             logger.Trace("{0}.Call", nameof(ToolRouter));
 
             if (request == null)
-                return new CallToolResponse().SetError("[Error] Request is null");
+                return new CallToolResult().SetError("[Error] Request is null");
 
             if (request.Params == null)
-                return new CallToolResponse().SetError("[Error] Request.Params is null");
+                return new CallToolResult().SetError("[Error] Request.Params is null");
 
             if (request.Params.Arguments == null)
-                return new CallToolResponse().SetError("[Error] Request.Params.Arguments is null");
+                return new CallToolResult().SetError("[Error] Request.Params.Arguments is null");
 
             var mcpServerService = McpServerService.Instance;
             if (mcpServerService == null)
-                return new CallToolResponse().SetError($"[Error] '{nameof(mcpServerService)}' is null");
+                return new CallToolResult().SetError($"[Error] '{nameof(mcpServerService)}' is null");
 
             var toolRunner = mcpServerService.McpRunner.HasTool(request.Params.Name)
                 ? mcpServerService.McpRunner
@@ -40,7 +40,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             logger.Trace("Using ToolRunner: {0}", toolRunner?.GetType().Name);
 
             if (toolRunner == null)
-                return new CallToolResponse().SetError($"[Error] '{nameof(toolRunner)}' is null");
+                return new CallToolResult().SetError($"[Error] '{nameof(toolRunner)}' is null");
 
             // while (RemoteApp.FirstConnectionId == null)
             //     await Task.Delay(100, cancellationToken);
@@ -51,21 +51,21 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
             var response = await toolRunner.RunCallTool(requestData, cancellationToken: cancellationToken);
             if (response == null)
-                return new CallToolResponse().SetError($"[Error] '{nameof(response)}' is null");
+                return new CallToolResult().SetError($"[Error] '{nameof(response)}' is null");
 
             if (logger.IsTraceEnabled)
                 logger.Trace("Call tool response:\n{0}", JsonUtils.Serialize(response));
 
             if (response.IsError)
-                return new CallToolResponse().SetError(response.Message ?? "[Error] Got an error during running tool");
+                return new CallToolResult().SetError(response.Message ?? "[Error] Got an error during running tool");
 
             if (response.Value == null)
-                return new CallToolResponse().SetError("[Error] Tool returned null value");
+                return new CallToolResult().SetError("[Error] Tool returned null value");
 
-            return response.Value.ToCallToolResponse();
+            return response.Value.ToCallToolResult();
         }
 
-        public static ValueTask<CallToolResponse> Call(string name, Action<Dictionary<string, object>>? configureArguments = null)
+        public static ValueTask<CallToolResult> Call(string name, Action<Dictionary<string, object>>? configureArguments = null)
         {
             var arguments = new Dictionary<string, object>();
             configureArguments?.Invoke(arguments);
@@ -77,7 +77,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             });
         }
 
-        public static ValueTask<CallToolResponse> CallWithJson(string name, Action<Dictionary<string, JsonElement>>? configureArguments = null)
+        public static ValueTask<CallToolResult> CallWithJson(string name, Action<Dictionary<string, JsonElement>>? configureArguments = null)
         {
             var mcpServer = McpServerService.Instance?.McpServer;
             if (mcpServer == null)
@@ -112,7 +112,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             //     return "[Error] Tool returned null value";
 
             // // logger.Trace("Call, result: {0}", JsonSerializer.Serialize(response.Value));
-            // return response.Value.ToCallToolResponse();
+            // return response.Value.ToCallToolResult();
         }
     }
 }

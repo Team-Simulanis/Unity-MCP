@@ -125,7 +125,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
                     if (client == null)
                     {
-                        logger.LogWarning($"No connected clients. Retrying [{retryCount}/{maxRetries}]...");
+                        logger.LogWarning("No connected clients. Retrying [{0}/{1}]...", retryCount, maxRetries);
                         await Task.Delay(retryDelayMs, cancellationToken); // Wait before retrying
                         continue;
                     }
