@@ -48,11 +48,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             };
 
             if (logger.IsTraceEnabled)
-                // logger.Trace("ListAll, result: {0}", JsonUtils.Serialize(result));
-                logger.Trace("ListAll, result");
-
-            // TODO: Replace existed tools, but not clear them all.
-            // mcpServerService.McpServer.ServerOptions.Capabilities?.Tools?.ToolCollection?.Clear();
+                logger.Trace("ListAll, result: {0}", JsonUtils.Serialize(result));
 
             return result;
         }
