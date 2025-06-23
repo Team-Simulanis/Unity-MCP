@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Save scene"
         )]
         [Description("Save scene to asset file with specified path.")]
-        public ValueTask<CallToolResponse> Save
+        public ValueTask<CallToolResult> Save
         (
             [Description("Path to the scene file.")]
             string path,

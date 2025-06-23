@@ -19,7 +19,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
 It requires to receive proper method schema.
 Use 'Reflection_MethodFind' to find available method before using it.
 Receives input parameters and returns result.")]
-        public ValueTask<CallToolResponse> MethodCall
+        public ValueTask<CallToolResult> MethodCall
         (
             MethodPointerRef filter,
 

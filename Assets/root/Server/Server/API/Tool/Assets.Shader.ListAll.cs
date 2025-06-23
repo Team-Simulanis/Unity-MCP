@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "List all shader names"
         )]
         [Description(@"Scans the project assets to find all shaders and to get the name from each of them. Returns the list of shader names.")]
-        public ValueTask<CallToolResponse> ListAll()
+        public ValueTask<CallToolResult> ListAll()
         {
             return ToolRouter.Call("Assets_Shader_ListAll");
         }

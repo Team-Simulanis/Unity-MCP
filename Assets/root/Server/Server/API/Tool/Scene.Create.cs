@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Create new scene"
         )]
         [Description("Create new scene in the project assets.")]
-        public ValueTask<CallToolResponse> Create
+        public ValueTask<CallToolResult> Create
         (
             [Description("Path to the scene file.")]
             string path

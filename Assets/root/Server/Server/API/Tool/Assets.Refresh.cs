@@ -16,7 +16,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
         [Description(@"Refreshes the AssetDatabase. Use it if any new files were added or updated in the project outside of Unity API.
 Don't need to call it for Scripts manipulations.
 It also triggers scripts recompilation if any changes in '.cs' files.")]
-        public ValueTask<CallToolResponse> Refresh()
+        public ValueTask<CallToolResult> Refresh()
         {
             return ToolRouter.Call("Assets_Refresh");
         }

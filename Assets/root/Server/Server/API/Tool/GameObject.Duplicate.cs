@@ -15,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Duplicate GameObjects in opened Prefab and in a Scene"
         )]
         [Description(@"Duplicate GameObjects in opened Prefab and in a Scene by 'instanceID' (int) array.")]
-        public ValueTask<CallToolResponse> Duplicate
+        public ValueTask<CallToolResult> Duplicate
         (
             GameObjectRefList gameObjectRefs
         )

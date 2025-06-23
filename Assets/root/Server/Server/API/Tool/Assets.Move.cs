@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Assets Move"
         )]
         [Description(@"Move the assets at paths in the project. Should be used for asset rename. Does AssetDatabase.Refresh() at the end.")]
-        public ValueTask<CallToolResponse> Move
+        public ValueTask<CallToolResult> Move
         (
             [Description("The paths of the assets to move.")]
             string[] sourcePaths,

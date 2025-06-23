@@ -17,7 +17,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
         )]
         [Description(@"Create a new GameObject at specific path.
 if needed - provide proper 'position', 'rotation' and 'scale' to reduce amount of operations.")]
-        public ValueTask<CallToolResponse> Create
+        public ValueTask<CallToolResult> Create
         (
             [Description("Name of the new GameObject.")]
             string name,

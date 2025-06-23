@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Create or Update Script"
         )]
         [Description("Creates or updates a script file with the provided content. Does AssetDatabase.Refresh() at the end.")]
-        public ValueTask<CallToolResponse> UpdateOrCreate
+        public ValueTask<CallToolResult> UpdateOrCreate
         (
             [Description("The path to the file. Sample: \"Assets/Scripts/MyScript.cs\".")]
             string filePath,

@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Read Script content"
         )]
         [Description("Reads the content of a script file and returns it as a string.")]
-        public ValueTask<CallToolResponse> Read
+        public ValueTask<CallToolResult> Read
         (
             [Description("The path to the file. Sample: \"Assets/Scripts/MyScript.cs\".")]
             string filePath

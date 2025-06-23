@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Create prefab from a GameObject in a scene"
         )]
         [Description("Create a prefab from a GameObject in a scene. The prefab will be saved in the project assets at the specified path.")]
-        public ValueTask<CallToolResponse> Create
+        public ValueTask<CallToolResult> Create
         (
             [Description("Prefab asset path. Should be in the format 'Assets/Path/To/Prefab.prefab'.")]
             string prefabAssetPath,

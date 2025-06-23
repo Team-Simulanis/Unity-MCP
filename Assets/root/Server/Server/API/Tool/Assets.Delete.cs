@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Assets Delete"
         )]
         [Description(@"Delete the assets at paths from the project. Does AssetDatabase.Refresh() at the end.")]
-        public ValueTask<CallToolResponse> Delete
+        public ValueTask<CallToolResult> Delete
         (
             [Description("The paths of the assets")]
             string[] paths

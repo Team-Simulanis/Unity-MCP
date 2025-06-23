@@ -15,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Instantiate prefab in the current active scene"
         )]
         [Description("Instantiates prefab in a scene.")]
-        public ValueTask<CallToolResponse> Instantiate
+        public ValueTask<CallToolResult> Instantiate
         (
             [Description("Prefab asset path.")]
             string prefabAssetPath,

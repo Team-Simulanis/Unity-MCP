@@ -17,7 +17,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
                     "1. Read prefab from asset using 'prefabAssetPath'.\n" +
                     "2. Read prefab from GameObject in loaded scene using 'instanceID' of the GameObject.\n" +
                     "   The GameObject should be connected to a prefab.")]
-        public ValueTask<CallToolResponse> Read
+        public ValueTask<CallToolResult> Read
         (
             [Description("'instanceID' of GameObject in a scene.")]
             int instanceID = 0,

@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Delete Script content"
         )]
         [Description("Delete the script file. Does AssetDatabase.Refresh() at the end.")]
-        public ValueTask<CallToolResponse> Delete
+        public ValueTask<CallToolResult> Delete
         (
             [Description("The path to the file. Sample: \"Assets/Scripts/MyScript.cs\".")]
             string filePath

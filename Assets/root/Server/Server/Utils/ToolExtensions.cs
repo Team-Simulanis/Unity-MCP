@@ -11,17 +11,16 @@ namespace com.IvanMurzak.Unity.MCP.Server
 
     public static class ToolsExtensions
     {
-        public static CallToolResponse SetError(this CallToolResponse target, string message)
+        public static CallToolResult SetError(this CallToolResult target, string message)
         {
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
             target.IsError = true;
-            target.Content ??= new List<Content>(1);
-            target.Content.Add(new Content()
+            target.Content ??= new List<ContentBlock>(1);
+            target.Content.Add(new TextContentBlock()
             {
                 Type = "text",
-                MimeType = Consts.MimeType.TextPlain,
                 Text = message
             });
 
@@ -49,7 +48,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
             },
         };
 
-        public static CallToolResponse ToCallToolResponse(this IResponseCallTool response) => new CallToolResponse()
+        public static CallToolResult ToCallToolResult(this IResponseCallTool response) => new CallToolResult()
         {
             IsError = response.IsError,
             Content = response.Content
@@ -57,12 +56,12 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 .ToList()
         };
 
-        public static Content ToContent(this ResponseCallToolContent response) => new Content()
+        public static ContentBlock ToContent(this ResponseCallToolContent response) => new TextContentBlock()
         {
             Type = response.Type,
-            MimeType = response.MimeType,
-            Text = response.Text,
-            Data = response.Data
+            // MimeType = response.MimeType,
+            Text = response.Text ?? string.Empty
+            // Data = response.Data
         };
     }
 }

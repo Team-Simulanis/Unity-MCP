@@ -15,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Modify asset file"
         )]
         [Description(@"Modify asset in the project. Not allowed to modify asset in 'Packages/' folder. Please modify it in 'Assets/' folder.")]
-        public ValueTask<CallToolResponse> Modify
+        public ValueTask<CallToolResult> Modify
         (
             [Description("The asset content. It overrides the existing asset content.")]
             SerializedMember content,

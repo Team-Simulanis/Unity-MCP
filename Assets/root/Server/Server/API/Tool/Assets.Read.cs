@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Read asset file content"
         )]
         [Description(@"Read file asset in the project.")]
-        public ValueTask<CallToolResponse> Read
+        public ValueTask<CallToolResult> Read
         (
             [Description("Path to the asset. See 'Assets_Search' for more details. Starts with 'Assets/'. Priority: 1. (Recommended)")]
             string? assetPath = null,

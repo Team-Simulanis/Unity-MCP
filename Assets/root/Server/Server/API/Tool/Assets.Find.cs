@@ -34,7 +34,7 @@ t:Texture
 t:VideoClip
 t:VisualEffectAsset
 t:VisualEffectSubgraph")]
-        public ValueTask<CallToolResponse> Search
+        public ValueTask<CallToolResult> Search
         (
             [Description("The folders where the search will start. If null, the search will be performed in all folders.")]
             string[]? searchInFolders = null,

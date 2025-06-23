@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Save prefab"
         )]
         [Description("Save a prefab. Use it when you are in prefab editing mode in Unity Editor.")]
-        public ValueTask<CallToolResponse> Save()
+        public ValueTask<CallToolResult> Save()
         {
             return ToolRouter.Call("Assets_Prefab_Save");
         }

@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Load scene"
         )]
         [Description("Load scene from the project assets.")]
-        public ValueTask<CallToolResponse> Load
+        public ValueTask<CallToolResult> Load
         (
             [Description("Path to the scene file.")]
             string path,

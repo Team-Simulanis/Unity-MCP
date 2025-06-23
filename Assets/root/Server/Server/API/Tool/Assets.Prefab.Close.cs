@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Close prefab"
         )]
         [Description("Close a prefab. Use it when you are in prefab editing mode in Unity Editor.")]
-        public ValueTask<CallToolResponse> Close
+        public ValueTask<CallToolResult> Close
         (
             [Description("True to save prefab. False to discard changes.")]
             bool save = true

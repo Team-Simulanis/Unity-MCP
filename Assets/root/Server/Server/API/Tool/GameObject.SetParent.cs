@@ -15,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Set parent GameObject in opened Prefab or in a Scene"
         )]
         [Description(@"Set GameObjects in opened Prefab or in a Scene by 'instanceID' (int) array.")]
-        public ValueTask<CallToolResponse> SetParent
+        public ValueTask<CallToolResult> SetParent
         (
             GameObjectRefList gameObjectRefs,
             GameObjectRef parentGameObjectRef,

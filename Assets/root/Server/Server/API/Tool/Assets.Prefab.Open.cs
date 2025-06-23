@@ -18,7 +18,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
                     "2. Open prefab from GameObject in loaded scene using 'instanceID' of the GameObject.\n" +
                     "   The GameObject should be connected to a prefab.\n\n" +
                     "Note: Please 'Close' the prefab after editing.")]
-        public ValueTask<CallToolResponse> Open
+        public ValueTask<CallToolResult> Open
         (
             [Description("'instanceID' of GameObject in a scene.")]
             int instanceID = 0,

@@ -15,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Destroy Components from a GameObject in opened Prefab or in a Scene"
         )]
         [Description("Destroy one or many components from target GameObject.")]
-        public ValueTask<CallToolResponse> DestroyComponents
+        public ValueTask<CallToolResult> DestroyComponents
         (
             GameObjectRef gameObjectRef,
             ComponentRefList destroyComponentRefs

@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Unload scene"
         )]
         [Description("Destroys all GameObjects associated with the given Scene and removes the Scene from the SceneManager.")]
-        public ValueTask<CallToolResponse> Save
+        public ValueTask<CallToolResult> Save
         (
             [Description("Name of the loaded scene.")]
             string name

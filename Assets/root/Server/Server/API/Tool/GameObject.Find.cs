@@ -19,7 +19,7 @@ First it looks for the opened Prefab, if any Prefab is opened it looks only ther
 If no opened Prefab it looks into current active scene.
 Returns GameObject information and its children.
 Also, it returns Components preview just for the target GameObject.")]
-        public ValueTask<CallToolResponse> Find
+        public ValueTask<CallToolResult> Find
         (
             GameObjectRef gameObjectRef,
             [Description("Determines the depth of the hierarchy to include. 0 - means only the target GameObject. 1 - means to include one layer below.")]

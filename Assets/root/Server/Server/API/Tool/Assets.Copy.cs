@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Assets Copy"
         )]
         [Description(@"Copy the asset at path and stores it at newPath. Does AssetDatabase.Refresh() at the end.")]
-        public ValueTask<CallToolResponse> Copy
+        public ValueTask<CallToolResult> Copy
         (
             [Description("The paths of the asset to copy.")]
             string[] sourcePaths,

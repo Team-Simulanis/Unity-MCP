@@ -14,7 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
             Title = "Get list of currently loaded scenes"
         )]
         [Description("Returns the list of currently loaded scenes.")]
-        public ValueTask<CallToolResponse> GetLoaded()
+        public ValueTask<CallToolResult> GetLoaded()
         {
             return ToolRouter.Call("Scene_GetLoaded");
         }

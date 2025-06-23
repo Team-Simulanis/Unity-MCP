@@ -15,7 +15,7 @@ namespace com.IvanMurzak.Unity.MCP.Server.API
         )]
         [Description(@"Create folders at specific locations in the project.
 Use it to organize scripts and assets in the project. Does AssetDatabase.Refresh() at the end.")]
-        public ValueTask<CallToolResponse> CreateFolders
+        public ValueTask<CallToolResult> CreateFolders
         (
             [Description("The paths for the folders to create.")]
             string[] paths
