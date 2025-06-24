@@ -29,20 +29,27 @@ namespace com.IvanMurzak.Unity.MCP.Common
     {
       public static partial class ClaudeDesktop
       {
-        public static string Config(string executablePath, string bodyName, int port)
-          => @"{
+        public static string Config(string executablePath, string bodyName, int port, float? timeoutSeconds = null)
+        {
+          var effectiveTimeoutSeconds = timeoutSeconds ?? Hub.DefaultTimeoutSeconds;
+          var timeoutMilliseconds = (int)(effectiveTimeoutSeconds * 1000);
+          
+          return @"{
   ""{0}"": {
     ""Unity-MCP"": {
       ""command"": ""{1}"",
       ""args"": [
-        ""{2}""
+        ""--port={2}"",
+        ""--timeout={3}""
       ]
     }
   }
 }"
 .Replace("{0}", bodyName)
 .Replace("{1}", executablePath)
-.Replace("{2}", port.ToString());
+.Replace("{2}", port.ToString())
+.Replace("{3}", timeoutMilliseconds.ToString());
+        }
 
       }
     }

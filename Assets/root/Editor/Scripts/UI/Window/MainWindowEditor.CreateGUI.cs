@@ -46,6 +46,28 @@ namespace com.IvanMurzak.Unity.MCP.Editor
                 McpPluginUnity.BuildAndStart();
             });
 
+            var inputTimeoutSeconds = root.Query<FloatField>("inputTimeoutSeconds").First();
+            inputTimeoutSeconds.value = McpPluginUnity.TimeoutSeconds;
+            inputTimeoutSeconds.tooltip = "Timeout for MCP tool execution.\n\nMost tools only need a few seconds, but running test suites can take much longer.\n\nSet this higher than your longest test execution time.\n\nImportant: Also update the --timeout= argument in your MCP client configuration to match this value so your MCP client doesn't timeout before the tool completes.";
+            inputTimeoutSeconds.RegisterCallback<FocusOutEvent>(evt =>
+            {
+                var newValue = Mathf.Max(1f, inputTimeoutSeconds.value);
+                if (newValue == McpPluginUnity.TimeoutSeconds)
+                    return;
+
+                if (newValue != inputTimeoutSeconds.value)
+                    inputTimeoutSeconds.SetValueWithoutNotify(newValue);
+
+                McpPluginUnity.TimeoutSeconds = newValue;
+
+                // Update the raw JSON configuration display
+                var rawJsonField = root.Query<TextField>("rawJsonConfiguration").First();
+                rawJsonField.value = Startup.RawJsonConfiguration(McpPluginUnity.Port, "mcpServers", McpPluginUnity.TimeoutSeconds);
+
+                SaveChanges($"[AI Connector] Timeout Changed: {newValue} seconds");
+                McpPluginUnity.BuildAndStart();
+            });
+
             // Connection status
             // -----------------------------------------------------------------
 
@@ -214,7 +236,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor
             // -----------------------------------------------------------------
 
             var rawJsonField = root.Query<TextField>("rawJsonConfiguration").First();
-            rawJsonField.value = Startup.RawJsonConfiguration(McpPluginUnity.Port);
+            rawJsonField.value = Startup.RawJsonConfiguration(McpPluginUnity.Port, "mcpServers", McpPluginUnity.TimeoutSeconds);
 
             // Rebuild MCP Server
             // -----------------------------------------------------------------

@@ -17,6 +17,7 @@ namespace com.IvanMurzak.Unity.MCP
             [SerializeField] public int port = Consts.Hub.DefaultPort;
             [SerializeField] public bool keepConnected = true;
             [SerializeField] public LogLevel logLevel = LogLevel.Warning;
+            [SerializeField] public float timeoutSeconds = Consts.Hub.DefaultTimeoutSeconds;
 
             public Data SetDefault()
             {
@@ -24,6 +25,7 @@ namespace com.IvanMurzak.Unity.MCP
                 port = Consts.Hub.DefaultPort;
                 keepConnected = true;
                 logLevel = LogLevel.Warning;
+                timeoutSeconds = Consts.Hub.DefaultTimeoutSeconds;
                 return this;
             }
         }

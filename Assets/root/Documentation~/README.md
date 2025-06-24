@@ -59,7 +59,7 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
   - ✅ Add
   - ✅ Remove
 - ✅ Execute `MenuItem`
-- 🔲 Run Tests
+- ✅ Run Tests
 
 #### Editor.Selection
 
