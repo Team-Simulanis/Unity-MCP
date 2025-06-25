@@ -1,14 +1,15 @@
 name: 6000.0.46f1-standalone
 
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - main
     types: [opened, synchronize, reopened]
 
-  pull_request:
+  pull_request_target:
     branches:
       - main
+    types: [opened, synchronize, reopened]
 
   push:
     branches:
@@ -16,10 +17,13 @@ on:
 
 jobs:
   editor-tests:
-    # Allow all push runs.
-    # For PRs, run only if the PR carries the 'ci-ok' label
+    # Conditions:
+    # 1. Allow all push runs
+    # 2. Allow internal PRs (pull_request event) without label requirement
+    # 3. For fork PRs (pull_request_target), require the ci-ok label
     if: github.event_name == 'push' ||
-        contains(github.event.pull_request.labels.*.name, 'ci-ok')
+        github.event_name == 'pull_request' ||
+        (github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'ci-ok'))
 
     uses: ./.github/workflows/main.yml
     with:
