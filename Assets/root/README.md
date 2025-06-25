@@ -59,7 +59,7 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
   - ✅ Add
   - ✅ Remove
 - ✅ Execute `MenuItem`
-- ✅ Run Tests
+- ✅ Run Tests (see note in section "Running PlayMode tests")
 
 #### Editor.Selection
 
@@ -146,6 +146,10 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 
 > **Legend:**
 > ✅ = Implemented & available, 🔲 = Planned / Not yet implemented
+
+#### Running PlayMode tests
+
+To be able to run Play Mode tests via the TestRunner MCP tool, you should consider configuring Unity to **not** perform a domain reload when entering Play Mode (`Edit -> Project Settings -> Editor -> Enter Play Mode Settings` - set to `Reload Scene only` or `Do not reload Domain or Scene`). Otherewise, starting the Play Mode tests will interrupt the TestRunner MCP tool, leading to a cycle of tests restarting.
 
 # Installation
 
