@@ -1,15 +1,22 @@
 name: 2022.3.61f1-editmode
 
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - main
+    types: [opened, synchronize, reopened]
+
   push:
     branches:
       - main
 
 jobs:
   editor-tests:
+    # Allow all push runs.
+    # For PRs, run only if the PR carries the 'ci-ok' label
+    if: github.event_name == 'push' ||
+        contains(github.event.pull_request.labels.*.name, 'ci-ok')
+
     uses: ./.github/workflows/main.yml
     with:
       projectPath: './'
