@@ -14,8 +14,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             public static string TestExecutionFailed(string reason)
                 => $"[Error] Test execution failed: {reason}";
 
-            public static string TestTimeout(int timeoutSeconds)
-                => $"[Error] Test execution timed out after {timeoutSeconds} seconds";
+            public static string TestTimeout(int timeoutMs)
+                => $"[Error] Test execution timed out after {timeoutMs} ms";
 
             public static string TestAssemblyNotFound(string assemblyName)
                 => $"[Error] Test assembly '{assemblyName}' not found";

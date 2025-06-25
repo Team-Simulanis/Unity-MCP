@@ -53,8 +53,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                     return Error.InvalidTestMode(testMode);
 
                 // Get timeout from MCP server configuration
-                var timeoutSeconds = (int)McpPluginUnity.TimeoutSeconds;
-                Debug.Log($"[TestRunner] Using timeout: {timeoutSeconds} seconds (from MCP plugin configuration)");
+                var timeoutMs = McpPluginUnity.TimeoutMs;
+                Debug.Log($"[TestRunner] Using timeout: {timeoutMs} ms (from MCP plugin configuration)");
 
                 // Get Test Runner API (must be on main thread)
                 var testRunnerApi = await MainThread.Instance.RunAsync(() => ScriptableObject.CreateInstance<TestRunnerApi>());
@@ -65,18 +65,18 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 {
                     // Handle "All" mode by running EditMode and PlayMode separately
                     Debug.Log($"[TestRunner] Running ALL tests by executing EditMode and PlayMode sequentially.");
-                    return await RunSequentialTests(testRunnerApi, testAssembly, testClass, testMethod, timeoutSeconds);
+                    return await RunSequentialTests(testRunnerApi, testAssembly, testClass, testMethod, timeoutMs);
                 }
                 else
                 {
                     Debug.Log($"[TestRunner] Running {testMode} tests.");
-                    var resultCollector = await RunSingleTestModeWithCollector(testMode, testRunnerApi, testAssembly, testClass, testMethod, timeoutSeconds);
+                    var resultCollector = await RunSingleTestModeWithCollector(testMode, testRunnerApi, testAssembly, testClass, testMethod, timeoutMs);
                     return FormatTestResults(resultCollector);
                 }
             }
             catch (OperationCanceledException)
             {
-                return Error.TestTimeout((int)McpPluginUnity.TimeoutSeconds);
+                return Error.TestTimeout(McpPluginUnity.TimeoutMs);
             }
             catch (Exception ex)
             {
@@ -147,7 +147,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             return filter;
         }
 
-        private async Task<string> RunSequentialTests(TestRunnerApi testRunnerApi, string? testAssembly, string? testClass, string? testMethod, int timeoutSeconds)
+        private async Task<string> RunSequentialTests(TestRunnerApi testRunnerApi, string? testAssembly, string? testClass, string? testMethod, int timeoutMs)
         {
             var combinedCollector = new CombinedTestResultCollector();
             var totalStartTime = DateTime.Now;
@@ -156,15 +156,15 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             {
                 Debug.Log($"[TestRunner] Starting EditMode tests...");
                 var editModeStartTime = DateTime.Now;
-                var editModeCollector = await RunSingleTestModeWithCollector("EditMode", testRunnerApi, testAssembly, testClass, testMethod, timeoutSeconds);
+                var editModeCollector = await RunSingleTestModeWithCollector("EditMode", testRunnerApi, testAssembly, testClass, testMethod, timeoutMs);
                 combinedCollector.AddResults(editModeCollector);
 
                 var editModeTestCount = editModeCollector.GetSummary().TotalTests;
                 var editModeDuration = DateTime.Now - editModeStartTime;
-                var remainingTimeoutSeconds = Math.Max(1, timeoutSeconds - (int)editModeDuration.TotalSeconds);
+                var remainingTimeoutMs = Math.Max(1000, timeoutMs - (int)editModeDuration.TotalMilliseconds);
 
-                Debug.Log($"[TestRunner] EditMode tests completed in {editModeDuration:mm\\:ss\\.fff}. Starting PlayMode tests with {remainingTimeoutSeconds}s timeout...");
-                var playModeCollector = await RunSingleTestModeWithCollector("PlayMode", testRunnerApi, testAssembly, testClass, testMethod, remainingTimeoutSeconds, editModeTestCount);
+                Debug.Log($"[TestRunner] EditMode tests completed in {editModeDuration:mm\\:ss\\.fff}. Starting PlayMode tests with {remainingTimeoutMs}ms timeout...");
+                var playModeCollector = await RunSingleTestModeWithCollector("PlayMode", testRunnerApi, testAssembly, testClass, testMethod, remainingTimeoutMs, editModeTestCount);
                 combinedCollector.AddResults(playModeCollector);
 
                 // Calculate total duration
@@ -180,7 +180,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             }
         }
 
-        private async Task<TestResultCollector> RunSingleTestModeWithCollector(string testMode, TestRunnerApi testRunnerApi, string? testAssembly, string? testClass, string? testMethod, int timeoutSeconds, int previousTestCount = 0)
+        private async Task<TestResultCollector> RunSingleTestModeWithCollector(string testMode, TestRunnerApi testRunnerApi, string? testAssembly, string? testClass, string? testMethod, int timeoutMs, int previousTestCount = 0)
         {
             var filter = CreateTestFilter(testMode, testAssembly, testClass, testMethod);
             var testModeEnum = testMode == "EditMode" ? TestModeType.EditMode : TestModeType.PlayMode;
@@ -196,13 +196,13 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             try
             {
-                var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
+                var timeoutCts = new CancellationTokenSource(TimeSpan.FromMilliseconds(timeoutMs));
                 await resultCollector.WaitForCompletionAsync(timeoutCts.Token);
                 return resultCollector;
             }
             catch (OperationCanceledException)
             {
-                Debug.LogWarning($"[TestRunner] {testMode} tests timed out after {timeoutSeconds} seconds.");
+                Debug.LogWarning($"[TestRunner] {testMode} tests timed out after {timeoutMs} ms.");
                 return resultCollector;
             }
             finally
@@ -496,7 +496,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         private TestSummaryData _combinedSummary = new();
         private TestSummaryData _editModeSummary = new();
         private TestSummaryData _playModeSummary = new();
-        private string _currentMode = "";
 
         public void AddResults(TestResultCollector collector)
         {

@@ -75,10 +75,10 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 }).Build(new Reflector());
 
                 // builder.WebHost.UseUrls(Consts.Hub.DefaultEndpoint);
-                var (port, timeoutSeconds) = ParseArguments(args);
+                var (port, timeoutMs) = ParseArguments(args);
                 
                 // Set the runtime configurable timeout
-                Consts.Hub.TimeoutSeconds = timeoutSeconds;
+                ConnectionConfig.TimeoutMs = timeoutMs;
                 
                 builder.WebHost.UseKestrel(options =>
                 {
@@ -124,10 +124,10 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 LogManager.Shutdown();
             }
         }
-        static (int port, float timeoutSeconds) ParseArguments(string[] args)
+        static (int port, int timeoutMs) ParseArguments(string[] args)
         {
             var port = Consts.Hub.DefaultPort;
-            var timeoutSeconds = Consts.Hub.TimeoutSeconds;
+            var timeoutMs = Consts.Hub.DefaultTimeoutMs;
 
             // Parse command line arguments
             // Format: [port] [timeout] or --port=8090 --timeout=300
@@ -144,17 +144,17 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 // Handle --timeout=value format (value in milliseconds)
                 else if (arg.StartsWith("--timeout="))
                 {
-                    if (float.TryParse(arg.Substring(10), out var parsedTimeoutMs))
-                        timeoutSeconds = parsedTimeoutMs / 1000f; // Convert milliseconds to seconds
+                    if (int.TryParse(arg.Substring(10), out var parsedTimeoutMs))
+                        timeoutMs = parsedTimeoutMs;
                 }
                 // Handle positional arguments (backwards compatibility)
                 else if (i == 0 && int.TryParse(arg, out var posPort))
                 {
                     port = posPort;
                 }
-                else if (i == 1 && float.TryParse(arg, out var posTimeoutMs))
+                else if (i == 1 && int.TryParse(arg, out var posTimeoutMs))
                 {
-                    timeoutSeconds = posTimeoutMs / 1000f; // Convert milliseconds to seconds
+                    timeoutMs = posTimeoutMs;
                 }
             }
 
@@ -164,10 +164,10 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 port = parsedEnvPort;
 
             var envTimeout = Environment.GetEnvironmentVariable(Consts.Env.Timeout);
-            if (envTimeout != null && float.TryParse(envTimeout, out var parsedEnvTimeoutMs))
-                timeoutSeconds = parsedEnvTimeoutMs / 1000f; // Convert milliseconds to seconds
+            if (envTimeout != null && int.TryParse(envTimeout, out var parsedEnvTimeoutMs))
+                timeoutMs = parsedEnvTimeoutMs;
 
-            return (port, timeoutSeconds);
+            return (port, timeoutMs);
         }
     }
 }

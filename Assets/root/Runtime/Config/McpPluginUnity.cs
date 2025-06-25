@@ -72,13 +72,13 @@ namespace com.IvanMurzak.Unity.MCP
                 NotifyChanged(Instance.data);
             }
         }
-        public static float TimeoutSeconds
+        public static int TimeoutMs
         {
-            get => Instance.data?.timeoutSeconds ?? Consts.Hub.DefaultTimeoutSeconds;
+            get => Instance.data?.timeoutMs ?? Consts.Hub.DefaultTimeoutMs;
             set
             {
                 Instance.data ??= new Data();
-                Instance.data.timeoutSeconds = value;
+                Instance.data.timeoutMs = value;
                 NotifyChanged(Instance.data);
             }
         }

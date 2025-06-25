@@ -29,10 +29,9 @@ namespace com.IvanMurzak.Unity.MCP.Common
     {
       public static partial class ClaudeDesktop
       {
-        public static string Config(string executablePath, string bodyName, int port, float? timeoutSeconds = null)
+        public static string Config(string executablePath, string bodyName, int port, int? timeoutMs = null)
         {
-          var effectiveTimeoutSeconds = timeoutSeconds ?? Hub.DefaultTimeoutSeconds;
-          var timeoutMilliseconds = (int)(effectiveTimeoutSeconds * 1000);
+          var timeoutMilliseconds = timeoutMs ?? Hub.DefaultTimeoutMs;
           
           return @"{
   ""{0}"": {

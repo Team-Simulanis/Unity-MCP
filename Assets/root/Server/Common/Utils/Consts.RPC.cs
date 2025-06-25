@@ -14,10 +14,7 @@ namespace com.IvanMurzak.Unity.MCP.Common
             public const int MaxPort = 65535;
             public const string DefaultEndpoint = "http://localhost:60606";
             public const string RemoteApp = "/mcp/remote-app";
-            public const float DefaultTimeoutSeconds = 10f; // Default timeout
-
-            // Runtime configurable timeout - set via command line args or environment variable
-            public static float TimeoutSeconds { get; set; } = DefaultTimeoutSeconds;
+            public const int DefaultTimeoutMs = 10000;
         }
 
         public static partial class RPC

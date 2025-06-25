@@ -60,11 +60,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
         // -------------------------------------------------------------------------------------------------------------------------------------------------
 
-        public static string RawJsonConfiguration(int port, string bodyName = "mcpServers", float? timeoutSeconds = null) => Consts.MCP_Client.ClaudeDesktop.Config(
+        public static string RawJsonConfiguration(int port, string bodyName = "mcpServers", int? timeoutMs = null) => Consts.MCP_Client.ClaudeDesktop.Config(
             ServerExecutableFile.Replace('\\', '/'),
             bodyName,
             port,
-            timeoutSeconds
+            timeoutMs
         );
 
         public static Task BuildServerIfNeeded(bool force = true)
