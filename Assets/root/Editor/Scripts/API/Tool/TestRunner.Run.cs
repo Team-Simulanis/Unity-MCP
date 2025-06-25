@@ -63,14 +63,32 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
                 if (testMode == "All")
                 {
+                    // Validate both EditMode and PlayMode filters
+                    var editModeValidation = await ValidateTestFilters(testRunnerApi, TestMode.EditMode, testAssembly, testClass, testMethod);
+                    var playModeValidation = await ValidateTestFilters(testRunnerApi, TestMode.PlayMode, testAssembly, testClass, testMethod);
+                    
+                    // If both modes failed validation, return error
+                    if (editModeValidation != null && playModeValidation != null)
+                    {
+                        return Error.NoTestsFound(testAssembly, testClass, testMethod);
+                    }
+                    
                     // Handle "All" mode by running EditMode and PlayMode separately
                     Debug.Log($"[TestRunner] Running ALL tests by executing EditMode and PlayMode sequentially.");
                     return await RunSequentialTests(testRunnerApi, testAssembly, testClass, testMethod, timeoutMs);
                 }
                 else
                 {
+                    // Convert string to TestMode enum
+                    var testModeEnum = testMode == "EditMode" ? TestMode.EditMode : TestMode.PlayMode;
+                    
+                    // Validate specific test mode filter
+                    var validation = await ValidateTestFilters(testRunnerApi, testModeEnum, testAssembly, testClass, testMethod);
+                    if (validation != null)
+                        return validation;
+                    
                     Debug.Log($"[TestRunner] Running {testMode} tests.");
-                    var resultCollector = await RunSingleTestModeWithCollector(testMode, testRunnerApi, testAssembly, testClass, testMethod, timeoutMs);
+                    var resultCollector = await RunSingleTestModeWithCollector(testModeEnum, testRunnerApi, testAssembly, testClass, testMethod, timeoutMs);
                     return FormatTestResults(resultCollector);
                 }
             }
@@ -103,17 +121,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             };
         }
 
-        private static Filter CreateTestFilter(string testMode, string? testAssembly, string? testClass, string? testMethod)
+        private static Filter CreateTestFilter(TestMode testMode, string? testAssembly, string? testClass, string? testMethod)
         {
             var filter = new Filter
             {
                 // Set test mode
-                testMode = testMode switch
-                {
-                    "EditMode" => TestMode.EditMode,
-                    "PlayMode" => TestMode.PlayMode,
-                    _ => throw new Exception($"Invalid test mode: {testMode}")
-                }
+                testMode = testMode
             };
 
             // Set assembly filter
@@ -147,6 +160,96 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             return filter;
         }
 
+        private async Task<string?> ValidateTestFilters(TestRunnerApi testRunnerApi, TestMode testMode, string? testAssembly, string? testClass, string? testMethod)
+        {
+            try
+            {
+                var tcs = new TaskCompletionSource<int>();
+                
+                // Retrieve test list without running tests
+                await MainThread.Instance.RunAsync(() =>
+                {
+                    testRunnerApi.RetrieveTestList(testMode, (testRoot) =>
+                    {
+                        var testCount = testRoot != null ? CountFilteredTests(testRoot, testAssembly, testClass, testMethod) : 0;
+                        tcs.SetResult(testCount);
+                    });
+                });
+
+                // Wait for the test count result with timeout
+                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
+                var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
+                
+                if (completedTask == timeoutTask)
+                {
+                    throw new OperationCanceledException("Test list retrieval timed out");
+                }
+                
+                var testCount = await tcs.Task;
+                
+                if (testCount == 0)
+                {
+                    return Error.NoTestsFound(testAssembly, testClass, testMethod);
+                }
+                
+                return null; // No error, tests found
+            }
+            catch (OperationCanceledException)
+            {
+                return Error.NoTestsFound(testAssembly, testClass, testMethod);
+            }
+            catch (Exception ex)
+            {
+                return Error.TestExecutionFailed($"Filter validation failed: {ex.Message}");
+            }
+        }
+
+        private static int CountFilteredTests(ITestAdaptor test, string? testAssembly, string? testClass, string? testMethod)
+        {
+            // If no filters are specified, count all tests
+            if (string.IsNullOrEmpty(testAssembly) && string.IsNullOrEmpty(testClass) && string.IsNullOrEmpty(testMethod))
+            {
+                return TestResultCollector.CountTests(test);
+            }
+
+            var count = 0;
+
+            // Check if this test matches the filters
+            if (!test.IsSuite)
+            {
+                // Check assembly filter - use FullName which may include assembly info
+                bool matches = !string.IsNullOrEmpty(testAssembly) && test.FullName.Contains(testAssembly);
+                
+                // Check class filter
+                if (!matches && !string.IsNullOrEmpty(testClass) && test.FullName.Contains(testClass))
+                {
+                    matches = true;
+                }
+
+                // Check method filter  
+                if (!matches && !string.IsNullOrEmpty(testMethod) && test.FullName.Contains(testMethod))
+                {
+                    matches = true;
+                }
+
+                if (matches)
+                {
+                    count = 1;
+                }
+            }
+
+            // Recursively check children
+            if (test.HasChildren)
+            {
+                foreach (var child in test.Children)
+                {
+                    count += CountFilteredTests(child, testAssembly, testClass, testMethod);
+                }
+            }
+
+            return count;
+        }
+
         private async Task<string> RunSequentialTests(TestRunnerApi testRunnerApi, string? testAssembly, string? testClass, string? testMethod, int timeoutMs)
         {
             var combinedCollector = new CombinedTestResultCollector();
@@ -156,7 +259,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             {
                 Debug.Log($"[TestRunner] Starting EditMode tests...");
                 var editModeStartTime = DateTime.Now;
-                var editModeCollector = await RunSingleTestModeWithCollector("EditMode", testRunnerApi, testAssembly, testClass, testMethod, timeoutMs);
+                var editModeCollector = await RunSingleTestModeWithCollector(TestMode.EditMode, testRunnerApi, testAssembly, testClass, testMethod, timeoutMs);
                 combinedCollector.AddResults(editModeCollector);
 
                 var editModeTestCount = editModeCollector.GetSummary().TotalTests;
@@ -164,7 +267,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 var remainingTimeoutMs = Math.Max(1000, timeoutMs - (int)editModeDuration.TotalMilliseconds);
 
                 Debug.Log($"[TestRunner] EditMode tests completed in {editModeDuration:mm\\:ss\\.fff}. Starting PlayMode tests with {remainingTimeoutMs}ms timeout...");
-                var playModeCollector = await RunSingleTestModeWithCollector("PlayMode", testRunnerApi, testAssembly, testClass, testMethod, remainingTimeoutMs, editModeTestCount);
+                var playModeCollector = await RunSingleTestModeWithCollector(TestMode.PlayMode, testRunnerApi, testAssembly, testClass, testMethod, remainingTimeoutMs, editModeTestCount);
                 combinedCollector.AddResults(playModeCollector);
 
                 // Calculate total duration
@@ -180,12 +283,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             }
         }
 
-        private async Task<TestResultCollector> RunSingleTestModeWithCollector(string testMode, TestRunnerApi testRunnerApi, string? testAssembly, string? testClass, string? testMethod, int timeoutMs, int previousTestCount = 0)
+        private async Task<TestResultCollector> RunSingleTestModeWithCollector(TestMode testMode, TestRunnerApi testRunnerApi, string? testAssembly, string? testClass, string? testMethod, int timeoutMs, int previousTestCount = 0)
         {
             var filter = CreateTestFilter(testMode, testAssembly, testClass, testMethod);
-            var testModeEnum = testMode == "EditMode" ? TestModeType.EditMode : TestModeType.PlayMode;
-            var runNumber = testModeEnum == TestModeType.EditMode ? 1 : 2;
-            var resultCollector = new TestResultCollector(testModeEnum, runNumber, previousTestCount);
+            var runNumber = testMode == TestMode.EditMode ? 1 : 2;
+            var resultCollector = new TestResultCollector(testMode, runNumber, previousTestCount);
 
             await MainThread.Instance.RunAsync(() =>
             {
@@ -359,15 +461,15 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
     {
         private readonly List<TestResultData> _results = new();
         private readonly List<string> _logs = new();
-        private TaskCompletionSource<bool> _completionSource = new();
-        private TestSummaryData _summary = new();
+        private readonly TaskCompletionSource<bool> _completionSource = new();
+        private readonly TestSummaryData _summary = new();
         private DateTime _startTime;
-        private int _totalExpectedTests = 0;
-        private readonly TestModeType _testMode;
+        private int _totalExpectedTests;
+        private readonly TestMode _testMode;
         private readonly int _runNumber;
         private readonly int _previousTestCount;
 
-        public TestResultCollector(TestModeType testMode = TestModeType.Unknown, int runNumber = 1, int previousTestCount = 0)
+        public TestResultCollector(TestMode testMode, int runNumber = 1, int previousTestCount = 0)
         {
             _testMode = testMode;
             _runNumber = runNumber;
@@ -478,7 +580,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         public List<TestResultData> GetResults() => _results;
         public TestSummaryData GetSummary() => _summary;
         public List<string> GetLogs() => _logs;
-        public TestModeType GetTestMode() => _testMode;
+        public TestMode GetTestMode() => _testMode;
 
         public static int CountTests(ITestAdaptor test)
         {
@@ -512,11 +614,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             _combinedSummary.FailedTests += summary.FailedTests;
             _combinedSummary.SkippedTests += summary.SkippedTests;
 
-            if (testMode == TestModeType.EditMode)
+            if (testMode == TestMode.EditMode)
             {
                 _editModeSummary = summary;
             }
-            else if (testMode == TestModeType.PlayMode)
+            else if (testMode == TestMode.PlayMode)
             {
                 _playModeSummary = summary;
             }
@@ -549,14 +651,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         Unknown,
         Passed,
         Failed
-    }
-
-    public enum TestModeType
-    {
-        Unknown,
-        EditMode,
-        PlayMode,
-        All
     }
 
     public class TestSummaryData
