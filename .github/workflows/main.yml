@@ -14,10 +14,6 @@ on:
       UNITY_EMAIL:    { required: true }
       UNITY_PASSWORD: { required: true }
 
-  # run automatically on PRs that target *this* repo
-  pull_request_target:
-    types: [opened, synchronize, reopened]
-
 ##############################################################################
 # 2. Job – runs only after a maintainer applies the `ci-ok` label
 ##############################################################################
