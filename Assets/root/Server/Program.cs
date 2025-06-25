@@ -78,7 +78,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 var dataArguments = new DataArguments(args);
                 
                 // Set the runtime configurable timeout
-                ConnectionConfig.TimeoutMs = dataArguments.TimeoutSeconds * 1000;
+                ConnectionConfig.TimeoutMs = dataArguments.TimeoutMs;
                 
                 builder.WebHost.UseKestrel(options =>
                 {

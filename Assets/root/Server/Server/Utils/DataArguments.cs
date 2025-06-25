@@ -6,12 +6,12 @@ namespace com.IvanMurzak.Unity.MCP.Server
     public class DataArguments
     {
         public int Port { get; private set; }
-        public int TimeoutSeconds { get; private set; }
+        public int TimeoutMs { get; private set; }
 
         public DataArguments(string[] args)
         {
             Port = Consts.Hub.DefaultPort;
-            TimeoutSeconds = Consts.Hub.DefaultTimeoutMs / 1000;
+            TimeoutMs = Consts.Hub.DefaultTimeoutMs;
 
             ParseCommandLineArguments(args);
             ParseEnvironmentVariables();
@@ -30,16 +30,16 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 }
                 else if (arg.StartsWith("--timeout="))
                 {
-                    if (int.TryParse(arg.Substring(10), out var parsedTimeoutSeconds))
-                        TimeoutSeconds = parsedTimeoutSeconds;
+                    if (int.TryParse(arg.Substring(10), out var parsedTimeoutMs))
+                        TimeoutMs = parsedTimeoutMs;
                 }
                 else if (i == 0 && int.TryParse(arg, out var posPort))
                 {
                     Port = posPort;
                 }
-                else if (i == 1 && int.TryParse(arg, out var posTimeoutSeconds))
+                else if (i == 1 && int.TryParse(arg, out var posTimeoutMs))
                 {
-                    TimeoutSeconds = posTimeoutSeconds;
+                    TimeoutMs = posTimeoutMs;
                 }
             }
         }
@@ -51,8 +51,8 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 Port = parsedEnvPort;
 
             var envTimeout = Environment.GetEnvironmentVariable(Consts.Env.Timeout);
-            if (envTimeout != null && int.TryParse(envTimeout, out var parsedEnvTimeoutSeconds))
-                TimeoutSeconds = parsedEnvTimeoutSeconds;
+            if (envTimeout != null && int.TryParse(envTimeout, out var parsedEnvTimeoutMs))
+                TimeoutMs = parsedEnvTimeoutMs;
         }
     }
 }
