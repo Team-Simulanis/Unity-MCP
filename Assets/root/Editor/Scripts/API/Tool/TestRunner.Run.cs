@@ -23,16 +23,18 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             "TestRunner_Run",
             Title = "Run Unity Tests"
         )]
-        [Description("Execute Unity tests and return detailed results. Supports filtering by test mode, assembly, class, and method.")]
+        [Description("Execute Unity tests and return detailed results. Supports filtering by test mode, assembly, namespace, class, and method.")]
         public async Task<string> Run
         (
             [Description("Test mode to run. Options: 'EditMode', 'PlayMode', 'All'. Default: 'All'")]
             string testMode = "All",
             [Description("Specific test assembly name to run (optional). Example: 'Assembly-CSharp-Editor-testable'")]
             string? testAssembly = null,
-            [Description("Specific fully qualified test class name to run (optional). Example: 'MyNamespace.MyTestClass'")]
+            [Description("Specific test namespace to run (optional). Example: 'MyTestNamespace'")]
+            string? testNamespace = null,
+            [Description("Specific test class name to run (optional). Example: 'MyTestClass'")]
             string? testClass = null,
-            [Description("Specific fully qualified test method name to run (optional). Example: 'MyNamespace.MyTestClass.MyTestMethod'")]
+            [Description("Specific fully qualified test method to run (optional). Example: 'MyTestNamespace.FixtureName.TestName'")]
             string? testMethod = null
         )
         {
@@ -63,32 +65,44 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
                 if (testMode == "All")
                 {
-                    // Validate both EditMode and PlayMode filters
-                    var editModeValidation = await ValidateTestFilters(testRunnerApi, TestMode.EditMode, testAssembly, testClass, testMethod);
-                    var playModeValidation = await ValidateTestFilters(testRunnerApi, TestMode.PlayMode, testAssembly, testClass, testMethod);
-                    
-                    // If both modes failed validation, return error
-                    if (editModeValidation != null && playModeValidation != null)
+                    // Create filter parameters
+                    var filterParams = new TestFilterParameters(testAssembly, testNamespace, testClass, testMethod);
+
+                    // Check which modes have matching tests
+                    var editModeTestCount = await GetMatchingTestCount(testRunnerApi, TestMode.EditMode, filterParams);
+                    var playModeTestCount = await GetMatchingTestCount(testRunnerApi, TestMode.PlayMode, filterParams);
+
+                    // If neither mode has tests, return error
+                    if (editModeTestCount == 0 && playModeTestCount == 0)
                     {
-                        return Error.NoTestsFound(testAssembly, testClass, testMethod);
+                        return Error.NoTestsFound(filterParams);
                     }
+
+                    // Handle "All" mode by running only the modes that have matching tests
+                    var modesToRun = new List<string>();
+                    if (editModeTestCount > 0) modesToRun.Add("EditMode");
+                    if (playModeTestCount > 0) modesToRun.Add("PlayMode");
                     
-                    // Handle "All" mode by running EditMode and PlayMode separately
-                    Debug.Log($"[TestRunner] Running ALL tests by executing EditMode and PlayMode sequentially.");
-                    return await RunSequentialTests(testRunnerApi, testAssembly, testClass, testMethod, timeoutMs);
+                    Debug.Log($"[TestRunner] Running tests in modes: {string.Join(", ", modesToRun)} (EditMode: {editModeTestCount}, PlayMode: {playModeTestCount})");
+                    return await RunSequentialTests(testRunnerApi, filterParams, timeoutMs, editModeTestCount > 0, playModeTestCount > 0);
                 }
                 else
                 {
+                    // Create filter parameters
+                    var filterParams = new TestFilterParameters(testAssembly, testNamespace, testClass, testMethod);
+
                     // Convert string to TestMode enum
-                    var testModeEnum = testMode == "EditMode" ? TestMode.EditMode : TestMode.PlayMode;
-                    
+                    var testModeEnum = testMode == "EditMode"
+                        ? TestMode.EditMode
+                        : TestMode.PlayMode;
+
                     // Validate specific test mode filter
-                    var validation = await ValidateTestFilters(testRunnerApi, testModeEnum, testAssembly, testClass, testMethod);
+                    var validation = await ValidateTestFilters(testRunnerApi, testModeEnum, filterParams);
                     if (validation != null)
                         return validation;
-                    
+
                     Debug.Log($"[TestRunner] Running {testMode} tests.");
-                    var resultCollector = await RunSingleTestModeWithCollector(testModeEnum, testRunnerApi, testAssembly, testClass, testMethod, timeoutMs);
+                    var resultCollector = await RunSingleTestModeWithCollector(testModeEnum, testRunnerApi, filterParams, timeoutMs);
                     return FormatTestResults(resultCollector);
                 }
             }
@@ -121,57 +135,102 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             };
         }
 
-        private static Filter CreateTestFilter(TestMode testMode, string? testAssembly, string? testClass, string? testMethod)
+        private static Filter CreateTestFilter(TestMode testMode, TestFilterParameters filterParams)
         {
             var filter = new Filter
             {
-                // Set test mode
                 testMode = testMode
             };
 
-            // Set assembly filter
-            if (!string.IsNullOrEmpty(testAssembly))
+            if (!string.IsNullOrEmpty(filterParams.TestAssembly))
             {
-                filter.assemblyNames = new[] { testAssembly };
+                filter.assemblyNames = new[] { filterParams.TestAssembly };
             }
 
-            // Set test name filter (class and/or method)
-            if (!string.IsNullOrEmpty(testClass) || !string.IsNullOrEmpty(testMethod))
+            var groupNames = new List<string>();
+            var testNames = new List<string>();
+
+            // Handle specific test method in FixtureName.TestName format
+            if (!string.IsNullOrEmpty(filterParams.TestMethod))
             {
-                var testNames = new List<string>();
+                testNames.Add(filterParams.TestMethod);
+            }
 
-                if (!string.IsNullOrEmpty(testClass) && !string.IsNullOrEmpty(testMethod))
-                {
-                    testNames.Add($"{testClass}.{testMethod}");
-                }
-                else if (!string.IsNullOrEmpty(testClass))
-                {
-                    testNames.Add(testClass);
-                }
-                else if (!string.IsNullOrEmpty(testMethod))
-                {
-                    testNames.Add(testMethod);
-                }
+            // Handle namespace filtering with regex (shared pattern ensures validation sync)
+            if (!string.IsNullOrEmpty(filterParams.TestNamespace))
+            {
+                groupNames.Add(CreateNamespaceRegexPattern(filterParams.TestNamespace));
+            }
 
-                if (testNames.Any())
-                    filter.testNames = testNames.ToArray();
+            // Handle class filtering with regex (shared pattern ensures validation sync)
+            if (!string.IsNullOrEmpty(filterParams.TestClass))
+            {
+                groupNames.Add(CreateClassRegexPattern(filterParams.TestClass));
+            }
+
+            if (groupNames.Any())
+            {
+                filter.groupNames = groupNames.ToArray();
+            }
+
+            if (testNames.Any())
+            {
+                filter.testNames = testNames.ToArray();
             }
 
             return filter;
         }
 
-        private async Task<string?> ValidateTestFilters(TestRunnerApi testRunnerApi, TestMode testMode, string? testAssembly, string? testClass, string? testMethod)
+        /// <summary>
+        /// Creates a regex pattern for namespace filtering that matches Unity's Filter.groupNames behavior.
+        /// This ensures our validation logic (CountFilteredTests) matches exactly what Unity's TestRunner will execute.
+        /// Pattern: "^{namespace}\." - matches tests in the specified namespace and its subnamespaces.
+        /// </summary>
+        /// <param name="namespaceName">The namespace to filter by</param>
+        /// <returns>Regex pattern for Unity's Filter.groupNames field</returns>
+        private static string CreateNamespaceRegexPattern(string namespaceName)
+        {
+            return $"^{EscapeRegex(namespaceName)}\\.";
+        }
+
+        /// <summary>
+        /// Creates a regex pattern for class filtering that matches Unity's Filter.groupNames behavior.
+        /// This ensures our validation logic (CountFilteredTests) matches exactly what Unity's TestRunner will execute.
+        /// Pattern: "^.*\.{className}$" - matches any test class with the specified name regardless of namespace.
+        /// </summary>
+        /// <param name="className">The class name to filter by</param>
+        /// <returns>Regex pattern for Unity's Filter.groupNames field</returns>
+        private static string CreateClassRegexPattern(string className)
+        {
+            return $"^.*\\.{EscapeRegex(className)}$";
+        }
+
+        /// <summary>
+        /// Escapes special regex characters to ensure literal string matching.
+        /// Used by the shared regex pattern builders to safely handle user input that may contain regex metacharacters.
+        /// </summary>
+        /// <param name="input">The string to escape</param>
+        /// <returns>Regex-safe escaped string</returns>
+        private static string EscapeRegex(string input)
+        {
+            return System.Text.RegularExpressions.Regex.Escape(input);
+        }
+
+        private async Task<int> GetMatchingTestCount(TestRunnerApi testRunnerApi, TestMode testMode, TestFilterParameters filterParams)
         {
             try
             {
                 var tcs = new TaskCompletionSource<int>();
-                
+
                 // Retrieve test list without running tests
                 await MainThread.Instance.RunAsync(() =>
                 {
                     testRunnerApi.RetrieveTestList(testMode, (testRoot) =>
                     {
-                        var testCount = testRoot != null ? CountFilteredTests(testRoot, testAssembly, testClass, testMethod) : 0;
+                        var testCount = testRoot != null
+                            ? CountFilteredTests(testRoot, filterParams)
+                            : 0;
+                        Debug.Log($"[TestRunner] {testCount} {testMode} tests matched for {filterParams}");
                         tcs.SetResult(testCount);
                     });
                 });
@@ -179,24 +238,32 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 // Wait for the test count result with timeout
                 var timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
                 var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
-                
+
                 if (completedTask == timeoutTask)
                 {
                     throw new OperationCanceledException("Test list retrieval timed out");
                 }
-                
-                var testCount = await tcs.Task;
-                
+
+                return await tcs.Task;
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+
+        private async Task<string?> ValidateTestFilters(TestRunnerApi testRunnerApi, TestMode testMode, TestFilterParameters filterParams)
+        {
+            try
+            {
+                var testCount = await GetMatchingTestCount(testRunnerApi, testMode, filterParams);
+
                 if (testCount == 0)
                 {
-                    return Error.NoTestsFound(testAssembly, testClass, testMethod);
+                    return Error.NoTestsFound(filterParams);
                 }
-                
+
                 return null; // No error, tests found
-            }
-            catch (OperationCanceledException)
-            {
-                return Error.NoTestsFound(testAssembly, testClass, testMethod);
             }
             catch (Exception ex)
             {
@@ -204,10 +271,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             }
         }
 
-        private static int CountFilteredTests(ITestAdaptor test, string? testAssembly, string? testClass, string? testMethod)
+        private static int CountFilteredTests(ITestAdaptor test, TestFilterParameters filterParams)
         {
             // If no filters are specified, count all tests
-            if (string.IsNullOrEmpty(testAssembly) && string.IsNullOrEmpty(testClass) && string.IsNullOrEmpty(testMethod))
+            if (!filterParams.HasAnyFilter)
             {
                 return TestResultCollector.CountTests(test);
             }
@@ -217,19 +284,41 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             // Check if this test matches the filters
             if (!test.IsSuite)
             {
-                // Check assembly filter - use FullName which may include assembly info
-                bool matches = !string.IsNullOrEmpty(testAssembly) && test.FullName.Contains(testAssembly);
-                
-                // Check class filter
-                if (!matches && !string.IsNullOrEmpty(testClass) && test.FullName.Contains(testClass))
+                bool matches = false;
+
+                // Check assembly filter
+                if (!string.IsNullOrEmpty(filterParams.TestAssembly) && test.FullName.Contains(filterParams.TestAssembly))
                 {
                     matches = true;
                 }
 
-                // Check method filter  
-                if (!matches && !string.IsNullOrEmpty(testMethod) && test.FullName.Contains(testMethod))
+                // Check namespace filter using same regex pattern as Filter.groupNames (ensures sync with Unity's execution)
+                if (!matches && !string.IsNullOrEmpty(filterParams.TestNamespace))
                 {
-                    matches = true;
+                    var namespacePattern = CreateNamespaceRegexPattern(filterParams.TestNamespace);
+                    if (System.Text.RegularExpressions.Regex.IsMatch(test.FullName, namespacePattern))
+                    {
+                        matches = true;
+                    }
+                }
+
+                // Check class filter using same regex pattern as Filter.groupNames (ensures sync with Unity's execution)
+                if (!matches && !string.IsNullOrEmpty(filterParams.TestClass))
+                {
+                    var classPattern = CreateClassRegexPattern(filterParams.TestClass);
+                    if (System.Text.RegularExpressions.Regex.IsMatch(test.FullName, classPattern))
+                    {
+                        matches = true;
+                    }
+                }
+
+                // Check method filter (FixtureName.TestName format, same as Filter.testNames)
+                if (!matches && !string.IsNullOrEmpty(filterParams.TestMethod))
+                {
+                    if (test.FullName.Equals(filterParams.TestMethod, StringComparison.OrdinalIgnoreCase))
+                    {
+                        matches = true;
+                    }
                 }
 
                 if (matches)
@@ -243,39 +332,77 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             {
                 foreach (var child in test.Children)
                 {
-                    count += CountFilteredTests(child, testAssembly, testClass, testMethod);
+                    count += CountFilteredTests(child, filterParams);
                 }
             }
 
             return count;
         }
 
-        private async Task<string> RunSequentialTests(TestRunnerApi testRunnerApi, string? testAssembly, string? testClass, string? testMethod, int timeoutMs)
+        private async Task<string> RunSequentialTests(TestRunnerApi testRunnerApi, TestFilterParameters filterParams, int timeoutMs, bool runEditMode, bool runPlayMode)
         {
             var combinedCollector = new CombinedTestResultCollector();
             var totalStartTime = DateTime.Now;
 
             try
             {
-                Debug.Log($"[TestRunner] Starting EditMode tests...");
-                var editModeStartTime = DateTime.Now;
-                var editModeCollector = await RunSingleTestModeWithCollector(TestMode.EditMode, testRunnerApi, testAssembly, testClass, testMethod, timeoutMs);
-                combinedCollector.AddResults(editModeCollector);
+                var editModeTestCount = 0;
+                var remainingTimeoutMs = timeoutMs;
 
-                var editModeTestCount = editModeCollector.GetSummary().TotalTests;
-                var editModeDuration = DateTime.Now - editModeStartTime;
-                var remainingTimeoutMs = Math.Max(1000, timeoutMs - (int)editModeDuration.TotalMilliseconds);
+                // Run EditMode tests if they exist
+                if (runEditMode)
+                {
+                    Debug.Log($"[TestRunner] Starting EditMode tests...");
+                    var editModeStartTime = DateTime.Now;
+                    var editModeCollector = await RunSingleTestModeWithCollector(TestMode.EditMode, testRunnerApi, filterParams, timeoutMs);
+                    combinedCollector.AddResults(editModeCollector);
 
-                Debug.Log($"[TestRunner] EditMode tests completed in {editModeDuration:mm\\:ss\\.fff}. Starting PlayMode tests with {remainingTimeoutMs}ms timeout...");
-                var playModeCollector = await RunSingleTestModeWithCollector(TestMode.PlayMode, testRunnerApi, testAssembly, testClass, testMethod, remainingTimeoutMs, editModeTestCount);
-                combinedCollector.AddResults(playModeCollector);
+                    editModeTestCount = editModeCollector.GetSummary().TotalTests;
+                    var editModeDuration = DateTime.Now - editModeStartTime;
+                    remainingTimeoutMs = Math.Max(1000, timeoutMs - (int)editModeDuration.TotalMilliseconds);
+
+                    Debug.Log($"[TestRunner] EditMode tests completed in {editModeDuration:mm\\:ss\\.fff}.");
+                }
+                else
+                {
+                    Debug.Log($"[TestRunner] Skipping EditMode tests (no matching tests found).");
+                }
+
+                // Run PlayMode tests if they exist
+                if (runPlayMode)
+                {
+                    Debug.Log($"[TestRunner] Starting PlayMode tests with {remainingTimeoutMs}ms timeout...");
+                    var playModeCollector = await RunSingleTestModeWithCollector(TestMode.PlayMode, testRunnerApi, filterParams, remainingTimeoutMs, editModeTestCount);
+                    combinedCollector.AddResults(playModeCollector);
+                    Debug.Log($"[TestRunner] PlayMode tests completed.");
+                }
+                else
+                {
+                    Debug.Log($"[TestRunner] Skipping PlayMode tests (no matching tests found).");
+                }
 
                 // Calculate total duration
                 var totalDuration = DateTime.Now - totalStartTime;
                 combinedCollector.SetTotalDuration(totalDuration);
 
-                // Format combined results
-                return FormatCombinedResults(combinedCollector);
+                // Format combined results - handle case where only one mode ran
+                if (runEditMode && runPlayMode)
+                {
+                    return FormatCombinedResults(combinedCollector);
+                }
+                else
+                {
+                    // Only one mode ran, use single mode formatting
+                    var collectors = combinedCollector.GetAllCollectors();
+                    if (collectors.Any())
+                    {
+                        return FormatTestResults(collectors.First());
+                    }
+                    else
+                    {
+                        return "[Success] No tests were executed (no matching tests found).";
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -283,10 +410,12 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             }
         }
 
-        private async Task<TestResultCollector> RunSingleTestModeWithCollector(TestMode testMode, TestRunnerApi testRunnerApi, string? testAssembly, string? testClass, string? testMethod, int timeoutMs, int previousTestCount = 0)
+        private async Task<TestResultCollector> RunSingleTestModeWithCollector(TestMode testMode, TestRunnerApi testRunnerApi, TestFilterParameters filterParams, int timeoutMs, int previousTestCount = 0)
         {
-            var filter = CreateTestFilter(testMode, testAssembly, testClass, testMethod);
-            var runNumber = testMode == TestMode.EditMode ? 1 : 2;
+            var filter = CreateTestFilter(testMode, filterParams);
+            var runNumber = testMode == TestMode.EditMode
+                ? 1
+                : 2;
             var resultCollector = new TestResultCollector(testMode, runNumber, previousTestCount);
 
             await MainThread.Instance.RunAsync(() =>
@@ -382,7 +511,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
             // Combined Summary
             output.AppendLine("=== COMBINED TEST SUMMARY ===");
-            var overallStatusColored = summary.Status == TestRunStatus.Passed ? "<color=green>✅</color>" : "<color=red>❌</color>";
+            var overallStatusColored = summary.Status == TestRunStatus.Passed
+                ? "<color=green>✅</color>"
+                : "<color=red>❌</color>";
             output.AppendLine($"Overall Status: {summary.Status} {overallStatusColored}");
             output.AppendLine($"Total Tests: {summary.TotalTests}");
             output.AppendLine($"Total Passed: {summary.PassedTests}");
@@ -394,7 +525,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             // EditMode Summary
             if (editModeSummary.TotalTests > 0)
             {
-                var editModeStatusColored = editModeSummary.Status == TestRunStatus.Passed ? "<color=green>✅</color>" : "<color=red>❌</color>";
+                var editModeStatusColored = editModeSummary.Status == TestRunStatus.Passed
+                    ? "<color=green>✅</color>"
+                    : "<color=red>❌</color>";
                 output.AppendLine("=== EDITMODE TEST SUMMARY ===");
                 output.AppendLine($"Status: {editModeSummary.Status} {editModeStatusColored}");
                 output.AppendLine($"Total: {editModeSummary.TotalTests}");
@@ -408,7 +541,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             // PlayMode Summary
             if (playModeSummary.TotalTests > 0)
             {
-                var playModeStatusColored = playModeSummary.Status == TestRunStatus.Passed ? "<color=green>✅</color>" : "<color=red>❌</color>";
+                var playModeStatusColored = playModeSummary.Status == TestRunStatus.Passed
+                    ? "<color=green>✅</color>"
+                    : "<color=red>❌</color>";
                 output.AppendLine("=== PLAYMODE TEST SUMMARY ===");
                 output.AppendLine($"Status: {playModeSummary.Status} {playModeStatusColored}");
                 output.AppendLine($"Total: {playModeSummary.TotalTests}");
@@ -481,16 +616,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             _startTime = DateTime.Now;
             var testCount = CountTests(testsToRun);
             var totalExpected = _previousTestCount + testCount;
-            
+
             _totalExpectedTests = testCount;
             _summary.TotalTests = testCount;
             Debug.Log($"[TestRunner] Run {_runNumber} ({_testMode}) started: {testCount} tests. Total expected: {totalExpected}");
-
-            if (testsToRun.HasChildren)
-            {
-                var firstFewTests = testsToRun.Children.Take(3).Select(t => t.Name);
-                Debug.Log($"[TestRunner] Sample tests in this run: {string.Join(", ", firstFewTests)}");
-            }
         }
 
         public void RunFinished(ITestResultAdaptor result)
@@ -498,7 +627,18 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             var endTime = DateTime.Now;
             var duration = endTime - _startTime;
             _summary.Duration = duration;
-            _summary.Status = _summary.FailedTests > 0 ? TestRunStatus.Failed : (_summary.PassedTests > 0 ? TestRunStatus.Passed : TestRunStatus.Unknown);
+            if (_summary.FailedTests > 0)
+            {
+                _summary.Status = TestRunStatus.Failed;
+            }
+            else if (_summary.PassedTests > 0)
+            {
+                _summary.Status = TestRunStatus.Passed;
+            }
+            else
+            {
+                _summary.Status = TestRunStatus.Unknown;
+            }
 
             Debug.Log($"[TestRunner] Run {_runNumber} ({_testMode}) finished with {CountTests(result.Test)} test results. Result status: {result.TestStatus}");
             Debug.Log($"[TestRunner] Final duration: {duration:mm\\:ss\\.fff}. Completed: {_results.Count}/{_totalExpectedTests}");
@@ -585,7 +725,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         public static int CountTests(ITestAdaptor test)
         {
             if (!test.HasChildren)
-                return test.IsSuite ? 0 : 1;
+                return test.IsSuite
+                    ? 0
+                    : 1;
 
             return test.Children.Sum(CountTests);
         }
@@ -595,6 +737,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
     {
         private readonly List<TestResultData> _allResults = new();
         private readonly List<string> _allLogs = new();
+        private readonly List<TestResultCollector> _collectors = new();
         private TestSummaryData _combinedSummary = new();
         private TestSummaryData _editModeSummary = new();
         private TestSummaryData _playModeSummary = new();
@@ -606,6 +749,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             var logs = collector.GetLogs();
             var testMode = collector.GetTestMode();
 
+            _collectors.Add(collector);
             _allResults.AddRange(results);
             _allLogs.AddRange(logs);
 
@@ -627,7 +771,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         public void SetTotalDuration(TimeSpan duration)
         {
             _combinedSummary.Duration = duration;
-            _combinedSummary.Status = _combinedSummary.FailedTests > 0 ? TestRunStatus.Failed : TestRunStatus.Passed;
+            _combinedSummary.Status = _combinedSummary.FailedTests > 0
+                ? TestRunStatus.Failed
+                : TestRunStatus.Passed;
         }
 
         public List<TestResultData> GetResults() => _allResults;
@@ -635,6 +781,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         public TestSummaryData GetEditModeSummary() => _editModeSummary;
         public TestSummaryData GetPlayModeSummary() => _playModeSummary;
         public List<string> GetLogs() => _allLogs;
+        public List<TestResultCollector> GetAllCollectors() => _collectors;
     }
 
     public class TestResultData
