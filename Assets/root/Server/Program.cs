@@ -75,14 +75,14 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 }).Build(new Reflector());
 
                 // builder.WebHost.UseUrls(Consts.Hub.DefaultEndpoint);
-                var (port, timeoutMs) = ParseArguments(args);
+                var dataArguments = new DataArguments(args);
                 
                 // Set the runtime configurable timeout
-                ConnectionConfig.TimeoutMs = timeoutMs;
+                ConnectionConfig.TimeoutMs = dataArguments.TimeoutSeconds * 1000;
                 
                 builder.WebHost.UseKestrel(options =>
                 {
-                    options.ListenLocalhost(port);
+                    options.ListenLocalhost(dataArguments.Port);
                 });
 
                 var app = builder.Build();
@@ -123,51 +123,6 @@ namespace com.IvanMurzak.Unity.MCP.Server
             {
                 LogManager.Shutdown();
             }
-        }
-        static (int port, int timeoutMs) ParseArguments(string[] args)
-        {
-            var port = Consts.Hub.DefaultPort;
-            var timeoutMs = Consts.Hub.DefaultTimeoutMs;
-
-            // Parse command line arguments
-            // Format: [port] [timeout] or --port=8090 --timeout=300
-            for (int i = 0; i < args.Length; i++)
-            {
-                var arg = args[i];
-                
-                // Handle --port=value format
-                if (arg.StartsWith("--port="))
-                {
-                    if (int.TryParse(arg.Substring(7), out var parsedPort))
-                        port = parsedPort;
-                }
-                // Handle --timeout=value format (value in milliseconds)
-                else if (arg.StartsWith("--timeout="))
-                {
-                    if (int.TryParse(arg.Substring(10), out var parsedTimeoutMs))
-                        timeoutMs = parsedTimeoutMs;
-                }
-                // Handle positional arguments (backwards compatibility)
-                else if (i == 0 && int.TryParse(arg, out var posPort))
-                {
-                    port = posPort;
-                }
-                else if (i == 1 && int.TryParse(arg, out var posTimeoutMs))
-                {
-                    timeoutMs = posTimeoutMs;
-                }
-            }
-
-            // Check environment variables as fallback
-            var envPort = Environment.GetEnvironmentVariable(Consts.Env.Port);
-            if (envPort != null && int.TryParse(envPort, out var parsedEnvPort))
-                port = parsedEnvPort;
-
-            var envTimeout = Environment.GetEnvironmentVariable(Consts.Env.Timeout);
-            if (envTimeout != null && int.TryParse(envTimeout, out var parsedEnvTimeoutMs))
-                timeoutMs = parsedEnvTimeoutMs;
-
-            return (port, timeoutMs);
         }
     }
 }
