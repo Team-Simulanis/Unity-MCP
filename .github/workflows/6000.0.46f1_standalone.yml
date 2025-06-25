@@ -6,6 +6,10 @@ on:
       - main
     types: [opened, synchronize, reopened]
 
+  pull_request:
+    branches:
+      - main
+
   push:
     branches:
       - main
