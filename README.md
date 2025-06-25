@@ -236,8 +236,9 @@ public class Tool_GameObject
 
 # Contribution
 
-Feel free to add new `tool` into the project.
+Feel free to add a new `tool` into the project.
 
 1. Fork the project.
-2. Implement new `tool` in your forked repository.
-3. Create Pull Request into original [Unity-MCP](https://github.com/IvanMurzak/Unity-MCP) repository.
+2. Clone the fork and open the resulting folder in Unity.
+3. Implement the new `tool` in your forked repository.
+4. Create Pull Request into original [Unity-MCP](https://github.com/IvanMurzak/Unity-MCP) repository.
