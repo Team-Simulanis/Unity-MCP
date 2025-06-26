@@ -149,7 +149,7 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 
 #### Running PlayMode tests
 
-To be able to run Play Mode tests via the TestRunner MCP tool, you should consider configuring Unity to **not** perform a domain reload when entering Play Mode (`Edit -> Project Settings -> Editor -> Enter Play Mode Settings` - set to `Reload Scene only` or `Do not reload Domain or Scene`). Otherewise, starting the Play Mode tests will interrupt the TestRunner MCP tool, leading to a cycle of tests restarting.
+To be able to run Play Mode tests via the TestRunner MCP tool, you should consider configuring Unity to **not** perform a domain reload when entering Play Mode (`Edit -> Project Settings -> Editor -> Enter Play Mode Settings` - set to `Reload Scene only` or `Do not reload Domain or Scene`). Otherwise, starting the Play Mode tests will interrupt the TestRunner MCP tool, leading to a cycle of tests restarting.
 
 # Installation
 
