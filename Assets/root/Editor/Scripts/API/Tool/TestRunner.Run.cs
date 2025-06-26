@@ -82,7 +82,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                     var modesToRun = new List<string>();
                     if (editModeTestCount > 0) modesToRun.Add("EditMode");
                     if (playModeTestCount > 0) modesToRun.Add("PlayMode");
-                    
+
                     Debug.Log($"[TestRunner] Running tests in modes: {string.Join(", ", modesToRun)} (EditMode: {editModeTestCount}, PlayMode: {playModeTestCount})");
                     return await RunSequentialTests(testRunnerApi, filterParams, timeoutMs, editModeTestCount > 0, playModeTestCount > 0);
                 }
@@ -416,7 +416,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             var runNumber = testMode == TestMode.EditMode
                 ? 1
                 : 2;
-            var resultCollector = new TestResultCollector(testMode, runNumber, previousTestCount);
+            var resultCollector = new TestResultCollector(testMode, runNumber);
 
             await MainThread.Instance.RunAsync(() =>
             {
@@ -599,27 +599,22 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         private readonly TaskCompletionSource<bool> _completionSource = new();
         private readonly TestSummaryData _summary = new();
         private DateTime _startTime;
-        private int _totalExpectedTests;
         private readonly TestMode _testMode;
         private readonly int _runNumber;
-        private readonly int _previousTestCount;
 
-        public TestResultCollector(TestMode testMode, int runNumber = 1, int previousTestCount = 0)
+        public TestResultCollector(TestMode testMode, int runNumber = 1)
         {
             _testMode = testMode;
             _runNumber = runNumber;
-            _previousTestCount = previousTestCount;
         }
 
         public void RunStarted(ITestAdaptor testsToRun)
         {
             _startTime = DateTime.Now;
             var testCount = CountTests(testsToRun);
-            var totalExpected = _previousTestCount + testCount;
 
-            _totalExpectedTests = testCount;
             _summary.TotalTests = testCount;
-            Debug.Log($"[TestRunner] Run {_runNumber} ({_testMode}) started: {testCount} tests. Total expected: {totalExpected}");
+            Debug.Log($"[TestRunner] Run {_runNumber} ({_testMode}) started: {testCount} tests.");
         }
 
         public void RunFinished(ITestResultAdaptor result)
@@ -641,7 +636,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             }
 
             Debug.Log($"[TestRunner] Run {_runNumber} ({_testMode}) finished with {CountTests(result.Test)} test results. Result status: {result.TestStatus}");
-            Debug.Log($"[TestRunner] Final duration: {duration:mm\\:ss\\.fff}. Completed: {_results.Count}/{_totalExpectedTests}");
+            Debug.Log($"[TestRunner] Final duration: {duration:mm\\:ss\\.fff}. Completed: {_results.Count}/{_summary.TotalTests}");
 
             _completionSource.TrySetResult(true);
         }
