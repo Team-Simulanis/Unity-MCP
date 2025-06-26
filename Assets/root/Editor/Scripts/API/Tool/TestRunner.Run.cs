@@ -124,16 +124,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             }
         }
 
-        private static bool IsValidTestMode(string testMode)
-        {
-            return testMode switch
-            {
-                "EditMode" => true,
-                "PlayMode" => true,
-                "All" => true,
-                _ => false
-            };
-        }
+        private static bool IsValidTestMode(string testMode) => testMode is "EditMode" or "PlayMode" or "All";
 
         private static Filter CreateTestFilter(TestMode testMode, TestFilterParameters filterParams)
         {
