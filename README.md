@@ -20,6 +20,13 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 
 ## AI Tools
 
+Unity-MCP supports a wide range of tools. Each tool is a small connector between LLM and Unity Engine. You may create your own `tools` by using API, take a look at [add custom tool](#add-custom-tool).
+
+Here is the list of default AI tools. All of them are available after installation Unity-MCP into your project.
+
+> **Legend:**
+> ✅ = Implemented & available, 🔲 = Planned / Not yet implemented
+
 <table>
 <tr>
 <td valign="top">
@@ -59,7 +66,7 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
   - ✅ Add
   - ✅ Remove
 - ✅ Execute `MenuItem`
-- 🔲 Run Tests
+- ✅ Run Tests (see note in [running play mode tests](#running-playmode-tests))
 
 #### Editor.Selection
 
@@ -143,9 +150,6 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 </td>
 </tr>
 </table>
-
-> **Legend:**
-> ✅ = Implemented & available, 🔲 = Planned / Not yet implemented
 
 # Installation
 
@@ -233,11 +237,16 @@ public class Tool_GameObject
 
 > ⚠️ Not yet supported. The work is in progress
 
+# Running PlayMode tests
+
+To be able to run Play Mode tests via the TestRunner MCP tool, you should consider configuring Unity to **not** perform a domain reload when entering Play Mode (`Edit -> Project Settings -> Editor -> Enter Play Mode Settings` - set to `Reload Scene only` or `Do not reload Domain or Scene`). Otherwise, starting the Play Mode tests will interrupt the TestRunner MCP tool, leading to a cycle of tests restarting.
+
 
 # Contribution
 
-Feel free to add new `tool` into the project.
+Feel free to add a new `tool` into the project.
 
 1. Fork the project.
-2. Implement new `tool` in your forked repository.
-3. Create Pull Request into original [Unity-MCP](https://github.com/IvanMurzak/Unity-MCP) repository.
+2. Clone the fork and open the resulting folder in Unity.
+3. Implement the new `tool` in your forked repository.
+4. Create Pull Request into original [Unity-MCP](https://github.com/IvanMurzak/Unity-MCP) repository.

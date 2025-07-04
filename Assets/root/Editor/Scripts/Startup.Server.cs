@@ -1,15 +1,14 @@
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 using com.IvanMurzak.Unity.MCP.Common;
+using com.IvanMurzak.Unity.MCP.Editor.Utils;
+using com.IvanMurzak.ReflectorNet.Utils;
+using System;
 using System.Diagnostics;
 using System.IO;
-using UnityEngine;
-using System;
-using System.Threading.Tasks;
-using Debug = UnityEngine.Debug;
-using com.IvanMurzak.Unity.MCP.Editor.Utils;
-using com.IvanMurzak.Unity.MCP.Utils;
 using System.Linq;
-using com.IvanMurzak.ReflectorNet.Utils;
+using System.Threading.Tasks;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace com.IvanMurzak.Unity.MCP.Editor
 {
@@ -60,10 +59,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor
 
         // -------------------------------------------------------------------------------------------------------------------------------------------------
 
-        public static string RawJsonConfiguration(int port, string bodyName = "mcpServers") => Consts.MCP_Client.ClaudeDesktop.Config(
+        public static string RawJsonConfiguration(int port, string bodyName = "mcpServers", int? timeoutMs = null) => Consts.MCP.Config(
             ServerExecutableFile.Replace('\\', '/'),
             bodyName,
-            port
+            port,
+            timeoutMs
         );
 
         public static Task BuildServerIfNeeded(bool force = true)

@@ -33,13 +33,9 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 if (LastSuccessfulClients.TryGetValue(type, out var connectionId))
                 {
                     if (ConnectedClients.TryGetValue(type, out clients) && clients.ContainsKey(connectionId))
-                    {
                         return connectionId;
-                    }
-                    else
-                    {
-                        LastSuccessfulClients.TryRemove(type, out _);
-                    }
+
+                    LastSuccessfulClients.TryRemove(type, out _);
                 }
             }
             if (ConnectedClients.TryGetValue(type, out clients))
@@ -55,8 +51,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
         //     ? clients?.FirstOrDefault().Key
         //     : null;
 
-        public static void AddClient<T>(string connectionId, ILogger? logger)
-            => AddClient(typeof(T), connectionId, logger);
+        public static void AddClient<T>(string connectionId, ILogger? logger) => AddClient(typeof(T), connectionId, logger);
         public static void AddClient(Type type, string connectionId, ILogger? logger)
         {
             var clients = ConnectedClients.GetOrAdd(type, _ => new());
@@ -69,8 +64,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                 logger?.LogWarning($"Client '{connectionId}' is already connected to {type.Name}.");
             }
         }
-        public static void RemoveClient<T>(string connectionId, ILogger? logger)
-            => RemoveClient(typeof(T), connectionId, logger);
+        public static void RemoveClient<T>(string connectionId, ILogger? logger) => RemoveClient(typeof(T), connectionId, logger);
         public static void RemoveClient(Type type, string connectionId, ILogger? logger)
         {
             if (ConnectedClients.TryGetValue(type, out var clients))
@@ -136,7 +130,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                         logger.LogTrace("Invoke '{0}', ConnectionId ='{1}'. RequestData:\n{2}\n{3}", methodName, connectionId, requestData, allConnections);
                     }
                     var invokeTask = client.InvokeAsync<ResponseData<TResponse>>(methodName, requestData, cancellationToken);
-                    var completedTask = await Task.WhenAny(invokeTask, Task.Delay(TimeSpan.FromSeconds(Consts.Hub.TimeoutSeconds), cancellationToken));
+                    var completedTask = await Task.WhenAny(invokeTask, Task.Delay(TimeSpan.FromMilliseconds(ConnectionConfig.TimeoutMs), cancellationToken));
                     if (completedTask == invokeTask)
                     {
                         try
@@ -159,7 +153,7 @@ namespace com.IvanMurzak.Unity.MCP.Server
                     }
 
                     // Timeout occurred
-                    logger.LogWarning($"Timeout: Client '{connectionId}' did not respond in {Consts.Hub.TimeoutSeconds} seconds. Removing from ConnectedClients.");
+                    logger.LogWarning($"Timeout: Client '{connectionId}' did not respond in {ConnectionConfig.TimeoutMs} ms. Removing from ConnectedClients.");
                     // RemoveCurrentClient(client);
                     await Task.Delay(retryDelayMs, cancellationToken); // Wait before retrying
                     // Restart the loop to try again with a new client
