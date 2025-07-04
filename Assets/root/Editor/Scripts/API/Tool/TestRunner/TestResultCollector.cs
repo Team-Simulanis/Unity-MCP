@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using com.IvanMurzak.Unity.MCP.Utils;
 using UnityEditor.TestTools.TestRunner.Api;
 using UnityEngine;
 
@@ -37,7 +38,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             var testCount = CountTests(testsToRun);
 
             _summary.TotalTests = testCount;
-            Debug.Log($"[TestRunner] Run {_runNumber} ({_testMode}) started: {testCount} tests.");
+
+            if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                Debug.Log($"[TestRunner] Run {_runNumber} ({_testMode}) started: {testCount} tests.");
         }
 
         public void RunFinished(ITestResultAdaptor result)
@@ -58,8 +61,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 _summary.Status = TestRunStatus.Unknown;
             }
 
-            Debug.Log($"[TestRunner] Run {_runNumber} ({_testMode}) finished with {CountTests(result.Test)} test results. Result status: {result.TestStatus}");
-            Debug.Log($"[TestRunner] Final duration: {duration:mm\\:ss\\.fff}. Completed: {_results.Count}/{_summary.TotalTests}");
+            if (McpPluginUnity.IsLogActive(LogLevel.Info))
+            {
+                Debug.Log($"[TestRunner] Run {_runNumber} ({_testMode}) finished with {CountTests(result.Test)} test results. Result status: {result.TestStatus}");
+                Debug.Log($"[TestRunner] Final duration: {duration:mm\\:ss\\.fff}. Completed: {_results.Count}/{_summary.TotalTests}");
+            }
 
             _completionSource.TrySetResult(true);
         }
@@ -90,10 +96,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                     TestStatus.Passed => "<color=green>✅</color>",
                     TestStatus.Failed => "<color=red>❌</color>",
                     TestStatus.Skipped => "<color=yellow>⚠️</color>",
-                    _ => ""
+                    _ => string.Empty
                 };
 
-                Debug.Log($"[TestRunner] {statusEmoji} Test finished: {result.Test.FullName} - {result.TestStatus} ({_results.Count}/{_summary.TotalTests})");
+                if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                    Debug.Log($"[TestRunner] {statusEmoji} Test finished: {result.Test.FullName} - {result.TestStatus} ({_results.Count}/{_summary.TotalTests})");
 
                 // Update summary counts
                 switch (result.TestStatus)
@@ -115,7 +122,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 // Check if all tests are complete
                 if (_results.Count >= _summary.TotalTests)
                 {
-                    Debug.Log($"[TestRunner] All tests completed via TestFinished. Final duration: {_summary.Duration:mm\\:ss\\.fff}");
+                    if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                        Debug.Log($"[TestRunner] All tests completed via TestFinished. Final duration: {_summary.Duration:mm\\:ss\\.fff}");
+
                     _completionSource.TrySetResult(true);
                 }
             }
@@ -128,9 +137,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             {
                 var completedTask = await Task.WhenAny(_completionSource.Task, tcs.Task);
                 if (completedTask == tcs.Task)
-                {
                     cancellationToken.ThrowIfCancellationRequested();
-                }
+
                 await _completionSource.Task; // Re-await to get the result or exception
             }
         }
@@ -165,14 +173,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                     output.AppendLine($"  Duration: {result.Duration:ss\\.fff}s");
 
                     if (!string.IsNullOrEmpty(result.Message))
-                    {
                         output.AppendLine($"  Message: {result.Message}");
-                    }
 
                     if (!string.IsNullOrEmpty(result.StackTrace))
-                    {
                         output.AppendLine($"  Stack Trace: {result.StackTrace}");
-                    }
+
                     output.AppendLine();
                 }
             }
@@ -182,22 +187,16 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             {
                 output.AppendLine("=== CONSOLE LOGS ===");
                 foreach (var log in logs)
-                {
                     output.AppendLine(log);
-                }
             }
 
             return output.ToString();
         }
 
-        public static int CountTests(ITestAdaptor test)
-        {
-            if (!test.HasChildren)
-                return test.IsSuite
-                    ? 0
-                    : 1;
-
-            return test.Children.Sum(CountTests);
-        }
+        public static int CountTests(ITestAdaptor test) => test.HasChildren
+            ? test.Children.Sum(CountTests)
+            : test.IsSuite
+                ? 0
+                : 1;
     }
 }

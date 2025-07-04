@@ -205,7 +205,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                         var testCount = testRoot != null
                             ? CountFilteredTests(testRoot, filterParams)
                             : 0;
-                        Debug.Log($"[TestRunner] {testCount} {testMode} tests matched for {filterParams}");
+
+                        if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                            Debug.Log($"[TestRunner] {testCount} {testMode} tests matched for {filterParams}");
+
                         tcs.SetResult(testCount);
                     });
                 });
@@ -334,7 +337,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 // Run EditMode tests if they exist
                 if (runEditMode)
                 {
-                    Debug.Log($"[TestRunner] Starting EditMode tests...");
+                    if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                        Debug.Log($"[TestRunner] Starting EditMode tests...");
                     var editModeStartTime = DateTime.Now;
                     var editModeCollector = await RunSingleTestModeWithCollector(TestMode.EditMode, testRunnerApi, filterParams, timeoutMs);
                     combinedCollector.AddResults(editModeCollector);
@@ -342,24 +346,31 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                     var editModeDuration = DateTime.Now - editModeStartTime;
                     remainingTimeoutMs = Math.Max(1000, timeoutMs - (int)editModeDuration.TotalMilliseconds);
 
-                    Debug.Log($"[TestRunner] EditMode tests completed in {editModeDuration:mm\\:ss\\.fff}.");
+                    if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                        Debug.Log($"[TestRunner] EditMode tests completed in {editModeDuration:mm\\:ss\\.fff}.");
                 }
                 else
                 {
-                    Debug.Log($"[TestRunner] Skipping EditMode tests (no matching tests found).");
+                    if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                        Debug.Log($"[TestRunner] Skipping EditMode tests (no matching tests found).");
                 }
 
                 // Run PlayMode tests if they exist
                 if (runPlayMode)
                 {
-                    Debug.Log($"[TestRunner] Starting PlayMode tests with {remainingTimeoutMs}ms timeout...");
+                    if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                        Debug.Log($"[TestRunner] Starting PlayMode tests with {remainingTimeoutMs}ms timeout...");
+
                     var playModeCollector = await RunSingleTestModeWithCollector(TestMode.PlayMode, testRunnerApi, filterParams, remainingTimeoutMs);
                     combinedCollector.AddResults(playModeCollector);
-                    Debug.Log($"[TestRunner] PlayMode tests completed.");
+
+                    if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                        Debug.Log($"[TestRunner] PlayMode tests completed.");
                 }
                 else
                 {
-                    Debug.Log($"[TestRunner] Skipping PlayMode tests (no matching tests found).");
+                    if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                        Debug.Log($"[TestRunner] Skipping PlayMode tests (no matching tests found).");
                 }
 
                 // Calculate total duration
@@ -376,13 +387,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                     // Only one mode ran, use single mode formatting
                     var collectors = combinedCollector.GetAllCollectors();
                     if (collectors.Any())
-                    {
                         return collectors.First().FormatTestResults();
-                    }
-                    else
-                    {
-                        return "[Success] No tests were executed (no matching tests found).";
-                    }
+
+                    return "[Success] No tests were executed (no matching tests found).";
                 }
             }
             catch (Exception ex)
@@ -414,7 +421,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             }
             catch (OperationCanceledException)
             {
-                Debug.LogWarning($"[TestRunner] {testMode} tests timed out after {timeoutMs} ms.");
+                if (McpPluginUnity.IsLogActive(LogLevel.Warning))
+                    Debug.LogWarning($"[TestRunner] {testMode} tests timed out after {timeoutMs} ms.");
                 return resultCollector;
             }
             finally

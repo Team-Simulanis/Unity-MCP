@@ -32,7 +32,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
                 var filterText = filters.Count > 0
                     ? $" matching {string.Join(", ", filters)}"
-                    : "";
+                    : string.Empty;
                 return $"[Error] No tests found{filterText}. Please check that the specified assembly, namespace, class, and method names are correct and that your Unity project contains tests.";
             }
         }
