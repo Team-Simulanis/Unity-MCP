@@ -20,7 +20,7 @@ The system is extensible: you can define custom `tool`s directly in your Unity p
 
 ## AI Tools
 
-Unity-MCP supports wide range of tools. Each tool is a small connector between LLM and Unity Engine. You may create your own `tools` by using API, take a look at [add custom tool](#add-custom-tool).
+Unity-MCP supports a wide range of tools. Each tool is a small connector between LLM and Unity Engine. You may create your own `tools` by using API, take a look at [add custom tool](#add-custom-tool).
 
 Here is the list of default AI tools. All of them are available after installation Unity-MCP into your project.
 
