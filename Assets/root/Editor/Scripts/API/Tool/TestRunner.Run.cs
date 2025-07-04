@@ -10,6 +10,7 @@ using com.IvanMurzak.ReflectorNet.Utils;
 using UnityEditor.TestTools.TestRunner.Api;
 using UnityEngine;
 using com.IvanMurzak.Unity.MCP.Editor.API.TestRunner;
+using com.IvanMurzak.Unity.MCP.Utils;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
@@ -44,9 +45,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 lock (_testLock)
                 {
                     if (_isTestRunning)
-                    {
                         return "[Error] Test execution is already in progress. Please wait for the current test run to complete.";
-                    }
+
                     _isTestRunning = true;
                 }
 
@@ -56,7 +56,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
                 // Get timeout from MCP server configuration
                 var timeoutMs = McpPluginUnity.TimeoutMs;
-                Debug.Log($"[TestRunner] Using timeout: {timeoutMs} ms (from MCP plugin configuration)");
+                if (McpPluginUnity.IsLogActive(LogLevel.Debug))
+                    Debug.Log($"[TestRunner] Using timeout: {timeoutMs} ms (from MCP plugin configuration)");
 
                 // Get Test Runner API (must be on main thread)
                 var testRunnerApi = await MainThread.Instance.RunAsync(() => ScriptableObject.CreateInstance<TestRunnerApi>());
@@ -74,16 +75,15 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
 
                     // If neither mode has tests, return error
                     if (editModeTestCount == 0 && playModeTestCount == 0)
-                    {
                         return Error.NoTestsFound(filterParams);
-                    }
 
                     // Handle "All" mode by running only the modes that have matching tests
                     var modesToRun = new List<string>();
                     if (editModeTestCount > 0) modesToRun.Add("EditMode");
                     if (playModeTestCount > 0) modesToRun.Add("PlayMode");
 
-                    Debug.Log($"[TestRunner] Running tests in modes: {string.Join(", ", modesToRun)} (EditMode: {editModeTestCount}, PlayMode: {playModeTestCount})");
+                    if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                        Debug.Log($"[TestRunner] Running tests in modes: {string.Join(", ", modesToRun)} (EditMode: {editModeTestCount}, PlayMode: {playModeTestCount})");
                     return await RunSequentialTests(testRunnerApi, filterParams, timeoutMs, editModeTestCount > 0, playModeTestCount > 0);
                 }
                 else
@@ -101,7 +101,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                     if (validation != null)
                         return validation;
 
-                    Debug.Log($"[TestRunner] Running {testMode} tests.");
+                    if (McpPluginUnity.IsLogActive(LogLevel.Info))
+                        Debug.Log($"[TestRunner] Running {testMode} tests.");
+
                     var resultCollector = await RunSingleTestModeWithCollector(testModeEnum, testRunnerApi, filterParams, timeoutMs);
                     return resultCollector.FormatTestResults();
                 }
@@ -134,40 +136,28 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             };
 
             if (!string.IsNullOrEmpty(filterParams.TestAssembly))
-            {
                 filter.assemblyNames = new[] { filterParams.TestAssembly };
-            }
 
             var groupNames = new List<string>();
             var testNames = new List<string>();
 
             // Handle specific test method in FixtureName.TestName format
             if (!string.IsNullOrEmpty(filterParams.TestMethod))
-            {
                 testNames.Add(filterParams.TestMethod);
-            }
 
             // Handle namespace filtering with regex (shared pattern ensures validation sync)
             if (!string.IsNullOrEmpty(filterParams.TestNamespace))
-            {
                 groupNames.Add(CreateNamespaceRegexPattern(filterParams.TestNamespace));
-            }
 
             // Handle class filtering with regex (shared pattern ensures validation sync)
             if (!string.IsNullOrEmpty(filterParams.TestClass))
-            {
                 groupNames.Add(CreateClassRegexPattern(filterParams.TestClass));
-            }
 
             if (groupNames.Any())
-            {
                 filter.groupNames = groupNames.ToArray();
-            }
 
             if (testNames.Any())
-            {
                 filter.testNames = testNames.ToArray();
-            }
 
             return filter;
         }
@@ -180,9 +170,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         /// <param name="namespaceName">The namespace to filter by</param>
         /// <returns>Regex pattern for Unity's Filter.groupNames field</returns>
         private static string CreateNamespaceRegexPattern(string namespaceName)
-        {
-            return $"^{EscapeRegex(namespaceName)}\\.";
-        }
+            => $"^{EscapeRegex(namespaceName)}\\.";
 
         /// <summary>
         /// Creates a regex pattern for class filtering that matches Unity's Filter.groupNames behavior.
@@ -192,9 +180,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         /// <param name="className">The class name to filter by</param>
         /// <returns>Regex pattern for Unity's Filter.groupNames field</returns>
         private static string CreateClassRegexPattern(string className)
-        {
-            return $"^.*\\.{EscapeRegex(className)}\\.[^\\.]+$";
-        }
+            => $"^.*\\.{EscapeRegex(className)}\\.[^\\.]+$";
 
         /// <summary>
         /// Escapes special regex characters to ensure literal string matching.
@@ -203,9 +189,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         /// <param name="input">The string to escape</param>
         /// <returns>Regex-safe escaped string</returns>
         private static string EscapeRegex(string input)
-        {
-            return System.Text.RegularExpressions.Regex.Escape(input);
-        }
+            => System.Text.RegularExpressions.Regex.Escape(input);
 
         private async Task<int> GetMatchingTestCount(TestRunnerApi testRunnerApi, TestMode testMode, TestFilterParameters filterParams)
         {
