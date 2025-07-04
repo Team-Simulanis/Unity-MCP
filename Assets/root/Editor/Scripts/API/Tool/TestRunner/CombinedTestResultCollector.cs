@@ -124,14 +124,11 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                     output.AppendLine($"  Duration: {result.Duration:ss\\.fff}s");
 
                     if (!string.IsNullOrEmpty(result.Message))
-                    {
                         output.AppendLine($"  Message: {result.Message}");
-                    }
 
                     if (!string.IsNullOrEmpty(result.StackTrace))
-                    {
                         output.AppendLine($"  Stack Trace: {result.StackTrace}");
-                    }
+
                     output.AppendLine();
                 }
             }
@@ -141,9 +138,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             {
                 output.AppendLine("=== CONSOLE LOGS ===");
                 foreach (var log in logs)
-                {
                     output.AppendLine(log);
-                }
             }
 
             return output.ToString();

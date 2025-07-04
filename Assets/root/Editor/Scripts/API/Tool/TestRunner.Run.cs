@@ -5,12 +5,13 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using com.IvanMurzak.Unity.MCP.Common;
 using com.IvanMurzak.ReflectorNet.Utils;
-using UnityEditor.TestTools.TestRunner.Api;
-using UnityEngine;
 using com.IvanMurzak.Unity.MCP.Editor.API.TestRunner;
 using com.IvanMurzak.Unity.MCP.Utils;
+using UnityEditor.TestTools.TestRunner.Api;
+using UnityEngine;
 
 namespace com.IvanMurzak.Unity.MCP.Editor.API
 {
@@ -189,7 +190,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         /// <param name="input">The string to escape</param>
         /// <returns>Regex-safe escaped string</returns>
         private static string EscapeRegex(string input)
-            => System.Text.RegularExpressions.Regex.Escape(input);
+            => Regex.Escape(input);
 
         private async Task<int> GetMatchingTestCount(TestRunnerApi testRunnerApi, TestMode testMode, TestFilterParameters filterParams)
         {
@@ -218,9 +219,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
 
                 if (completedTask == timeoutTask)
-                {
                     throw new OperationCanceledException("Test list retrieval timed out");
-                }
 
                 return await tcs.Task;
             }
@@ -235,11 +234,8 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
             try
             {
                 var testCount = await GetMatchingTestCount(testRunnerApi, testMode, filterParams);
-
                 if (testCount == 0)
-                {
                     return Error.NoTestsFound(filterParams);
-                }
 
                 return null; // No error, tests found
             }
@@ -253,16 +249,14 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
         {
             // If no filters are specified, count all tests
             if (!filterParams.HasAnyFilter)
-            {
                 return TestResultCollector.CountTests(test);
-            }
 
             var count = 0;
 
             // Check if this test matches the filters
             if (!test.IsSuite)
             {
-                bool matches = false;
+                var matches = false;
 
                 // Check assembly filter using UniqueName which contains assembly information
                 if (!string.IsNullOrEmpty(filterParams.TestAssembly))
@@ -272,9 +266,7 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                     {
                         var assemblyName = test.UniqueName.Substring(0, dllIndex);
                         if (assemblyName.Equals(filterParams.TestAssembly, StringComparison.OrdinalIgnoreCase))
-                        {
                             matches = true;
-                        }
                     }
                 }
 
@@ -282,44 +274,34 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 if (!matches && !string.IsNullOrEmpty(filterParams.TestNamespace))
                 {
                     var namespacePattern = CreateNamespaceRegexPattern(filterParams.TestNamespace);
-                    if (System.Text.RegularExpressions.Regex.IsMatch(test.FullName, namespacePattern))
-                    {
+                    if (Regex.IsMatch(test.FullName, namespacePattern))
                         matches = true;
-                    }
                 }
 
                 // Check class filter using same regex pattern as Filter.groupNames (ensures sync with Unity's execution)
                 if (!matches && !string.IsNullOrEmpty(filterParams.TestClass))
                 {
                     var classPattern = CreateClassRegexPattern(filterParams.TestClass);
-                    if (System.Text.RegularExpressions.Regex.IsMatch(test.FullName, classPattern))
-                    {
+                    if (Regex.IsMatch(test.FullName, classPattern))
                         matches = true;
-                    }
                 }
 
                 // Check method filter (FixtureName.TestName format, same as Filter.testNames)
                 if (!matches && !string.IsNullOrEmpty(filterParams.TestMethod))
                 {
                     if (test.FullName.Equals(filterParams.TestMethod, StringComparison.OrdinalIgnoreCase))
-                    {
                         matches = true;
-                    }
                 }
 
                 if (matches)
-                {
                     count = 1;
-                }
             }
 
             // Recursively check children
             if (test.HasChildren)
             {
                 foreach (var child in test.Children)
-                {
                     count += CountFilteredTests(child, filterParams);
-                }
             }
 
             return count;
@@ -339,8 +321,10 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 {
                     if (McpPluginUnity.IsLogActive(LogLevel.Info))
                         Debug.Log($"[TestRunner] Starting EditMode tests...");
+
                     var editModeStartTime = DateTime.Now;
                     var editModeCollector = await RunSingleTestModeWithCollector(TestMode.EditMode, testRunnerApi, filterParams, timeoutMs);
+
                     combinedCollector.AddResults(editModeCollector);
 
                     var editModeDuration = DateTime.Now - editModeStartTime;
@@ -430,7 +414,5 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API
                 await MainThread.Instance.RunAsync(() => testRunnerApi.UnregisterCallbacks(resultCollector));
             }
         }
-
-
     }
 }
